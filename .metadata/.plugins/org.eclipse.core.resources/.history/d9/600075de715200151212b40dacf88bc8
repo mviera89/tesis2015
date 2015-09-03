@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+	<h1>Hello World PrimeFaces</h1>
+
+	<h:form>
+	   <p:growl id="msgs" showDetail="true" escape="false"/>
+	   
+	   <h3>Checkbox</h3>
+   		<p:tree value="#{treeSelectionView.root3}" var="doc" orientation="horizontal"
+                selectionMode="checkbox"
+                selection="#{treeSelectionView.selectedNodes2}">
+                
+	        <p:treeNode icon="ui-icon-note">
+	            <h:outputText value="#{doc.name}"/>
+	        </p:treeNode>
+	        <p:treeNode type="document" icon="ui-icon-document">
+	            <h:outputText value="#{doc.name}" />
+	        </p:treeNode>
+	        <p:treeNode type="picture" icon="ui-icon-image">
+	            <h:outputText value="#{doc.name}" />
+	        </p:treeNode>
+	        <p:treeNode type="mp3" icon="ui-icon-video">
+	            <h:outputText value="#{doc.name}" />
+	        </p:treeNode>
+	        
+    	</p:tree>
+ 
+    <p:commandButton value="Display" update="msgs" icon="ui-icon-newwin"
+    	actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}"/>
+    
+	</h:form>
+
+</h:body>
+</html>

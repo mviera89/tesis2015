@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui"> 
+<h:head>
+	<title>vSPEM</title>
+</h:head>
+
+<h:body class="body">
+<div id="daddy">
+	<div id="header">
+		
+		<div id="menu">
+			
+					
+					<h:form id="formulario_login">
+						<p:growl id="growl" showDetail="true" life="2000"/>   
+								<div id = "row_div"> 
+									<div id = "col_div"> 
+										<h:outputLabel class = "label_div" value="Nombre:"></h:outputLabel>
+									</div> 								
+									<div id = "col_div"> 
+										<h:outputLabel class = "label_div" value="ContraseÃ±a:"></h:outputLabel>
+									</div> 									
+								 </div>
+								 <div id = "row_div"> 
+									<div id = "col_div"> 
+										<p:inputText id="nomLogin" value="#{loginBean.nombre}">
+										<f:validateLength minimum="1">Debe ingresar un Nombre</f:validateLength>
+										</p:inputText>	
+									</div> 								
+									<div id = "col_div"> 
+										<p:password id="pwdLogin" value="#{loginBean.pwd}">
+							 			</p:password>
+									</div> 		
+									<div id = "col_div"> 
+										<h:commandButton value="Iniciar SesiÃ³n" type="submit" action="#{loginBean.login()}">
+										</h:commandButton>
+									</div> 									
+								 </div>	 
+				        
+				        	
+		    			
+	    			</h:form>					
+				
+		
+			
+		</div>	<!-- menu -->
+		
+		<div id="ticker">
+			 Juego de FÃºtbol Manager. Dirige tu propio equipo.
+		</div>	<!-- ticker -->
+		
+		<div id="headerimage">				
+			<div id="slogan">
+				JATRIK
+			</div>
+		</div>	<!-- headerimage -->
+		
+	</div>	<!-- header -->
+	
+	<div id="content">
+		<div id="cA">
+			<div class="Ctopleft"></div>
+				<h2>Registrarse</h2>
+					<div class="registro">
+						<h:form id="formulario_registro">
+							<p:panel style="margin-bottom:20px;">
+						      		
+						      		<h:message for="nombreUsuarioR" style="color:red" />	
+						            <h:outputLabel value="Nombre:"></h:outputLabel>
+									<h:inputText id="nombreUsuarioR" value="#{registroBean.nombre}">
+									</h:inputText>			
+									
+									<h:message for="contraseniaUsuarioR" style="color:red" />									
+									<h:outputLabel value="ContraseÃ±a:"></h:outputLabel>
+									 <p:password id="contraseniaUsuarioR" value="#{registroBean.pwd}"
+									  feedback="true" />
+									 
+									 <h:message for="mailUsuarioR" style="color:red" />										 
+									 <h:outputLabel value="Mail:"></h:outputLabel>
+									 <p:inputText id="mailUsuarioR" value="#{registroBean.mail}" />
+									 
+									 <h5>InformaciÃ³n del equipo</h5>
+									 
+									 <h:message for="equipoUsuarioR" style="color:red" />	
+									 <h:outputLabel value="Nombre Equipo:"></h:outputLabel>
+									 <p:inputText id="equipoUsuarioR" value="#{registroBean.equipo}" />	
+									 
+									 <h:message for="nomEstadioUsuarioR" style="color:red" />	
+									 <h:outputLabel value="Nombre del Estadio:"></h:outputLabel>
+									 <p:inputText id="nomEstadioUsuarioR" value="#{registroBean.nomEstadio}" />					      
+						        	 
+						        	 <p:outputLabel value="PaÃ­s y/o ciudad:" />	    	
+						        	 <p:inputText id="searchTextField" type="text" value="#{registroBean.paisSeleccionado}" />				        	 
+        
+						        	<p:commandButton value="Registrarme" style="margin-top:8px;" type="submit" 
+						        		actionListener="#{registroBean.registarUsuario()}" update=":formulario_registro">										
+									</p:commandButton>
+				    		</p:panel>
+		    			</h:form>	    				
+		    				 
+					</div>
+		</div><!-- cA -->
+		<div id="cB">
+			<div class="Ctopright"></div>
+						
+						
+			
+		</div><!-- cB -->
+		<div class="Cpad">
+			<br class="clear" /><div class="Cbottomleft"></div><div class="Cbottom"></div><div class="Cbottomright"></div>
+		</div><!-- Cpad -->				
+	</div><!-- content -->
+	<div id="properspace"></div><!-- properspace -->
+		<p:ajaxStatus id="startAjax" >
+	         <f:facet name="start">
+		            <div class="ui-widget-overlay">						                	
+			             <h:graphicImage style="position: absolute;
+							left: 50%;
+						 	top: 50%;"		 
+		                    value="./resources/images/ajax-loader.gif">
+			               </h:graphicImage>	
+			         </div>					                     
+	        </f:facet>							           
+		</p:ajaxStatus>	
+</div><!-- daddy -->
+<div id="footer">
+	|<div id="foot2">
+			<a> Designed by tsi10<span class="star">*</span></a>
+		</div>
+</div><!-- footer -->
+</h:body>
+</html>
