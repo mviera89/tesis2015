@@ -4,31 +4,44 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:p="http://primefaces.org/ui">
 <h:head>
+	<style type="text/css">
+	.ui-steps .ui-steps-item {
+	    width: 24%;
+	}
+	 
+	.ui-state-highlight {
+	    text-shadow: none !important;
+	}
+	 
+	.ui-steps.custom {
+	    margin-bottom: 30px;
+	}
+	 
+	.ui-steps.custom .ui-steps-item .ui-menuitem-link {
+	    height: 10px;
+	    padding: 0 1em;
+	}
+	 
+	.ui-steps.custom .ui-steps-item .ui-steps-number {
+	    background-color: #0081c2;
+	    color: #FFFFFF;
+	    display: inline-block;
+	    width: 30px;
+	    border-radius: 10px;
+	    margin-top: -10px;
+	    margin-bottom: 10px;
+	}
+	</style>
 </h:head>
-<h:body>
-  	<h:form>
-    <p:growl id="msgs" showDetail="true" escape="false"/>
- 
-    <h3>Checkbox</h3>
-    <p:tree value="#{treeSelectionView.root3}" var="doc" orientation="horizontal"
-                selectionMode="checkbox"
-                selection="#{treeSelectionView.selectedNodes2}">
-        <p:treeNode icon="ui-icon-note">
-            <h:outputText value="#{doc.name}"/>
-        </p:treeNode>
-        <p:treeNode type="document" icon="ui-icon-document">
-            <h:outputText value="#{doc.name}" />
-        </p:treeNode>
-        <p:treeNode type="picture" icon="ui-icon-image">
-            <h:outputText value="#{doc.name}" />
-        </p:treeNode>
-        <p:treeNode type="mp3" icon="ui-icon-video">
-            <h:outputText value="#{doc.name}" />
-        </p:treeNode>
-    </p:tree>
- 
-    <p:commandButton value="Display" update="msgs" icon="ui-icon-newwin"
-                actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}"/>
-</h:form>
- </h:body>
+	<h:body>
+	  	<h:form>
+		  	<h3 style="margin-top:0"></h3>
+			<p:steps activeIndex="1" readonly="false">
+			    <p:menuitem value="Importar modelo" />
+			    <p:menuitem value="Adaptar modelo" url="http://localhost:8080/vSpemWeb/prueba.xhtml" />
+			    <p:menuitem value="Ver modelo final" />
+			    <p:menuitem value="Exportar modelo" />
+			</p:steps>
+		</h:form>
+	</h:body>
 </html>
