@@ -5,43 +5,55 @@
     xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<style type="text/css">
-	.ui-steps .ui-steps-item {
-	    width: 24%;
-	}
-	 
-	.ui-state-highlight {
-	    text-shadow: none !important;
-	}
-	 
-	.ui-steps.custom {
-	    margin-bottom: 30px;
-	}
-	 
-	.ui-steps.custom .ui-steps-item .ui-menuitem-link {
-	    height: 10px;
-	    padding: 0 1em;
-	}
-	 
-	.ui-steps.custom .ui-steps-item .ui-steps-number {
-	    background-color: #0081c2;
-	    color: #FFFFFF;
-	    display: inline-block;
-	    width: 30px;
-	    border-radius: 10px;
-	    margin-top: -10px;
-	    margin-bottom: 10px;
-	}
+		.ui-steps .ui-steps-item {
+		    width: 24.85%;
+		}
+		
+		.ui-state-highlight {
+		    text-shadow: none !important;
+		}
+		
+		.ui-steps.custom {
+		    margin-bottom: 30px;
+		}
+		
+		.ui-steps.custom .ui-steps-item .ui-menuitem-link {
+		    height: 10px;
+		    padding: 0 1em;
+		}
+		
+		.ui-steps.custom .ui-steps-item .ui-steps-number {
+		    background-color: #0081c2;
+		    color: #FFFFFF;
+		    display: inline-block;
+		    width: 30px;
+		    border-radius: 10px;
+		    margin-top: -10px;
+		    margin-bottom: 10px;
+		}
 	</style>
 </h:head>
 	<h:body>
 	  	<h:form>
 		  	<h3 style="margin-top:0"></h3>
-			<p:steps activeIndex="1" readonly="false">
-			    <p:menuitem value="Importar modelo" />
-			    <p:menuitem value="Adaptar modelo" url="http://localhost:8080/vSpemWeb/prueba.xhtml" />
-			    <p:menuitem value="Ver modelo final" />
-			    <p:menuitem value="Exportar modelo" />
+			<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
+			    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update="@form"/>
+			    <p:menuitem value="Adaptar modelo"   action="#{VistaBean.actualizarIndiceActivo(1)}" update="@form"/>
+			    <p:menuitem value="Ver modelo final" action="#{VistaBean.actualizarIndiceActivo(2)}" update="@form"/>
+			    <p:menuitem value="Exportar modelo"  action="#{VistaBean.actualizarIndiceActivo(3)}" update="@form"/>
 			</p:steps>
+			<p:panelGrid id="panelGridImportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 0}">
+				 <ui:include src="/importarModelo.xhtml"/>
+			</p:panelGrid>
+			<p:panelGrid id="panelGridAdaptar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 1}">
+				 <ui:include src="/adaptarModelo.xhtml"/>
+			</p:panelGrid>
+			<p:panelGrid id="panelGridVer" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 2}">
+				 <ui:include src="/verModelo.xhtml"/>
+			</p:panelGrid>
+			<p:panelGrid id="panelGridExportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 3}">
+				 <ui:include src="/exportarModelo.xhtml"/>
+			</p:panelGrid>
 		</h:form>
 	</h:body>
 </html>

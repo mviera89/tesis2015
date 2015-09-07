@@ -12,8 +12,9 @@ import org.primefaces.model.TreeNode;
 @ManagedBean(name="treeSelectionView")
 @ViewScoped
 public class SelectionView implements Serializable {
-     
-    private TreeNode root1;
+    
+	private static final long serialVersionUID = 1L;
+	private TreeNode root1;
     private TreeNode root2;
     private TreeNode root3;
     private TreeNode selectedNode;

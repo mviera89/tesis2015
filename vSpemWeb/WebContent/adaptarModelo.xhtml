@@ -1,0 +1,25 @@
+<html xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+    
+	<h3 style="margin-top:1%">Adaptar modelo</h3>
+    <p:growl id="msgs" showDetail="true" escape="false"/>
+    <p:tree value="#{treeSelectionView.root3}" var="doc" orientation="horizontal"
+                selectionMode="checkbox"
+                selection="#{treeSelectionView.selectedNodes2}">
+        <p:treeNode icon="ui-icon-note">
+            <h:outputText value="#{doc.name}"/>
+        </p:treeNode>
+        <p:treeNode type="document" icon="ui-icon-document">
+            <h:outputText value="#{doc.name}" />
+        </p:treeNode>
+        <p:treeNode type="picture" icon="ui-icon-image">
+            <h:outputText value="#{doc.name}" />
+        </p:treeNode>
+        <p:treeNode type="mp3" icon="ui-icon-video">
+            <h:outputText value="#{doc.name}" />
+        </p:treeNode>
+    </p:tree>
+ 	<br/>
+    <p:commandButton value="Finalizar" update="msgs" icon="ui-icon-newwin"
+                actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}"/>
+</html>
