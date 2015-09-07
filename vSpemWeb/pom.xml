@@ -20,6 +20,14 @@
 	    <artifactId>primefaces</artifactId>  
 	    <version>5.2</version>  
 	</dependency>
+	
+	<!-- Bootsfaces -->
+	<dependency>
+	    <groupId>net.bootsfaces</groupId>
+	    <artifactId>bootsfaces</artifactId>
+	    <version>0.6.6</version>
+	    <scope>compile</scope>
+	</dependency>
 
    	<dependency>
 	    <groupId>org.apache.maven.plugins</groupId>
