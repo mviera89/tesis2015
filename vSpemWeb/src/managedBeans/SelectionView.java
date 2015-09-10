@@ -35,9 +35,7 @@ public class SelectionView implements Serializable {
     public void init() {
     	String nomFile = "C:\\model.xmi"; 
     	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
-        root1 = service.createDocuments(nodos);
-        root2 = service.createDocuments(nodos);
-        root3 = service.createCheckboxDocuments(nodos);
+        root3 = service.createTree(nodos);
     }
  
     public TreeNode getRoot1() {

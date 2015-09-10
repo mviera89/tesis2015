@@ -3,6 +3,7 @@ package logica;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import dominio.Struct;
+import dominio.Variant;
 
 public class XMIParser {
 	
@@ -28,26 +30,20 @@ public class XMIParser {
 	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	         Document doc = dBuilder.parse(inputFile);
 	         
-	         HashMap<String, String> registroVP = new HashMap<String, String>();
+	         //HashMap<String, String> registroVP = new HashMap<String, String>();
+	         List<Variant> registroVar = new ArrayList<Variant>();
+	         //HashMap<String, String> registroVar = new HashMap<String, String>();
 	                  
 	         doc.getDocumentElement().normalize();
-	         //System.out.println("Element :" 
-	           // + doc.getDocumentElement().getNodeName());
-	         
+	                  
 	         NodeList nList = doc.getElementsByTagName("childPackages");
-	         //System.out.println("----------------------------");
-	         
+	         	         
 	         //Recorro la lista de childPackages
 	         for (int temp = 0; temp < nList.getLength(); temp++) {
 	            Node nNode = nList.item(temp);
-	            //String name = nNode.getNodeName();
-	            //System.out.println("Element : " + nNode.getNodeName());
-	            
+	            	            
 	            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 	            	
-	               //Element eElement = (Element) nNode;
-	               //System.out.println("Name : " + eElement.getAttribute("name"));
-	               
 	               //Obtengo lista de elementos hijos del nodo
 	               NodeList nHijos = nNode.getChildNodes();
 	               	for (int temp1 = 0; temp1 < nHijos.getLength(); temp1++) {
@@ -57,26 +53,18 @@ public class XMIParser {
 	               		if (nHijo.getNodeType() == Node.ELEMENT_NODE){
 	            		   Element eHijo = (Element) nHijo;
 	            		   
-	            		   //System.out.println("\tElement: " 
-	             	         //      + nHijo.getNodeName());
-	            		   
 	            		   String nameHijo = eHijo.getAttribute("name");
-	            		   //System.out.println("\t\tName: " + name );
 	            		   String type = eHijo.getAttribute("xsi:type").substring(20);
-	            		   //System.out.println("\t\tType : " +type);
-	            		   
-	            		   Struct nodo = new Struct(nameHijo,type);
-	            		   result.add(nodo);
 	            		   String id = eHijo.getAttribute("xmi:id");
 	            		   
-	            		   if (type.equals("vpActivity")){
+	            		   //if (type.equals("vpActivity")){
 	            			   //System.out.println("\t\tMin : " +eHijo.getAttribute("min"));
 	            			   //System.out.println("\t\tMax : " +eHijo.getAttribute("max"));
-	            			   registroVP.put(id, nameHijo);
-	            		   }
+	            			   //registroVP.put(id, nameHijo);
+	            		   //}
 	            		   
 	            		   if (type.equals("VarActivity")){
-	            		   
+	            			               		   
 	            			 //Obtengo lista de elementos hijos del nodo
 	                           NodeList nHijosVar = nHijo.getChildNodes();
 	                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
@@ -87,24 +75,49 @@ public class XMIParser {
 	                        		   Element eHijoVar = (Element) nHijoVar;
 	                        		                           		   
 	                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("variant2varP")){
-	                        			   		if (!registroVP.isEmpty()){
-	                        			   			String varPoint = registroVP.get(eHijoVar.getAttribute("supplier"));
+	                        			   		//if (!registroVP.isEmpty()){
+	                        			   			String iDVarPoint = eHijoVar.getAttribute("supplier");
+	                        			   			//registroVar.put(id, nameHijo);
 	                        			   			//System.out.println("\t\tCorresponde al VarPoint:  " + varPoint);
-	                        			   			//System.out.println("\t\tEs Inclusiva:  " + eHijoVar.getAttribute("isInclusive"));
-	                        			   		}
+	                        			   			String isInclusive = eHijoVar.getAttribute("isInclusive");
+	                        			   			boolean inclusiva = false;
+	                        			   			if (isInclusive.equals("true")){
+	                        			   				inclusiva = false;
+	                        			   			}
+	                        			   			Variant var = new Variant(id,nameHijo,iDVarPoint,inclusiva);
+	                        			   			registroVar.add(var);
+	                        			   		//}
 	                        		   }
+	                           		}
+	            		        }
 	            		   }
-	            		   
-	            		   
+	            		   else if (!type.equals("RoleDescriptor")){
+	            			   Struct nodo = new Struct(id,nameHijo,type);
+		            		   result.add(nodo);
+	            		   }
 	               		}
-	            	 
-	               }
-	               	//System.out.println();
-	              }
 	               
+	               	}
 	            }
-	           }
 	         }
+	         
+	         //Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
+	         Iterator<Struct> it = result.iterator();
+	         while (it.hasNext()){
+	         	Struct s = it.next();
+	         	if (s.getType().equals("vpActivity")){
+	         		Iterator<Variant> itaux = registroVar.iterator();
+	         		while (itaux.hasNext()){
+	         			Variant v = itaux.next();
+	         			if (v.getIDVarPoint().equals(s.getElementID())){
+	         				s.getHijos().add(v);
+	         			}
+	         		}
+	         		
+	         		
+	         	}
+	         }
+	         
 	      
 	      } catch (Exception e) {
 	         e.printStackTrace();
