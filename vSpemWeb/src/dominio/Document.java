@@ -1,4 +1,4 @@
-package managedBeans;
+package dominio;
 import java.io.Serializable;
 
 public class Document implements Serializable, Comparable<Document> {

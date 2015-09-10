@@ -24,6 +24,7 @@ public class FileUploadView {
         if(file != null) {
             FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, message);
+            System.out.println("message: " + message);
         }
     }
 }

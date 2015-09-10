@@ -1,9 +1,12 @@
 package managedBeans;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+
 import org.primefaces.model.CheckboxTreeNode;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+
+import dominio.Document;
  
 @ManagedBean(name = "documentService")
 @ApplicationScoped
