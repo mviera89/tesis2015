@@ -33,7 +33,7 @@ public class SelectionView implements Serializable {
      
     @PostConstruct
     public void init() {
-    	String nomFile = "C:\\wsEclipse\\model.xmi"; 
+    	String nomFile = "C:\\model.xmi"; 
     	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
         root1 = service.createDocuments(nodos);
         root2 = service.createDocuments(nodos);
