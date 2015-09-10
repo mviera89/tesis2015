@@ -1,4 +1,7 @@
 package managedBeans;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 
@@ -7,15 +10,21 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import dominio.Document;
+import dominio.Struct;
  
 @ManagedBean(name = "documentService")
 @ApplicationScoped
 public class DocumentService {
      
-    public TreeNode createDocuments() {
+    public TreeNode createDocuments(List<Struct> nodos) {
         TreeNode root = new DefaultTreeNode(new Document("Files", "-", "Folder"), null);
          
-        TreeNode documents = new DefaultTreeNode(new Document("Documents", "-", "Folder"), root);
+        Iterator<Struct> it = nodos.iterator();
+        while (it.hasNext()){
+        	Struct s = it.next();
+        	TreeNode documents = new DefaultTreeNode(new Document(s.getElementID(), "-", "Folder"), root);
+        }
+       /* TreeNode documents = new DefaultTreeNode(new Document("Documents", "-", "Folder"), root);
         TreeNode pictures = new DefaultTreeNode(new Document("Pictures", "-", "Folder"), root);
         TreeNode movies = new DefaultTreeNode(new Document("Movies", "-", "Folder"), root);
          
@@ -40,15 +49,20 @@ public class DocumentService {
         TreeNode carlitosWay = new DefaultTreeNode("mp3", new Document("Carlitos' Way", "24 GB", "Movie File"), pacino);
          
         TreeNode goodfellas = new DefaultTreeNode("mp3", new Document("Goodfellas", "23 GB", "Movie File"), deniro);
-        TreeNode untouchables = new DefaultTreeNode("mp3", new Document("Untouchables", "17 GB", "Movie File"), deniro);
+        TreeNode untouchables = new DefaultTreeNode("mp3", new Document("Untouchables", "17 GB", "Movie File"), deniro);*/
          
         return root;
     }
      
-    public TreeNode createCheckboxDocuments() {
+    public TreeNode createCheckboxDocuments(List<Struct> nodos) {
         TreeNode root = new CheckboxTreeNode(new Document("Files", "-", "Folder"), null);
          
-        TreeNode documents = new CheckboxTreeNode(new Document("Documents", "-", "Folder"), root);
+        Iterator<Struct> it = nodos.iterator();
+        while (it.hasNext()){
+        	Struct s = it.next();
+        	TreeNode documents = new CheckboxTreeNode(new Document(s.getElementID(), "-", "Folder"), root);
+        }
+       /* TreeNode documents = new CheckboxTreeNode(new Document("Documents", "-", "Folder"), root);
         TreeNode pictures = new CheckboxTreeNode(new Document("Pictures", "-", "Folder"), root);
         TreeNode movies = new CheckboxTreeNode(new Document("Movies", "-", "Folder"), root);
          
@@ -73,7 +87,7 @@ public class DocumentService {
         TreeNode carlitosWay = new CheckboxTreeNode("mp3", new Document("Carlitos' Way", "24 GB", "Movie File"), pacino);
          
         TreeNode goodfellas = new CheckboxTreeNode("mp3", new Document("Goodfellas", "23 GB", "Movie File"), deniro);
-        TreeNode untouchables = new CheckboxTreeNode("mp3", new Document("Untouchables", "17 GB", "Movie File"), deniro);
+        TreeNode untouchables = new CheckboxTreeNode("mp3", new Document("Untouchables", "17 GB", "Movie File"), deniro);*/
          
         return root;
     }

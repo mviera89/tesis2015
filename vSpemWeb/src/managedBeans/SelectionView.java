@@ -1,13 +1,20 @@
 package managedBeans;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+
+import logica.XMIParser;
+
 import org.primefaces.model.TreeNode;
+
+import dominio.Struct;
  
 @ManagedBean(name="treeSelectionView")
 @ViewScoped
@@ -26,9 +33,11 @@ public class SelectionView implements Serializable {
      
     @PostConstruct
     public void init() {
-        root1 = service.createDocuments();
-        root2 = service.createDocuments();
-        root3 = service.createCheckboxDocuments();
+    	String nomFile = "C:\\wsEclipse\\model.xmi"; 
+    	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
+        root1 = service.createDocuments(nodos);
+        root2 = service.createDocuments(nodos);
+        root3 = service.createCheckboxDocuments(nodos);
     }
  
     public TreeNode getRoot1() {
