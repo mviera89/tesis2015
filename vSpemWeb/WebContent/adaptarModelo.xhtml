@@ -2,7 +2,7 @@
     xmlns:p="http://primefaces.org/ui">
    
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
-	<h:form>
+	<h:form id="adaptar_form">
 	    <p:growl id="msgs" showDetail="true" escape="false"/>
 	    <p:tree value="#{treeSelectionView.root3}" var="doc" orientation="horizontal"
 	                selectionMode="checkbox"
@@ -22,7 +22,7 @@
 	        </p:treeNode>
 	    </p:tree>
 	 	<br/>
-	    <p:commandButton value="Finalizar" icon="ui-icon-newwin" 
-	    		actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}" />   
+	    <p:commandButton value="Finalizar" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
+	    		actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}" update=":panel_principal" />   
    </h:form>
 </html>

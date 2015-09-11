@@ -37,14 +37,17 @@
 	</style>
 </h:head>
 	<h:body>
-	  	<h:form>
+		<b:panel id="panel_principal">
 	  		<b:container>
-				<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
-				    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update="@form"/>
-				    <p:menuitem value="Adaptar modelo"   action="#{VistaBean.actualizarIndiceActivo(1)}" update="@form"/>
-				    <p:menuitem value="Ver modelo final" action="#{VistaBean.actualizarIndiceActivo(2)}" update="@form"/>
-				    <p:menuitem value="Exportar modelo"  action="#{VistaBean.actualizarIndiceActivo(3)}" update="@form"/>
-				</p:steps>
+		  		<h:form id="form_index">
+					<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
+					    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update=":panel_principal"/>
+					    <p:menuitem value="Adaptar modelo"   action="#{VistaBean.actualizarIndiceActivo(1)}" update=":panel_principal"/>
+					    <p:menuitem value="Ver modelo final" action="#{VistaBean.actualizarIndiceActivo(2)}" update=":panel_principal"/>
+					    <p:menuitem value="Exportar modelo"  action="#{VistaBean.actualizarIndiceActivo(3)}" update=":panel_principal"/>
+					</p:steps>
+				</h:form>
+			
 				<p:panelGrid id="panelGridImportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 0}">
 					 <ui:include src="/importarModelo.xhtml"/>
 				</p:panelGrid>
@@ -57,7 +60,8 @@
 				<p:panelGrid id="panelGridExportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 3}">
 					 <ui:include src="/exportarModelo.xhtml"/>
 				</p:panelGrid>
+			
 			</b:container>
-		</h:form>
+		</b:panel>
 	</h:body>
 </html>

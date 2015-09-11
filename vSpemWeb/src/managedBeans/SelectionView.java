@@ -30,10 +30,11 @@ public class SelectionView implements Serializable {
      
     @ManagedProperty("#{documentService}")
     private DocumentService service;
-     
-    @PostConstruct
+    
+    private String nomFile = "C:\\upload\\model.xmi";
+
+	@PostConstruct
     public void init() {
-    	String nomFile = "C:\\upload\\model.xmi"; 
     	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
         root3 = service.createTree(nodos);
     }
@@ -77,6 +78,14 @@ public class SelectionView implements Serializable {
     public void setService(DocumentService service) {
         this.service = service;
     }
+    
+    public String getNomFile() {
+		return nomFile;
+	}
+
+	public void setNomFile(String nomFile) {
+		this.nomFile = nomFile;
+	}
  
     public void displaySelectedSingle() {
         if(selectedNode != null) {
@@ -86,6 +95,7 @@ public class SelectionView implements Serializable {
     }
      
     public void displaySelectedMultiple(TreeNode[] nodes) {
+    	System.out.println("### displaySelectedMultiple");
         if(nodes != null && nodes.length > 0) {
             StringBuilder builder = new StringBuilder();
  

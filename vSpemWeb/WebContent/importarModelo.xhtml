@@ -1,9 +1,12 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
     xmlns:p="http://primefaces.org/ui">
 
-<h3 style="margin-top:1%">Importar modelo</h3>
+	<h3 style="margin-top:1%">Importar modelo</h3>
 
-	<p:fileUpload fileUploadListener="#{fileUploadView.upload}" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" sizeLimit="100000" description="Select Images"/>
-
+	 <h:form id="importar_form">
+	 
+		<p:fileUpload fileUploadListener="#{fileUploadView.upload}" allowTypes="/(\.|\/)(xmi)$/" description="Select Images" update=":panel_principal"/>
+		
+	</h:form>
 
 </html>
