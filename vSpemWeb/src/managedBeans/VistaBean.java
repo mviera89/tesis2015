@@ -1,8 +1,10 @@
 package managedBeans;
 
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 
 @ManagedBean(name="VistaBean")
+@ViewScoped
 public class VistaBean {
 	
 	private int indiceActivo = 0;

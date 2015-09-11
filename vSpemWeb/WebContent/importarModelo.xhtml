@@ -3,10 +3,9 @@
 
 	<h3 style="margin-top:1%">Importar modelo</h3>
 
-	 <h:form id="importar_form">
-	 
-		<p:fileUpload fileUploadListener="#{fileUploadView.upload}" allowTypes="/(\.|\/)(xmi)$/" description="Select Images" update=":panel_principal"/>
-		
+	<h:form id="importar_form">
+		<p:fileUpload fileUploadListener="#{fileUploadView.upload}" allowTypes="/(\.|\/)(xmi)$/" description="Select Images" uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"/>
+		<p:commandButton value="Siguiente" actionListener="#{VistaBean.actualizarIndiceActivo(1)}" update=":panel_principal"/>
 	</h:form>
 
 </html>

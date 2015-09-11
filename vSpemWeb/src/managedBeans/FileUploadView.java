@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.event.FileUploadEvent;
@@ -34,7 +35,7 @@ public class FileUploadView {
         try {
             copyFile(event.getFile().getFileName(), event.getFile().getInputstream());
             VistaBean vb = (VistaBean) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("VistaBean");
-            vb.actualizarIndiceActivo(1);
+            //vb.actualizarIndiceActivo(1);
 
             /*SelectionView sv = (SelectionView) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("SelectionView");
             sv.setNomFile(event.getFile().getFileName());*/
