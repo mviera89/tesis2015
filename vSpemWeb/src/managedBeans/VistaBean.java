@@ -1,24 +1,33 @@
 package managedBeans;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 
 @ManagedBean(name="VistaBean")
-@ViewScoped
+@SessionScoped
 public class VistaBean {
-	
+
 	private int indiceActivo = 0;
-	
+	private String nombreArchivo = "";
+
 	public int getIndiceActivo() {
 		return indiceActivo;
 	}
-	
+
 	public void setIndiceActivo(int indiceActivo) {
 		this.indiceActivo = indiceActivo;
 	}
-	
+
+	public String getNombreArchivo() {
+		return nombreArchivo;
+	}
+
+	public void setNombreArchivo(String nombreArchivo) {
+		this.nombreArchivo = nombreArchivo;
+	}
+
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
 	}
-	
+
 }

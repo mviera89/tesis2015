@@ -3,11 +3,8 @@ package dominio;
 public class Variant {
 
 	private String ID;
-	
 	private String name;
-	
 	private String IDVarPoint;
-	
 	private boolean isInclusive;
 	
 	public Variant(String ID, String name, String IDVarPoint, boolean isInclusive){
@@ -48,6 +45,5 @@ public class Variant {
 	public void setInclusive(boolean isInclusive) {
 		this.isInclusive = isInclusive;
 	}
-	
-	
+		
 }

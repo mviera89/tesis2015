@@ -2,7 +2,6 @@ package logica;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,8 +21,6 @@ public class XMIParser {
 	public static List<Struct> getElementXMI(String nomFile){
 		List<Struct> result = new ArrayList<Struct>();
 		try {
-			
-			 
 	         File inputFile = new File(nomFile);
 	         DocumentBuilderFactory dbFactory 
 	            = DocumentBuilderFactory.newInstance();

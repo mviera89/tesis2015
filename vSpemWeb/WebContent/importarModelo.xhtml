@@ -1,11 +1,16 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:p="http://primefaces.org/ui">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
 	<h3 style="margin-top:1%">Importar modelo</h3>
 
 	<h:form id="importar_form">
-		<p:fileUpload fileUploadListener="#{fileUploadView.upload}" allowTypes="/(\.|\/)(xmi)$/" description="Select Images" uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"/>
-		<p:commandButton value="Siguiente" actionListener="#{VistaBean.actualizarIndiceActivo(1)}" update=":panel_principal"/>
+		<p:fileUpload fileUploadListener="#{subirArchivoBean.cargarArchivo}" allowTypes="/(\.|\/)(xmi)$/"
+					  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar" update="msg" invalidFileMessage="Formato de archivo incorrecto"/>
+		<br/>
+		<p:messages id="msg" showDetail="true"/>
+		<br/>
+		<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(1)}" update=":panel_principal" />
 	</h:form>
 
 </html>

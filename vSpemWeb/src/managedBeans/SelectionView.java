@@ -7,17 +7,15 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-
-import logica.XMIParser;
+import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.TreeNode;
 
+import logica.XMIParser;
 import dominio.Struct;
  
 @ManagedBean(name="treeSelectionView")
-@ViewScoped
 public class SelectionView implements Serializable {
     
 	private static final long serialVersionUID = 1L;
@@ -31,14 +29,20 @@ public class SelectionView implements Serializable {
     @ManagedProperty("#{documentService}")
     private DocumentService service;
     
-    private String nomFile = "C:\\upload\\model.xmi";
+    private String nomFile = "C:\\download\\";
 
 	@PostConstruct
     public void init() {
-    	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
-        root3 = service.createTree(nodos);
+		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+		if ((vb != null) && (!vb.getNombreArchivo().isEmpty())){
+			nomFile += vb.getNombreArchivo();
+		   	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
+		   	root3 = service.createTree(nodos);
+		}
     }
- 
+	
     public TreeNode getRoot1() {
         return root1;
     }
