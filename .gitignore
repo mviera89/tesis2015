@@ -3,7 +3,7 @@
 *.war
 *.ear
 /build/
-.metadata/
+/.metadata/
 /vSpemWeb/.project
 /vSpemWeb/.classpath
 /vSpemWeb/.settings/
