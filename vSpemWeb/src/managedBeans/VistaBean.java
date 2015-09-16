@@ -11,7 +11,8 @@ public class VistaBean {
 
 	private int indiceActivo = 0;
 	private String nombreArchivo = "";
-	private TreeNode treeAdaptado;
+	private TreeNode treeAdaptado = null;
+	private boolean finModelado = false;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -36,10 +37,38 @@ public class VistaBean {
 	public void setTreeAdaptado(TreeNode treeAdaptado) {
 		this.treeAdaptado = treeAdaptado;
 	}
+	
+	public boolean isFinModelado() {
+		return finModelado;
+	}
+
+	public void setFinModelado(boolean finModelado) {
+		this.finModelado = finModelado;
+	}
 
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
 	}
 	
+	public boolean deshabilitar(int indice){
+		boolean res = true;
+		switch (indice) {
+			case 0:
+				res = false;
+				break;
+			case 1:
+				res = (nombreArchivo == "");
+				break;
+			case 2:
+				res = (treeAdaptado == null);
+				break;
+			case 3:
+				res = !finModelado;
+				break;
+			default:
+				break;
+		}
+		return res;
+	}
 
 }
