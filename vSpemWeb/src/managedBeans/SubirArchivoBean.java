@@ -15,12 +15,13 @@ import javax.servlet.http.HttpSession;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
+import config.Constantes;
+
 @ManagedBean
 @ViewScoped
 public class SubirArchivoBean {
 
 	private String nombreArchivo = "";
-	private String destino = "C:\\download\\";
 
 	public String getNombreArchivo() {
 		return nombreArchivo;
@@ -28,14 +29,6 @@ public class SubirArchivoBean {
 
 	public void setNombreArchivo(String nombreArchivo) {
 		this.nombreArchivo = nombreArchivo;
-	}
-
-	public String getDestino() {
-		return destino;
-	}
-
-	public void setDestino(String destino) {
-		this.destino = destino;
 	}
 
 	public void cargarArchivo(FileUploadEvent event) {
@@ -60,7 +53,7 @@ public class SubirArchivoBean {
 
     public void copiarArchivo(String nombreArchivo, InputStream in) {
     	try {
-		    OutputStream out = new FileOutputStream(new File(destino + nombreArchivo));
+		    OutputStream out = new FileOutputStream(new File(Constantes.destinoDescargas + nombreArchivo));
 		    int leer = 0;
 		    byte[] bytes = new byte[1024];
 		    

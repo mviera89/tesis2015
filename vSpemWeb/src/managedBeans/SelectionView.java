@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.TreeNode;
 
+import config.Constantes;
 import logica.XMIParser;
 import dominio.Struct;
  
@@ -29,15 +30,13 @@ public class SelectionView implements Serializable {
     @ManagedProperty("#{documentService}")
     private DocumentService service;
     
-    private String nomFile = "C:\\download\\";
-
 	@PostConstruct
     public void init() {
 		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		if ((vb != null) && (!vb.getNombreArchivo().isEmpty())){
-			nomFile += vb.getNombreArchivo();
+			String nomFile = Constantes.destinoDescargas + vb.getNombreArchivo();
 		   	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
 		   	root3 = service.createTree(nodos);
 		 
@@ -83,14 +82,6 @@ public class SelectionView implements Serializable {
     public void setService(DocumentService service) {
         this.service = service;
     }
-    
-    public String getNomFile() {
-		return nomFile;
-	}
-
-	public void setNomFile(String nomFile) {
-		this.nomFile = nomFile;
-	}
  
     public void displaySelectedSingle() {
         if(selectedNode != null) {

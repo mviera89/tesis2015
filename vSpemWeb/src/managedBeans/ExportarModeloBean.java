@@ -14,19 +14,17 @@ import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.TreeNode;
 
+import config.Constantes;
 import dominio.Document;
 import dominio.Struct;
  
 @ManagedBean
 public class ExportarModeloBean {
-
-	private String destino = "C:\\download\\";
-	private String nomArchivo = "export.xml";
 	
 	public void exportarModelo(TreeNode treeAdaptado){
 		try{
 			if (treeAdaptado != null){
-				File archivo = new File(destino + nomArchivo);
+				File archivo = new File(Constantes.destinoExport + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 				
 				String texto =
@@ -68,7 +66,8 @@ public class ExportarModeloBean {
 					String id = nodo.getElementID();
 					texto += 
 							"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-							"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n";
+							"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
+							"</BreakdownElement>" + "\n";
 					       /* "<BreakdownElement xsi:type=\"uma:Activity\" name=\"Relevamiento de requerimientos\" briefDescription=\"\" id=\"_3gq5UFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"Relevamiento de requerimientos\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
 					          "<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
 					        "</BreakdownElement>" + "\n" +
