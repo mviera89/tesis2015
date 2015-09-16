@@ -19,14 +19,14 @@ public class DocumentService {
      
    public TreeNode createTree(List<Struct> nodos) {
 	   
-        TreeNode root = new CheckboxTreeNode(new Document("Inicio", "-", "Folder"), null);
+        TreeNode root = new CheckboxTreeNode(new Document("-", "Inicio", "-", "Folder"), null);
         root.setExpanded(true);
         root.setSelectable(false);
-         
+        
         Iterator<Struct> it = nodos.iterator();
         while (it.hasNext()){
         	Struct s = it.next();
-        	TreeNode padre = new CheckboxTreeNode(new Document(s.getNombre(), "-", "Folder"), root);
+        	TreeNode padre = new CheckboxTreeNode(new Document(s.getElementID(), s.getNombre(), "-", "Folder"), root);
         	padre.setExpanded(true);
         	padre.setSelectable(false);
         	
@@ -34,7 +34,7 @@ public class DocumentService {
         	Iterator<Variant> it1 = s.getHijos().iterator();
         	while (it1.hasNext()){
         		Variant v = it1.next();
-        		TreeNode hijo = new CheckboxTreeNode(new Document(v.getName(), "-", "Folder"), padre);
+        		TreeNode hijo = new CheckboxTreeNode(new Document(v.getID(), v.getName(), "-", "Folder"), padre);
         		hijo.setExpanded(true);
         		
         	}

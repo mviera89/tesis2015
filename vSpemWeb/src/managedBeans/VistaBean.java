@@ -11,7 +11,8 @@ public class VistaBean {
 
 	private int indiceActivo = 0;
 	private String nombreArchivo = "";
-
+	private TreeNode treeAdaptado;
+	
 	public int getIndiceActivo() {
 		return indiceActivo;
 	}
@@ -26,6 +27,14 @@ public class VistaBean {
 
 	public void setNombreArchivo(String nombreArchivo) {
 		this.nombreArchivo = nombreArchivo;
+	}
+
+	public TreeNode getTreeAdaptado() {
+		return treeAdaptado;
+	}
+
+	public void setTreeAdaptado(TreeNode treeAdaptado) {
+		this.treeAdaptado = treeAdaptado;
 	}
 
 	public void actualizarIndiceActivo(int indice){

@@ -23,6 +23,7 @@
 	    </p:tree>
 	 	<br/>
 
-	<p:commandButton value="Finalizar" action="#{VistaBean.actualizarIndiceActivo(3)}" update=":panel_principal"/>
+	<p:commandButton value="Finalizar" action="#{VistaBean.actualizarIndiceActivo(3)}" 
+	actionListener="#{exportarModeloBean.exportarModelo(VistaBean.treeAdaptado)}" update=":panel_principal"/>
 </h:form>
 </html>

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
@@ -75,6 +76,8 @@ public class ShowTree implements Serializable {
 		}
 			
 	}
+		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+		vb.setTreeAdaptado(treeAdaptado);
 		
 	}
 }

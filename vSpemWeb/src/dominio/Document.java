@@ -6,16 +6,26 @@ public class Document implements Serializable, Comparable<Document> {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;     
+	private String elementID;
+	private String name;
     private String size;
     private String type;
      
-    public Document(String name, String size, String type) {
+    public Document(String elementID, String name, String size, String type) {
+    	this.elementID = elementID;
         this.name = name;
         this.size = size;
         this.type = type;
     }
- 
+
+	public String getElementID() {
+		return elementID;
+	}
+
+	public void setElementID(String elementID) {
+		this.elementID = elementID;
+	}
+
     public String getName() {
         return name;
     }
