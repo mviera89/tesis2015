@@ -20,7 +20,7 @@
 		</init-param>
 		<init-param>
 		    <param-name>uploadDirectory</param-name>
-		    <param-value>C:\wsEclipse</param-value>
+		    <param-value>C:\wsEclipse\upload</param-value>
  		</init-param> -->
  </filter>
  <filter-mapping>

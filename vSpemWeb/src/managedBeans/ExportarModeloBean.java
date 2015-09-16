@@ -27,6 +27,7 @@ public class ExportarModeloBean {
 				File archivo = new File(Constantes.destinoExport + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 				
+				/*** Para vEPF ***/
 				String texto =
 					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" +
 					"<uma:MethodLibrary xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:uma=\"http://www.eclipse.org/epf/uma/1.0.3\" name=\"LibraryPublish\" briefDescription=\"\" id=\"_ot_IIFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" tool=\"epf=1.2.0\">" + "\n" +
@@ -68,18 +69,6 @@ public class ExportarModeloBean {
 							"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
 							"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
 							"</BreakdownElement>" + "\n";
-					       /* "<BreakdownElement xsi:type=\"uma:Activity\" name=\"Relevamiento de requerimientos\" briefDescription=\"\" id=\"_3gq5UFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"Relevamiento de requerimientos\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-					          "<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-					        "</BreakdownElement>" + "\n" +
-					        "<BreakdownElement xsi:type=\"uma:Activity\" name=\"Analisis y Disenio\" briefDescription=\"\" id=\"_42wigFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"Analisis y Disenio\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-					          "<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-					        "</BreakdownElement>" + "\n" +
-					        "<BreakdownElement xsi:type=\"uma:Activity\" name=\"Implementacion\" briefDescription=\"\" id=\"_590RMFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"Implementacion\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-					          "<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-					        "</BreakdownElement>" + "\n" +
-					        "<BreakdownElement xsi:type=\"uma:Activity\" name=\"Testing\" briefDescription=\"\" id=\"_7Bk0QFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"Testing\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-					          "<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-					        "</BreakdownElement>" + "\n" +*/
 				}
 				
 				texto +=
@@ -105,6 +94,75 @@ public class ExportarModeloBean {
 					    "<ProcessView>_BoAG8FyeEeWvU7GfTaR-Wg</ProcessView>" + "\n" +
 					  "</MethodConfiguration>" + "\n" +
 					"</uma:MethodLibrary>";
+
+				/*** Para EPF-C ***/
+				/*String texto = 
+						"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" +
+						"<uma:MethodLibrary xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:uma=\"http://www.eclipse.org/epf/uma/1.0.6\" name=\"Library1\" briefDescription=\"\" id=\"_4voVEFy-EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" tool=\"epf=1.5.0\">" + "\n" +
+						  "<MethodElementProperty name=\"library_synFree\" value=\"true\"/>" + "\n" +
+						  "<MethodPlugin name=\"new_plug-in\" briefDescription=\"\" id=\"_OIDEIFy_EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" supporting=\"false\" userChangeable=\"true\">" + "\n" +
+						    "<MethodElementProperty name=\"plugin_synFree\" value=\"true\"/>" + "\n" +
+						    "<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"_G90coFzAEeWgQtxNTihl_w\">" + "\n" +
+						      "<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"new_custom_category\" briefDescription=\"\" id=\"_ULZtsFy_EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"new_custom_category\" suppressed=\"false\" isAbstract=\"false\" variabilityType=\"na\">" + "\n" +
+						        "<MethodElementProperty name=\"me_edited\" value=\"true\"/>" + "\n" +
+						        "<CategorizedElement>_Pyl6YVy_EeWgQtxNTihl_w</CategorizedElement>" + "\n" +
+						      "</ContentCategory>" + "\n" +
+						    "</MethodPackage>" + "\n" +
+						    "<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"dp1\" briefDescription=\"\" id=\"_Pyl6YFy_EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"\" suppressed=\"false\" global=\"false\" authors=\"\" changeDescription=\"\" version=\"\">" + "\n" +
+						      "<MethodElementProperty name=\"pkg_loadCheck\" value=\"true\"/>" + "\n" +
+						      "<MethodElementProperty name=\"me_edited\" value=\"true\"/>" + "\n" +
+						      "<Process xsi:type=\"uma:DeliveryProcess\" name=\"dp1\" briefDescription=\"\" id=\"_Pyl6YVy_EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"dp1\" suppressed=\"false\" isAbstract=\"false\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" variabilityType=\"na\">" + "\n" +
+						        "<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"dp1,_Pyl6YVy_EeWgQtxNTihl_w\" briefDescription=\"\" id=\"-NylF8m6y-xXRpyezC4dSOw\" orderingGuide=\"\" presentationName=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" externalId=\"\" usageGuidance=\"\">" + "\n" +
+						          "<MainDescription></MainDescription>" + "\n" +
+						          "<KeyConsiderations></KeyConsiderations>" + "\n" +
+						          "<Alternatives></Alternatives>" + "\n" +
+						          "<HowToStaff></HowToStaff>" + "\n" +
+						          "<Purpose></Purpose>" + "\n" +
+						          "<Scope></Scope>" + "\n" +
+						          "<UsageNotes></UsageNotes>" + "\n" +
+						          "<Scale></Scale>" + "\n" +
+						          "<ProjectCharacteristics></ProjectCharacteristics>" + "\n" +
+						          "<RiskLevel></RiskLevel>" + "\n" +
+						          "<EstimatingTechnique></EstimatingTechnique>" + "\n" +
+						          "<ProjectMemberExpertise></ProjectMemberExpertise>" + "\n" +
+						          "<TypeOfContract></TypeOfContract>" + "\n" +
+						        "</Presentation>" + "\n";
+				
+				List<TreeNode> nodos = treeAdaptado.getChildren();
+				Iterator<TreeNode> it = nodos.iterator();
+				while (it.hasNext()){
+					Document nodo = (Document) it.next().getData();
+					String nombre = nodo.getName();
+					String nombrePresentacion = nombre;
+					String id = nodo.getElementID();
+					texto += 
+							"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
+							"<SuperActivity>_Pyl6YVy_EeWgQtxNTihl_w</SuperActivity>" + "\n" +
+							"</BreakdownElement>" + "\n";
+				}
+				
+				texto += "</Process>" + "\n" +
+					    "</MethodPackage>" + "\n" +
+					  "</MethodPlugin>" + "\n" +
+					  "<MethodConfiguration name=\"new_config\" briefDescription=\"\" id=\"_necEoFy_EeWgQtxNTihl_w\" orderingGuide=\"\" presentationName=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\">" + "\n" +
+					    "<MethodElementProperty name=\"TouchedByConfigEditor\" value=\"true\"/>" + "\n" +
+					    "<MethodElementProperty name=\"Config_doneLoadCheckPkgs\" value=\"_Pyl6YFy_EeWgQtxNTihl_w\"/>" + "\n" +
+					    "<MethodElementProperty name=\"me_edited\" value=\"true\"/>" + "\n" +
+					    "<MethodPluginSelection>_OIDEIFy_EeWgQtxNTihl_w</MethodPluginSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDrOFy_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_Pyl6YFy_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDrN1y_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_R9baQFy_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDEIVy_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDrNly_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_G90coFzAEeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDEIly_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDrMly_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>_OIDrNFy_EeWgQtxNTihl_w</MethodPackageSelection>" + "\n" +
+					    "<ProcessView>_ULZtsFy_EeWgQtxNTihl_w</ProcessView>" + "\n" +
+					  "</MethodConfiguration>" + "\n" +
+					"</uma:MethodLibrary>";
+				*/
 				
 		        byte bytes[] = texto.getBytes();
 		        out.write(bytes);
