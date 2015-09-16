@@ -22,7 +22,7 @@
 	        </p:treeNode>
 	    </p:tree>
 	 	<br/>
-	    <p:commandButton value="Finalizar" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
-	    		actionListener="#{treeSelectionView.displaySelectedMultiple(treeSelectionView.selectedNodes2)}" update=":panel_principal" />   
+	    <p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
+	    		actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}" update=":panel_principal" />   
    </h:form>
 </html>

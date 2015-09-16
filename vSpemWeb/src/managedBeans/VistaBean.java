@@ -3,6 +3,8 @@ package managedBeans;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+import org.primefaces.model.TreeNode;
+
 @ManagedBean(name="VistaBean")
 @SessionScoped
 public class VistaBean {
@@ -29,5 +31,6 @@ public class VistaBean {
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
 	}
+	
 
 }

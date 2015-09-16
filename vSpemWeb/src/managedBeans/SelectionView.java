@@ -40,6 +40,7 @@ public class SelectionView implements Serializable {
 			nomFile += vb.getNombreArchivo();
 		   	List<Struct> nodos = XMIParser.getElementXMI(nomFile);
 		   	root3 = service.createTree(nodos);
+		 
 		}
     }
 	
@@ -99,7 +100,8 @@ public class SelectionView implements Serializable {
     }
      
     public void displaySelectedMultiple(TreeNode[] nodes) {
-    	System.out.println("### displaySelectedMultiple");
+    	
+    	//System.out.println("### displaySelectedMultiple");
         if(nodes != null && nodes.length > 0) {
             StringBuilder builder = new StringBuilder();
  
