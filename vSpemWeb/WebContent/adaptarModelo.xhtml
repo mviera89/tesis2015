@@ -1,27 +1,27 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:p="http://primefaces.org/ui">
-   
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+	  
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	<h:form id="adaptar_form">
-	    <p:growl id="msgs" showDetail="true" escape="false"/>
-	    <p:tree value="#{treeSelectionView.root3}" var="doc" orientation="horizontal"
-	                selectionMode="checkbox"
-	                dynamic="true"
-	                selection="#{treeSelectionView.selectedNodes2}">
-	        <p:treeNode icon="ui-icon-note">
-	            <h:outputText value="#{doc.name}"/>
-	        </p:treeNode>
-	        <p:treeNode type="document" icon="ui-icon-document">
-	            <h:outputText value="#{doc.name}" />
-	        </p:treeNode>
-	        <p:treeNode type="picture" icon="ui-icon-image">
-	            <h:outputText value="#{doc.name}" />
-	        </p:treeNode>
-	        <p:treeNode type="mp3" icon="ui-icon-video">
-	            <h:outputText value="#{doc.name}" />
-	        </p:treeNode>
-	    </p:tree>
-	 	<br/>
+		<p:diagram value="#{diagramHierarchicalView.model}" style="height:600px" styleClass="ui-widget-content" var="el">
+	        <f:facet name="element">
+	            <h:commandLink>
+	            	<h:outputText value="#{el.name}" style="display:block;margin-top:1em;" />
+				    <p:graphicImage value="/images/#{el.image}" style="display:block; margin:auto;"/>
+				    <f:param name="name" value="#{el.name}"/>
+			        <p:ajax event="click" listener="#{diagramHierarchicalView.redibujarModelo}" update=":adaptar_form"/>
+				</h:commandLink>
+	        </f:facet>
+	    </p:diagram>
+	    
+	    <p:dialog header="Variantes" widgetVar="variantesDialog" modal="true" closeOnEscape="true" style="min-width: 25%; min-height: 30%">
+	    	<h:outputText value="Aca se listaran las variantes" />
+		    <p:selectManyCheckbox id="variantesCheck" value="#{diagramHierarchicalView.variantesSeleccionadas}" layout="grid" columns="1" style="heigth: auto;">
+		        <f:selectItems value="#{diagramHierarchicalView.variantes}" var="variant" itemLabel="#{variant.name}" itemValue="#{variant.name}" />
+		    </p:selectManyCheckbox>
+		</p:dialog>
+		
 	    <p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
 	    		actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}" update=":panel_principal" />   
    </h:form>
