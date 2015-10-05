@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import dataTypes.TipoElemento;
 import dominio.Struct;
 import dominio.Variant;
 
@@ -60,7 +61,7 @@ public class XMIParser {
 	            			   //registroVP.put(id, nameHijo);
 	            		   //}
 	            		   
-	            		   if (type.equals("VarActivity")){
+	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString())){
 	            			               		   
 	            			 //Obtengo lista de elementos hijos del nodo
 	                           NodeList nHijosVar = nHijo.getChildNodes();
@@ -89,7 +90,7 @@ public class XMIParser {
 	            		        }
 	            		   }
 	            		   else if (!type.equals("RoleDescriptor")){
-	            			   Struct nodo = new Struct(id,nameHijo,type);
+	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type));
 		            		   result.add(nodo);
 	            		   }
 	               		}
@@ -102,7 +103,7 @@ public class XMIParser {
 	         Iterator<Struct> it = result.iterator();
 	         while (it.hasNext()){
 	         	Struct s = it.next();
-	         	if (s.getType().equals("vpActivity")){
+	         	if (s.getType() == TipoElemento.VP_ACTIVITY){
 	         		Iterator<Variant> itaux = registroVar.iterator();
 	         		while (itaux.hasNext()){
 	         			Variant v = itaux.next();
@@ -121,6 +122,16 @@ public class XMIParser {
 	      }
         return result;
      
-     }
+    }
+	
+	public static TipoElemento obtenerTipoElemento(String t){
+		
+		TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString())) ? TipoElemento.PROCESS_PACKAGE :
+    				   		(t.equals(TipoElemento.ACTIVITY.toString()))	    ? TipoElemento.ACTIVITY		   :
+			   			 	(t.equals(TipoElemento.VP_ACTIVITY.toString()))     ? TipoElemento.VP_ACTIVITY	   :
+		   			 		(t.equals(TipoElemento.VAR_ACTIVITY.toString()))    ? TipoElemento.VAR_ACTIVITY	   :
+	   			 			null;
+    	return type;
+    }
 
 }

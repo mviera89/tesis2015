@@ -3,17 +3,19 @@ package dominio;
 import java.util.ArrayList;
 import java.util.List;
 
+import dataTypes.TipoElemento;
+
 public class Struct {
 	
 	private String elementID;
 	private String nombre;
-	private String Type;
+	private TipoElemento type;
 	private List<Variant> hijos;
 	
-	public Struct(String ID, String nombre, String type){
+	public Struct(String ID, String nombre, TipoElemento type){
 		this.elementID = ID;
 		this.nombre = nombre;
-		this.Type = type;
+		this.type = type;
 		this.hijos = new ArrayList<Variant>();
 	}
 	
@@ -42,12 +44,12 @@ public class Struct {
 	}
 	
 	
-	public String getType() {
-		return Type;
+	public TipoElemento getType() {
+		return type;
 	}
 
-	public void setType(String type) {
-		Type = type;
+	public void setType(TipoElemento type) {
+		type = type;
 	}
 	
 }

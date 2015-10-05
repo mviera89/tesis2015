@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -44,6 +45,11 @@ public class SubirArchivoBean {
         		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
         		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
                 vb.setNombreArchivo(nombreArchivo);
+                
+                AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
+                if (ab != null){
+                	ab.init();
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();

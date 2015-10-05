@@ -1,28 +1,35 @@
+
 <html xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-	  
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://primefaces.org/ui">
+	
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
+	
 	<h:form id="adaptar_form">
-		<p:diagram value="#{diagramHierarchicalView.model}" style="height:600px" styleClass="ui-widget-content" var="el">
-	        <f:facet name="element">
-	            <h:commandLink>
-	            	<h:outputText value="#{el.name}" style="display:block;margin-top:1em;" />
-				    <p:graphicImage value="/images/#{el.image}" style="display:block; margin:auto;"/>
-				    <f:param name="name" value="#{el.name}"/>
-			        <p:ajax event="click" listener="#{diagramHierarchicalView.redibujarModelo}" update=":adaptar_form"/>
+		<p:diagram value="#{adaptarModeloBean.modelo}" style="height:600px" styleClass="ui-widget-content" var="elem">
+			<f:facet name="element">
+				<h:commandLink>
+					<h:outputText value="#{elem.nombre}" style="display:block; margin-top:1em;" />
+					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+					<p:ajax event="click" listener="#{adaptarModeloBean.seleccionarVariantes}" update=":panel_principal"/>
+					<f:param name="elemSeleccionado" value="#{elem.id}"/>
 				</h:commandLink>
-	        </f:facet>
-	    </p:diagram>
-	    
-	    <p:dialog header="Variantes" widgetVar="variantesDialog" modal="true" closeOnEscape="true" style="min-width: 25%; min-height: 30%">
-	    	<h:outputText value="Aca se listaran las variantes" />
-		    <p:selectManyCheckbox id="variantesCheck" value="#{diagramHierarchicalView.variantesSeleccionadas}" layout="grid" columns="1" style="heigth: auto;">
-		        <f:selectItems value="#{diagramHierarchicalView.variantes}" var="variant" itemLabel="#{variant.name}" itemValue="#{variant.name}" />
-		    </p:selectManyCheckbox>
-		</p:dialog>
+			</f:facet>
+		</p:diagram>
 		
-	    <p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
-	    		actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}" update=":panel_principal" />   
-   </h:form>
+		<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
+						 actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}" 
+						 update=":panel_principal" />
+	</h:form>
+	
+	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" closeOnEscape="true" style="min-width: 25%; min-height: 30%">
+		<h:form id="seleccionarVariante_form">
+			<p:selectManyCheckbox id="variantesCheck" value="#{adaptarModeloBean.variantesSeleccionadas}" layout="grid" columns="1">
+				<f:selectItems value="#{adaptarModeloBean.variantes}" var="var" itemLabel="#{var.label}" itemValue="#{var.value}" />
+			</p:selectManyCheckbox>
+			
+			<p:commandButton value="Seleccionar" update=":panel_principal" />
+		</h:form>
+	</p:dialog>
+	
 </html>
