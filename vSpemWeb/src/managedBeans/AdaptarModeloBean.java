@@ -36,6 +36,7 @@ import logica.XMIParser;
 public class AdaptarModeloBean {
      
     private DefaultDiagramModel modelo;
+	private int y;
 	private List<Struct> nodos;
 	private EndPoint endPointRoot;
 	private Element puntoVariacionAdaptado;
@@ -50,6 +51,7 @@ public class AdaptarModeloBean {
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
     	this.puntosDeVariacion = new HashMap<String, String[]>();
+    	this.y = Constantes.yInicial;
         crearModelo();
     }
 
@@ -61,6 +63,14 @@ public class AdaptarModeloBean {
 
     public void setModelo(DefaultDiagramModel modelo) {
 		this.modelo = modelo;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	public List<Struct> getNodos() {
@@ -139,23 +149,27 @@ public class AdaptarModeloBean {
 	    	conector.setAlwaysRespectStubs(true);
 	        modelo.setDefaultConnector(conector);
 	        
-	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE), "30em", "0em");
+	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE));
+	        root.setY(this.y + "em");
 	        endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
         	modelo.addElement(root);
 	        
-        	int i = 0;
+        	this.y += Constantes.distanciaEntreNiveles;
+        	int x = 0;
 	        Iterator<Struct> it = this.nodos.iterator();
 	        while (it.hasNext()){
-	        	i++;
 	        	Struct s = it.next();
 				
-	        	Element padre = new Element(new ElementoModelo(s.getElementID(), s.getNombre(), obtenerIconoPorTipo(s.getType()), s.getType()), 15 * i + "em", "10em");
+	        	Element padre = new Element(new ElementoModelo(s.getElementID(), s.getNombre(), obtenerIconoPorTipo(s.getType()), s.getType()), x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
 		        modelo.addElement(padre);
 		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
+	        	x += 2 * s.getNombre().length() / 3;
 	        }
+	        root.setX(x/2 + "em");
+	        this.y += Constantes.distanciaEntreNiveles;
 		}
     }
     
@@ -243,6 +257,9 @@ public class AdaptarModeloBean {
 	
 	public void redibujarModelo() {
     	int cantVariantes = this.variantesSeleccionadas.length;
+    	String xStr = this.puntoVariacionAdaptado.getX();
+		int xIni = Integer.valueOf(xStr.substring(0, xStr.length() - 2));
+		int x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
     	for (int i = 0; i < cantVariantes; i++){
     		// Creo la variante
     		String nombreVariante = "";
@@ -253,7 +270,7 @@ public class AdaptarModeloBean {
     				nombreVariante = (String) si.getLabel();
     			}
     		}
-			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(TipoElemento.VAR_ACTIVITY), TipoElemento.VAR_ACTIVITY), 10 * i + "em", "20em");
+			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(TipoElemento.VAR_ACTIVITY), TipoElemento.VAR_ACTIVITY), x + "em", this.y + "em");
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
@@ -265,6 +282,7 @@ public class AdaptarModeloBean {
 	        // Conecto el punto de variación con la variante
 	        modelo.connect(crearConexion(endPointPV_B, endPointH1));
         	
+	        x += 2 * nombreVariante.length() / 3;
     	}
     }
 	
