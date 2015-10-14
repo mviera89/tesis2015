@@ -96,7 +96,7 @@ public class XMIParser {
 	   	            				   || type.equals(TipoElemento.VAR_PHASE.toString())
 	   	            				|| type.equals(TipoElemento.VAR_ITERATION.toString())){
 	   	            			               		   
-	   	            			    Variant var = new Variant(id,nameHijo,"",true);
+	   	            			    Variant var = new Variant(id,nameHijo,"",true,type);
 	   	                        	registroVar.add(var);
 	   	                        		
 	   	            		     }
@@ -124,8 +124,7 @@ public class XMIParser {
 	            		   int min = -1;
  	            		   int max = -1;
 	            		  
-	            		   if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
-	            				   type.equals(TipoElemento.VP_TASK.toString()) ){
+	            		   if (type.equals(TipoElemento.VP_TASK.toString())){
 	            			   
 	            			  // min = Integer.parseInt(eHijo.getAttribute("min"));
 	            			   //max = Integer.parseInt(eHijo.getAttribute("max"));
@@ -152,11 +151,10 @@ public class XMIParser {
 		                           	vpToVar.put(id, variantes);
 		            		   }
 	            		   
-	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString()) 
-	            				   || type.equals(TipoElemento.VAR_TASK.toString())){
+	            		   if (type.equals(TipoElemento.VAR_TASK.toString())){
 	            				
 	                           		
-	                        			Variant var = new Variant(id,nameHijo,"",true);
+	                        			Variant var = new Variant(id,nameHijo,"",true,type);
 	                        			registroVar.add(var);
 	                        		
 	                           	

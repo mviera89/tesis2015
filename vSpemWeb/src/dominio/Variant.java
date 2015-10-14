@@ -6,12 +6,14 @@ public class Variant {
 	private String name;
 	private String IDVarPoint;
 	private boolean isInclusive;
+	private String varType;
 	
-	public Variant(String ID, String name, String IDVarPoint, boolean isInclusive){
+	public Variant(String ID, String name, String IDVarPoint, boolean isInclusive, String varType){
 		this.ID = ID;
 		this.name = name;
 		this.IDVarPoint = IDVarPoint;
 		this.isInclusive = isInclusive;
+		this.varType = varType;
 	}
 
 	public String getID() {
@@ -45,5 +47,15 @@ public class Variant {
 	public void setInclusive(boolean isInclusive) {
 		this.isInclusive = isInclusive;
 	}
+
+	public String getVarType() {
+		return varType;
+	}
+
+	public void setVarType(String varType) {
+		this.varType = varType;
+	}
+	
+	
 		
 }

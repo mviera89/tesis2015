@@ -190,6 +190,35 @@ public class AdaptarModeloBean {
     				   "";
     	return icono;
     }
+    
+public TipoElemento getTipoElemento(String tipo){
+		
+		if (tipo.equals(TipoElemento.ACTIVITY.toString()))
+			return TipoElemento.ACTIVITY;
+		else if (tipo.equals(TipoElemento.VP_ACTIVITY.toString()))
+			return TipoElemento.VP_ACTIVITY;
+		else if (tipo.equals(TipoElemento.VAR_ACTIVITY.toString()))
+			return TipoElemento.VAR_ACTIVITY;
+		else if (tipo.equals(TipoElemento.TASK.toString()))
+			return TipoElemento.TASK;
+		else if (tipo.equals(TipoElemento.VP_TASK.toString()))
+			return TipoElemento.VP_TASK;
+		else if (tipo.equals(TipoElemento.VAR_TASK.toString()))
+			return TipoElemento.VAR_TASK;
+		else if (tipo.equals(TipoElemento.PHASE.toString()))
+			return TipoElemento.PHASE;
+		else if (tipo.equals(TipoElemento.VP_PHASE.toString()))
+			return TipoElemento.VP_PHASE;
+		else if (tipo.equals(TipoElemento.VAR_PHASE.toString()))
+			return TipoElemento.VAR_PHASE;
+		else if (tipo.equals(TipoElemento.ITERATION.toString()))
+			return TipoElemento.ITERATION;
+		else if (tipo.equals(TipoElemento.VP_ITERATION.toString()))
+			return TipoElemento.VP_ITERATION;
+		else
+			return TipoElemento.VAR_ITERATION;
+	}
+
 
     private EndPoint crearEndPoint(EndPointAnchor anchor) {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
@@ -250,7 +279,7 @@ public class AdaptarModeloBean {
 	        Iterator<Variant> it = s.getHijos().iterator();
 	    	while (it.hasNext()){
 	    		Variant v = it.next();
-	    		variantes.add(new SelectItem(v.getID(), v.getName()));
+	    		variantes.add(new SelectItem(v.getID(), v.getName(),v.getVarType()));
 	    	}
         }
 	}
@@ -279,14 +308,16 @@ public class AdaptarModeloBean {
     	for (int i = 0; i < cantVariantes; i++){
     		// Creo la variante
     		String nombreVariante = "";
+    		String tipoVariante = "";
     		Iterator<SelectItem> it = this.variantes.iterator();
-    		while (it.hasNext() && nombreVariante.equals("")){
+    		while (it.hasNext() && nombreVariante.equals("") && tipoVariante.equals("")){
     			SelectItem si = it.next();
     			if (si.getValue().equals(this.variantesSeleccionadas[i])){
     				nombreVariante = (String) si.getLabel();
+    				tipoVariante = si.getDescription();
     			}
     		}
-			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(TipoElemento.VAR_ACTIVITY), TipoElemento.VAR_ACTIVITY), x + "em", this.y + "em");
+			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(getTipoElemento(tipoVariante)), getTipoElemento(tipoVariante)), x + "em", this.y + "em");
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
