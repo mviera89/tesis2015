@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.4/uma.ecore" xmlns:org.eclipse.epf.uma.resourcemanager="http:///org/eclipse/epf/uma/resourcemanager.ecore"
+    xmlns:epf="http://www.eclipse.org/epf" epf:version="1.2.0">
+  <org.eclipse.epf.uma.resourcemanager:ResourceManager xmi:id="_yVzr4XJtEeWUVeGXKIjKpQ"
+      guid="_yVzr4XJtEeWUVeGXKIjKpQ">
+    <resourceDescriptors xmi:id="_yVzr4nJtEeWUVeGXKIjKpQ" id="-Na-7Y7y-r6ZRtK0RM9J4Pg"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_IM4s4HJuEeWUVeGXKIjKpQ" id="_7Q-3IXJtEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_IM4s4XJuEeWUVeGXKIjKpQ" id="_-BCj8XJtEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_INCd4HJuEeWUVeGXKIjKpQ" id="_BpeDMXJuEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_KpRXUHKQEeWUVeGXKIjKpQ" id="_DjUoUnKQEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_KpVowHKQEeWUVeGXKIjKpQ" id="_FD8tknKQEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_KpZ6MHKQEeWUVeGXKIjKpQ" id="_Gj7SknKQEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_EBOoIHKXEeWUVeGXKIjKpQ" id="_-ki9AnKWEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_EBTgoHKXEeWUVeGXKIjKpQ" id="__vWjQnKWEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_EBZnQHKXEeWUVeGXKIjKpQ" id="_BQbUcHKXEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_tQiMoHKYEeWUVeGXKIjKpQ" id="_m-K2sXKYEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_tQl3AHKYEeWUVeGXKIjKpQ" id="_pK7CInKYEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+    <resourceDescriptors xmi:id="_tQqIcHKYEeWUVeGXKIjKpQ" id="_qk33onKYEeWUVeGXKIjKpQ"
+        uri="content.xmi"/>
+  </org.eclipse.epf.uma.resourcemanager:ResourceManager>
+  <org.eclipse.epf.uma:ProcessComponent xmi:id="_yUT3EHJtEeWUVeGXKIjKpQ" name="cp"
+      guid="_yUT3EHJtEeWUVeGXKIjKpQ">
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_BQQZgHKQEeWUVeGXKIjKpQ"
+        name="act1" guid="_BQQZgHKQEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:Activity" xmi:id="_BQQZgXKQEeWUVeGXKIjKpQ"
+          name="act1" guid="_BQQZgXKQEeWUVeGXKIjKpQ" presentationName="act1" superActivities="_yUT3EXJtEeWUVeGXKIjKpQ"
+          breakdownElements="_7SZ9YHLDEeWUVeGXKIjKpQ"/>
+      <processElements xsi:type="org.eclipse.epf.uma:TaskDescriptor" xmi:id="_7SZ9YHLDEeWUVeGXKIjKpQ"
+          name="taskHija" guid="_7SZ9YHLDEeWUVeGXKIjKpQ" presentationName="taskHija"
+          superActivities="_BQQZgXKQEeWUVeGXKIjKpQ"/>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_DjUoUHKQEeWUVeGXKIjKpQ"
+        name="vpActivity" guid="_DjUoUHKQEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:vpActivity" xmi:id="_DjUoUXKQEeWUVeGXKIjKpQ"
+          name="vpActivity" guid="_DjUoUXKQEeWUVeGXKIjKpQ" presentationName="vpActivity"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="vpActivity" vId="5ce07e0d-d7d9-4986-bdf7-3be26ca131c5"
+          description="" min="1" max="1">
+        <presentation xmi:id="_DjUoUnKQEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_DjUoUnKQEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_sP3zUHK4EeWUVeGXKIjKpQ"
+            isInclusive="true" client="_DjUoUXKQEeWUVeGXKIjKpQ" supplier="_FD8tkXKQEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_sP3zUXK4EeWUVeGXKIjKpQ"
+            isInclusive="true" client="_DjUoUXKQEeWUVeGXKIjKpQ" supplier="_Gj7SkXKQEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_FD8tkHKQEeWUVeGXKIjKpQ"
+        name="VarActivity1" guid="_FD8tkHKQEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarActivity" xmi:id="_FD8tkXKQEeWUVeGXKIjKpQ"
+          name="VarActivity1" guid="_FD8tkXKQEeWUVeGXKIjKpQ" presentationName="VarActivity1"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarActivity1" vId="083d4102-3de0-4539-be33-f6d06184cfc9"
+          description="">
+        <presentation xmi:id="_FD8tknKQEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_FD8tknKQEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_KoGSoHKQEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_DjUoUXKQEeWUVeGXKIjKpQ" supplier="_FD8tkXKQEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_Gj7SkHKQEeWUVeGXKIjKpQ"
+        name="VarActivity2" guid="_Gj7SkHKQEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarActivity" xmi:id="_Gj7SkXKQEeWUVeGXKIjKpQ"
+          name="VarActivity2" guid="_Gj7SkXKQEeWUVeGXKIjKpQ" presentationName="VarActivity2"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarActivity2" vId="21405c17-84ea-439b-95c9-6d506b555fba"
+          description="">
+        <presentation xmi:id="_Gj7SknKQEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_Gj7SknKQEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_KoGSoXKQEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_DjUoUXKQEeWUVeGXKIjKpQ" supplier="_Gj7SkXKQEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_80ZOAHKWEeWUVeGXKIjKpQ"
+        name="phase" guid="_80ZOAHKWEeWUVeGXKIjKpQ">
+      <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_u7Sk0HLFEeWUVeGXKIjKpQ"
+          name="iterHija" guid="_u7Sk0HLFEeWUVeGXKIjKpQ">
+        <processElements xsi:type="org.eclipse.epf.uma:Iteration" xmi:id="_u7Sk0XLFEeWUVeGXKIjKpQ"
+            name="iterHija" guid="_u7Sk0XLFEeWUVeGXKIjKpQ" presentationName="iterHija"
+            superActivities="_80ZOAXKWEeWUVeGXKIjKpQ" isRepeatable="true"/>
+      </childPackages>
+      <processElements xsi:type="org.eclipse.epf.uma:Phase" xmi:id="_80ZOAXKWEeWUVeGXKIjKpQ"
+          name="phase" guid="_80ZOAXKWEeWUVeGXKIjKpQ" presentationName="phase" superActivities="_yUT3EXJtEeWUVeGXKIjKpQ"
+          breakdownElements="_u7Sk0XLFEeWUVeGXKIjKpQ"/>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_-ki9AHKWEeWUVeGXKIjKpQ"
+        name="vpPhase" guid="_-ki9AHKWEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:vpPhase" xmi:id="_-ki9AXKWEeWUVeGXKIjKpQ"
+          name="vpPhase" guid="_-ki9AXKWEeWUVeGXKIjKpQ" presentationName="vpPhase"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="vpPhase" vId="222a0e18-85dd-4320-8870-c7108494c9e4"
+          description="" max="-1">
+        <presentation xmi:id="_-ki9AnKWEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_-ki9AnKWEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_EAwuEnKXEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_-ki9AXKWEeWUVeGXKIjKpQ" supplier="__vWjQXKWEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_EAwuE3KXEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_-ki9AXKWEeWUVeGXKIjKpQ" supplier="_BQatYXKXEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="__vWjQHKWEeWUVeGXKIjKpQ"
+        name="VarPhase" guid="__vWjQHKWEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarPhase" xmi:id="__vWjQXKWEeWUVeGXKIjKpQ"
+          name="VarPhase" guid="__vWjQXKWEeWUVeGXKIjKpQ" presentationName="VarPhase1"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarPhase" vId="ed689138-9c50-49cc-a865-05773371fc4c"
+          description="">
+        <presentation xmi:id="__vWjQnKWEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#__vWjQnKWEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_EAwuEHKXEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_-ki9AXKWEeWUVeGXKIjKpQ" supplier="__vWjQXKWEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_BQatYHKXEeWUVeGXKIjKpQ"
+        name="VarPhase2" guid="_BQatYHKXEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarPhase" xmi:id="_BQatYXKXEeWUVeGXKIjKpQ"
+          name="VarPhase2" guid="_BQatYXKXEeWUVeGXKIjKpQ" presentationName="VarPhase2"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarPhase2" vId="c59697cb-eee8-4254-ba85-68679f195356"
+          description="">
+        <presentation xmi:id="_BQbUcHKXEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_BQbUcHKXEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_EAwuEXKXEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_-ki9AXKWEeWUVeGXKIjKpQ" supplier="_BQatYXKXEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_lQX4IHKYEeWUVeGXKIjKpQ"
+        name="ITER1" guid="_lQX4IHKYEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:Iteration" xmi:id="_lQYfMHKYEeWUVeGXKIjKpQ"
+          name="ITER1" guid="_lQYfMHKYEeWUVeGXKIjKpQ" presentationName="ITER1" superActivities="_yUT3EXJtEeWUVeGXKIjKpQ"
+          isRepeatable="true"/>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_m-KPoHKYEeWUVeGXKIjKpQ"
+        name="vpIteration" guid="_m-KPoHKYEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:vpIteration" xmi:id="_m-K2sHKYEeWUVeGXKIjKpQ"
+          name="vpIteration" guid="_m-K2sHKYEeWUVeGXKIjKpQ" presentationName="vpIteration"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" isRepeatable="true" vpName="vpIteration"
+          vId="20004e36-d647-46f8-aa9e-425f5a1926b0" description="" max="-1">
+        <presentation xmi:id="_m-K2sXKYEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_m-K2sXKYEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_tQDrgnKYEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_m-K2sHKYEeWUVeGXKIjKpQ" supplier="_pK7CIXKYEeWUVeGXKIjKpQ"/>
+        <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_tQDrg3KYEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_m-K2sHKYEeWUVeGXKIjKpQ" supplier="_qk33oXKYEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_pK7CIHKYEeWUVeGXKIjKpQ"
+        name="VarIteration1" guid="_pK7CIHKYEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarIteration" xmi:id="_pK7CIXKYEeWUVeGXKIjKpQ"
+          name="VarIteration1" guid="_pK7CIXKYEeWUVeGXKIjKpQ" presentationName="VarIteration1"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" isRepeatable="true" vpName="VarIteration1"
+          vId="34949a43-f49f-4b65-92ec-f079b081d10d" description="">
+        <presentation xmi:id="_pK7CInKYEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_pK7CInKYEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_tQDrgHKYEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_m-K2sHKYEeWUVeGXKIjKpQ" supplier="_pK7CIXKYEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_qk33oHKYEeWUVeGXKIjKpQ"
+        name="VarIteration2" guid="_qk33oHKYEeWUVeGXKIjKpQ">
+      <processElements xsi:type="org.eclipse.epf.uma:VarIteration" xmi:id="_qk33oXKYEeWUVeGXKIjKpQ"
+          name="VarIteration2" guid="_qk33oXKYEeWUVeGXKIjKpQ" presentationName="VarIteration2"
+          superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" isRepeatable="true" vpName="VarIteration2"
+          vId="1ab52d56-14c9-43f7-ac0d-8941e2f22afe" description="">
+        <presentation xmi:id="_qk33onKYEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_qk33onKYEeWUVeGXKIjKpQ"/>
+        <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_tQDrgXKYEeWUVeGXKIjKpQ"
+            isInclusive="true" client="_m-K2sHKYEeWUVeGXKIjKpQ" supplier="_qk33oXKYEeWUVeGXKIjKpQ"/>
+      </processElements>
+    </childPackages>
+    <processElements xsi:type="org.eclipse.epf.uma:TaskDescriptor" xmi:id="_3-GKEHJtEeWUVeGXKIjKpQ"
+        name="task1" guid="_3-GKEHJtEeWUVeGXKIjKpQ" presentationName="task1" superActivities="_yUT3EXJtEeWUVeGXKIjKpQ"/>
+    <processElements xsi:type="org.eclipse.epf.uma:vpTaskDescriptor" xmi:id="_7Q-3IHJtEeWUVeGXKIjKpQ"
+        name="vpTask Descriptor" guid="_7Q-3IHJtEeWUVeGXKIjKpQ" presentationName="vpTask Descriptor"
+        superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" linkToPredecessor="_9iArsHLHEeWUVeGXKIjKpQ"
+        vpName="vpTask Descriptor" vId="d534fd2e-fb27-47e3-b70c-04eebda352b6" description=""
+        isOpen="true" max="-1">
+      <presentation xmi:id="_7Q-3IXJtEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_7Q-3IXJtEeWUVeGXKIjKpQ"/>
+      <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_IL_VAnJuEeWUVeGXKIjKpQ"
+          isInclusive="true" client="_7Q-3IHJtEeWUVeGXKIjKpQ" supplier="_-BCj8HJtEeWUVeGXKIjKpQ"/>
+      <client xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_IL_VA3JuEeWUVeGXKIjKpQ"
+          isInclusive="true" client="_7Q-3IHJtEeWUVeGXKIjKpQ" supplier="_BpeDMHJuEeWUVeGXKIjKpQ"/>
+    </processElements>
+    <processElements xsi:type="org.eclipse.epf.uma:VarTaskDescriptor" xmi:id="_-BCj8HJtEeWUVeGXKIjKpQ"
+        name="VarTaskDescriptor1" guid="_-BCj8HJtEeWUVeGXKIjKpQ" presentationName="VarTaskDescriptor1"
+        superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarTaskDescriptor1" vId="36ce428f-f950-4bdf-b8df-ac9227cc3266"
+        description="">
+      <presentation xmi:id="_-BCj8XJtEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_-BCj8XJtEeWUVeGXKIjKpQ"/>
+      <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_IL_VAHJuEeWUVeGXKIjKpQ"
+          isInclusive="true" client="_7Q-3IHJtEeWUVeGXKIjKpQ" supplier="_-BCj8HJtEeWUVeGXKIjKpQ"/>
+    </processElements>
+    <processElements xsi:type="org.eclipse.epf.uma:VarTaskDescriptor" xmi:id="_BpeDMHJuEeWUVeGXKIjKpQ"
+        name="VarTaskDescriptor2" guid="_BpeDMHJuEeWUVeGXKIjKpQ" presentationName="VarTaskDescriptor2"
+        superActivities="_yUT3EXJtEeWUVeGXKIjKpQ" vpName="VarTaskDescriptor2" vId="5d547f2e-196c-457c-83ab-7dc783ffd47c"
+        description="">
+      <presentation xmi:id="_BpeDMXJuEeWUVeGXKIjKpQ" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#_BpeDMXJuEeWUVeGXKIjKpQ"/>
+      <supplier xsi:type="org.eclipse.epf.uma:varp2variant" xmi:id="_IL_VAXJuEeWUVeGXKIjKpQ"
+          isInclusive="true" client="_7Q-3IHJtEeWUVeGXKIjKpQ" supplier="_BpeDMHJuEeWUVeGXKIjKpQ"/>
+    </processElements>
+    <processElements xsi:type="org.eclipse.epf.uma:WorkOrder" xmi:id="_9iArsHLHEeWUVeGXKIjKpQ"
+        guid="_9iArsHLHEeWUVeGXKIjKpQ" pred="_3-GKEHJtEeWUVeGXKIjKpQ"/>
+    <process xsi:type="org.eclipse.epf.uma:CapabilityPattern" xmi:id="_yUT3EXJtEeWUVeGXKIjKpQ"
+        name="cp" guid="_yUT3EXJtEeWUVeGXKIjKpQ" presentationName="cp" processLineName="pl"
+        breakdownElements="_3-GKEHJtEeWUVeGXKIjKpQ _7Q-3IHJtEeWUVeGXKIjKpQ _-BCj8HJtEeWUVeGXKIjKpQ _BpeDMHJuEeWUVeGXKIjKpQ _BQQZgXKQEeWUVeGXKIjKpQ _DjUoUXKQEeWUVeGXKIjKpQ _FD8tkXKQEeWUVeGXKIjKpQ _Gj7SkXKQEeWUVeGXKIjKpQ _80ZOAXKWEeWUVeGXKIjKpQ _-ki9AXKWEeWUVeGXKIjKpQ __vWjQXKWEeWUVeGXKIjKpQ _BQatYXKXEeWUVeGXKIjKpQ _lQYfMHKYEeWUVeGXKIjKpQ _m-K2sHKYEeWUVeGXKIjKpQ _pK7CIXKYEeWUVeGXKIjKpQ _qk33oXKYEeWUVeGXKIjKpQ">
+      <presentation xmi:id="-Na-7Y7y-r6ZRtK0RM9J4Pg" href="uma://-Na-7Y7y-r6ZRtK0RM9J4Pg#-Na-7Y7y-r6ZRtK0RM9J4Pg"/>
+      <defaultContext href="uma://_g5CTAHJtEeWUVeGXKIjKpQ#_inFwQHJtEeWUVeGXKIjKpQ"/>
+      <validContext href="uma://_g5CTAHJtEeWUVeGXKIjKpQ#_inFwQHJtEeWUVeGXKIjKpQ"/>
+    </process>
+  </org.eclipse.epf.uma:ProcessComponent>
+</xmi:XMI>

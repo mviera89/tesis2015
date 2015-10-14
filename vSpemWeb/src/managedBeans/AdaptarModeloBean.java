@@ -263,7 +263,7 @@ return type;
         			&& (s.getElementID().equals(idElemSeleccionado)));
         }
         if (fin){
-	        Iterator<Variant> it = s.getHijos().iterator();
+	        Iterator<Variant> it = s.getVariantes().iterator();
 	    	while (it.hasNext()){
 	    		Variant v = it.next();
 	    		variantes.add(new SelectItem(v.getID(), v.getName(),v.getVarType()));

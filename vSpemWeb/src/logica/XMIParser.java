@@ -36,147 +36,10 @@ public class XMIParser {
 	         	                  
 	         doc.getDocumentElement().normalize();
 	                  
-	         NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");      
-	         	         
-	         //Recorro la lista
-	         for (int temp = 0; temp < nList.getLength(); temp++) {
-	            Node nNode = nList.item(temp);
-	            	            
-	            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-	            	
-	               //Obtengo lista de elementos hijos del nodo
-	               NodeList nHijos = nNode.getChildNodes();
-	               	for (int temp1 = 0; temp1 < nHijos.getLength(); temp1++) {
-	               		
-	               		Node nHijo = nHijos.item(temp1);
-	               		
-	               		if (nHijo.getNodeName().equals("childPackages")){
-	               				               			
-	               			NodeList hijos = nHijo.getChildNodes();
-	               			for(int aux = 0; aux <hijos.getLength();aux++){
-	               				Node hijo =hijos.item(aux);
-	               				if (hijo.getNodeType() == Node.ELEMENT_NODE){
-	     	            		   Element eHijo = (Element) hijo;
-	     	            		   
-	     	            		   String nameHijo = eHijo.getAttribute("name");
-	     	            		   String type = eHijo.getAttribute("xsi:type").substring(20);
-	     	            		   String id = eHijo.getAttribute("xmi:id");
-	     	            		   int min = -1;
-	     	            		   int max = -1;
-	     	            		   
-	     	            		   //////////////////////////////////////////////
-	     	            		  if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
-	   	            				   type.equals(TipoElemento.VP_PHASE.toString()) || 
-	   	            				   type.equals(TipoElemento.VP_ITERATION.toString()) ){
-	     	            			 if (eHijo.hasAttribute("min")) {
-	   	            				  min = Integer.parseInt(eHijo.getAttribute("min"));
-	     	            			 }
-	     	            			 if (eHijo.hasAttribute("max")) {
-	   	            				  max = Integer.parseInt(eHijo.getAttribute("max"));
-	     	            			 }
-	   	            			   	System.out.println("\t\tMin : " + min);
-	   	            			   	System.out.println("\t\tMax : " + max);
-	     	            			
-	   		               		   List<String> variantes = new ArrayList<String>();
-	   		               		        //Obtengo lista de elementos hijos del nodo
-	   		                           NodeList nHijosVar = hijo.getChildNodes();
-	   		                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
-	   		                           		
-	   		                           		Node nHijoVar = nHijosVar.item(temp2);
-	   		                           		                           		
-	   		                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
-	   		                        		   Element eHijoVar = (Element) nHijoVar;
-	   		                        		                           		   
-	   		                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("varp2variant")){
-	   		                        			   		    String iDVariant = eHijoVar.getAttribute("supplier");
-	   		                        			   			variantes.add(iDVariant);
-	   		                        			   	}
-	   		                           		}
-	   		            		        }
-	   		                           	vpToVar.put(id, variantes);
-	   		            		   }
-	   	            		   
-	   	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString()) 
-	   	            				   || type.equals(TipoElemento.VAR_PHASE.toString())
-	   	            				|| type.equals(TipoElemento.VAR_ITERATION.toString())){
-	   	            			               		   
-	   	            			    Variant var = new Variant(id,nameHijo,"",true,type);
-	   	                        	registroVar.add(var);
-	   	                        		
-	   	            		     }
-	   	            		   else if (!type.equals("RoleDescriptor")){
-	   	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
-	   		            		   result.add(nodo);
-	   	            		   }
-	   	               		  	               
-	   	               	
-	     	            		   
-	     	           ////////////////////////////////////////////////
-	               				}
-	               				
-	               			}
-	 	               			
-	               		}
-	               		else if(nHijo.getNodeName().equals("processElements")){
-	               		
-	               		if (nHijo.getNodeType() == Node.ELEMENT_NODE){
-	            		   Element eHijo = (Element) nHijo;
-	            		   
-	            		   String nameHijo = eHijo.getAttribute("name");
-	            		   String type = eHijo.getAttribute("xsi:type").substring(20);
-	            		   String id = eHijo.getAttribute("xmi:id");
-	            		   int min = -1;
- 	            		   int max = -1;
-	            		  
-	            		   if (type.equals(TipoElemento.VP_TASK.toString())){
-	            			  if (eHijo.hasAttribute("min")) {
-	            				  min = Integer.parseInt(eHijo.getAttribute("min"));
-	            			  }
-	            			  if (eHijo.hasAttribute("max")) {
-	            				  max = Integer.parseInt(eHijo.getAttribute("max"));
-	            			  }
-	            			   System.out.println("\t\tMin : " + min);
-	            			   System.out.println("\t\tMax : " + max);
-		               		   List<String> variantes = new ArrayList<String>();
-		               		        //Obtengo lista de elementos hijos del nodo
-		                           NodeList nHijosVar = nHijo.getChildNodes();
-		                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
-		                           		
-		                           		Node nHijoVar = nHijosVar.item(temp2);
-		                           		                           		
-		                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
-		                        		   Element eHijoVar = (Element) nHijoVar;
-		                        		                           		   
-		                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("varp2variant")){
-		                        			   		
-		                        			   			String iDVariant = eHijoVar.getAttribute("supplier");
-		                        			   			variantes.add(iDVariant);
-		                        			   		
-		                        		   }
-		                           		}
-		            		        }
-		                           	vpToVar.put(id, variantes);
-		            		   }
-	            		   
-	            		   if (type.equals(TipoElemento.VAR_TASK.toString())){
-	            				
-	                           		
-	                        			Variant var = new Variant(id,nameHijo,"",true,type);
-	                        			registroVar.add(var);
-	                        		
-	                           	
-	            		   }
-	            		   else if (!type.equals("RoleDescriptor")){
-	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
-		            		   result.add(nodo);
-	            		   }
-	               		}
-	               
-	               	}
-	            }
-	           }
-	         }
+	         NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent"); 
 	         
+	         getNodos(nList, result, registroVar, vpToVar);
+   
 	         //Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
 	         Iterator<Struct> it = result.iterator();
 	         while (it.hasNext()){
@@ -190,7 +53,7 @@ public class XMIParser {
 	         			Variant v = itaux.next();
 	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
 	         				v.setIDVarPoint(s.getElementID());
-	         				s.getHijos().add(v);
+	         				s.getVariantes().add(v);
 	         			}
 	         		}
 	         		
@@ -226,5 +89,102 @@ public class XMIParser {
 	   			 			null;
     	return type;
     }
-
+	
+	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar ){
+		for (int temp = 0; temp < nodos.getLength(); temp++){
+			Node nodo = nodos.item(temp);
+			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+				Element eHijo = (Element) nodo;
+				if (nodo.getNodeName().equals("processElements")){
+					String nameHijo = "";
+					String type = "";
+					String id = "";
+					
+					
+					if (eHijo.hasAttribute("name")){
+						nameHijo = eHijo.getAttribute("name");
+					}
+					if (eHijo.hasAttribute("xsi:type")){
+						type = eHijo.getAttribute("xsi:type").substring(20);
+					}
+					if (eHijo.hasAttribute("xmi:id")){
+						id = eHijo.getAttribute("xmi:id");
+					}
+	      		    int min = -1;
+	      		    int max = -1;
+	      		    
+	      		    //me fijo si es hijo de alguien
+	      		    if(eHijo.hasAttribute("superActivities")){
+	      		    	String padre = eHijo.getAttribute("superActivities");
+	      		    	//veo si result tiene el padre
+	      		    	Iterator<Struct> it = result.iterator();
+	      		    	while (it.hasNext()){
+	      		    		Struct s = it.next();
+	      		    		if (s.getElementID().equals(padre)){
+	      		    			s.getHijos().add(new Struct(id, nameHijo, obtenerTipoElemento(type),min,max));
+	      		    		}
+	      		    		
+	      		    	}
+	      		    	
+	      		    } 
+	      		    
+	      		  if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
+          				   type.equals(TipoElemento.VP_PHASE.toString()) || 
+          				   type.equals(TipoElemento.VP_ITERATION.toString()) ||
+          				 type.equals(TipoElemento.VP_TASK.toString()) ){
+            			 if (eHijo.hasAttribute("min")) {
+          				  min = Integer.parseInt(eHijo.getAttribute("min"));
+            			 }
+            			 if (eHijo.hasAttribute("max")) {
+          				  max = Integer.parseInt(eHijo.getAttribute("max"));
+            			 }
+          			   	System.out.println("\t\tMin : " + min);
+          			   	System.out.println("\t\tMax : " + max);
+            			
+	               		   List<String> variantes = new ArrayList<String>();
+	               		        //Obtengo lista de elementos hijos del nodo
+	                           NodeList nHijosVar = nodo.getChildNodes();
+	                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
+	                           		
+	                           		Node nHijoVar = nHijosVar.item(temp2);
+	                           		                           		
+	                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
+	                        		   Element eHijoVar = (Element) nHijoVar;
+	                        		                           		   
+	                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("varp2variant")){
+	                        			   		    String iDVariant = eHijoVar.getAttribute("supplier");
+	                        			   			variantes.add(iDVariant);
+	                        			   	}
+	                           		}
+	            		        }
+	                           	vpToVar.put(id, variantes);
+	            		   }
+          		   
+          		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString()) 
+          				   || type.equals(TipoElemento.VAR_PHASE.toString())
+          				|| type.equals(TipoElemento.VAR_ITERATION.toString())
+          				|| type.equals(TipoElemento.VAR_TASK.toString())){
+          			               		   
+          			    Variant var = new Variant(id,nameHijo,"",true,type);
+                      	registroVar.add(var);
+                      		
+          		     }
+	      		    
+	      		    
+          		   else if(id != null && nameHijo != null && type != null){
+					Struct nodoAux = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
+	     		   	result.add(nodoAux);
+	      		    }
+	      		    
+	      		    
+				}
+     		    NodeList hijos = nodo.getChildNodes();
+     		    getNodos(hijos, result, registroVar, vpToVar);
+        	   }		
+		}
+	}
 }
+
+		
+	
+	

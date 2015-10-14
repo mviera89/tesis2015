@@ -31,7 +31,7 @@ public class DocumentService {
         	padre.setSelectable(false);
         	
         	
-        	Iterator<Variant> it1 = s.getHijos().iterator();
+        	Iterator<Variant> it1 = s.getVariantes().iterator();
         	while (it1.hasNext()){
         		Variant v = it1.next();
         		TreeNode hijo = new CheckboxTreeNode(new Document(v.getID(), v.getName(), "-", "Folder"), padre);
