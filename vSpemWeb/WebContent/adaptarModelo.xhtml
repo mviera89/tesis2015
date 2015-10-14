@@ -16,7 +16,7 @@
 				</h:commandLink>
 			</f:facet>
 		</p:diagram>
-		
+		<br/>
 		<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
 						 actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}"
 						 update=":panel_principal" />
@@ -29,7 +29,8 @@
 								  style="margin-bottom: 5%;">
 				<f:selectItems value="#{adaptarModeloBean.variantes}" var="var" itemLabel="#{var.label}" itemValue="#{var.value}" />
 			</p:selectManyCheckbox>
-			<p:commandButton value="Seleccionar" update=":panel_principal" />
+			<p:messages id="msg" showDetail="true"/>
+			<p:commandButton value="Seleccionar" update="msg" />
 			<p:commandButton value="Cancelar" immediate="true" update=":panel_principal" />
 		</h:form>
 	</p:dialog>
