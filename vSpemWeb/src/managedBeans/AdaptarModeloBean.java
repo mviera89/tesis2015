@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.context.RequestContext;
@@ -38,12 +42,11 @@ public class AdaptarModeloBean {
     private DefaultDiagramModel modelo;
 	private int y;
 	private List<Struct> nodos;
-	private EndPoint endPointRoot;
 	private Element puntoVariacionAdaptado;
 	private List<SelectItem> variantes;
 	private String[] variantesSeleccionadas;
 	private HashMap<String, String[]> puntosDeVariacion; // <Id del PV, Lista de Variantes elegidas>
-
+	
 	@PostConstruct
     public void init() {
     	//System.out.println("### AdaptarModeloBean - init() ###");
@@ -79,14 +82,6 @@ public class AdaptarModeloBean {
 
 	public void setNodos(List<Struct> nodos) {
 		this.nodos = nodos;
-	}
-	
-	public EndPoint getEndPointRoot() {
-		return endPointRoot;
-	}
-
-	public void setEndPointRoot(EndPoint endPointRoot) {
-		this.endPointRoot = endPointRoot;
 	}
 
 	public Element getPuntoVariacionAdaptado() {
@@ -151,12 +146,12 @@ public class AdaptarModeloBean {
 	        
 	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE));
 	        root.setY(this.y + "em");
-	        endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
+	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
         	modelo.addElement(root);
 	        
         	this.y += Constantes.distanciaEntreNiveles;
-        	int x = 0;
+        	float x = 0;
 	        Iterator<Struct> it = this.nodos.iterator();
 	        while (it.hasNext()){
 	        	Struct s = it.next();
@@ -166,7 +161,7 @@ public class AdaptarModeloBean {
 		        padre.addEndPoint(endPointP1_T);
 		        modelo.addElement(padre);
 		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
-	        	x += 2 * s.getNombre().length() / 3;
+	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        }
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
@@ -190,7 +185,7 @@ public class AdaptarModeloBean {
     				   "";
     	return icono;
     }
-    
+
 public TipoElemento getTipoElemento(String tipo){
 		
 		if (tipo.equals(TipoElemento.ACTIVITY.toString()))
@@ -219,7 +214,6 @@ public TipoElemento getTipoElemento(String tipo){
 			return TipoElemento.VAR_ITERATION;
 	}
 
-
     private EndPoint crearEndPoint(EndPointAnchor anchor) {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
         return endPoint;
@@ -243,21 +237,21 @@ public TipoElemento getTipoElemento(String tipo){
 		
 		return null;
 	}
-	
+
 	public void seleccionarVariantes(){
 		FacesContext fc = FacesContext.getCurrentInstance();
-        String idElemSeleccionado =  fc.getExternalContext().getRequestParameterMap().get("elemSeleccionado"); 
+		ExternalContext c = fc.getExternalContext();
+        String idElemSeleccionado =  c.getRequestParameterMap().get("elemSeleccionado");
 		
-        Element elemento = obtenerElemento(idElemSeleccionado);
-        ElementoModelo e = (ElementoModelo) elemento.getData();
-        if (e.getType() == TipoElemento.VP_ACTIVITY 
-        		|| e.getType() == TipoElemento.VP_TASK
-        		|| e.getType() == TipoElemento.VP_PHASE
-        		|| e.getType() == TipoElemento.VP_ITERATION){
-			puntoVariacionAdaptado = elemento;
-			cargarVariantesDelPunto(idElemSeleccionado);
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('variantesDialog').show()");
+		if (idElemSeleccionado != null){
+	        Element elemento = obtenerElemento(idElemSeleccionado);
+	        ElementoModelo e = (ElementoModelo) elemento.getData();
+	        if (e.getEsPV()){
+				puntoVariacionAdaptado = elemento;
+				cargarVariantesDelPunto(idElemSeleccionado);
+				RequestContext context = RequestContext.getCurrentInstance();
+				context.execute("PF('variantesDialog').show()");
+			}
 		}
 	}
     
@@ -303,8 +297,8 @@ public TipoElemento getTipoElemento(String tipo){
 	public void redibujarModelo() {
     	int cantVariantes = this.variantesSeleccionadas.length;
     	String xStr = this.puntoVariacionAdaptado.getX();
-		int xIni = Integer.valueOf(xStr.substring(0, xStr.length() - 2));
-		int x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
+		float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+		float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
     	for (int i = 0; i < cantVariantes; i++){
     		// Creo la variante
     		String nombreVariante = "";
@@ -329,7 +323,7 @@ public TipoElemento getTipoElemento(String tipo){
 	        // Conecto el punto de variación con la variante
 	        modelo.connect(crearConexion(endPointPV_B, endPointH1));
         	
-	        x += 2 * nombreVariante.length() / 3;
+	        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
     	}
     }
 	
