@@ -1,5 +1,6 @@
 package dominio;
 
+import config.Constantes;
 import dataTypes.TipoElemento;
 
 public class ElementoModelo {
@@ -7,19 +8,23 @@ public class ElementoModelo {
 	private String id;
 	private String nombre;
     private String imagen;
-    private TipoElemento type;
+    private TipoElemento tipo;
+    private Boolean esPV;
+    private String color;
 
 	public ElementoModelo() {
     }
 
-    public ElementoModelo(String id, String nombre, String imagen, TipoElemento type) {
+    public ElementoModelo(String id, String nombre, String imagen, TipoElemento tipo) {
     	this.id = id;
         this.nombre = nombre;
         this.imagen = imagen;
-        this.type = type;
+        this.tipo = tipo;
+        this.esPV = (tipo == TipoElemento.VP_ACTIVITY);
+        this.color = this.esPV ? Constantes.colorVarPoint : "black";
     }
-
-    public String getId() {
+    
+	public String getId() {
 		return id;
 	}
 
@@ -43,12 +48,28 @@ public class ElementoModelo {
         this.imagen = imagen;
     }
 
-    public TipoElemento getType() {
-		return type;
+    public TipoElemento getTipo() {
+		return tipo;
 	}
 
-	public void setType(TipoElemento type) {
-		this.type = type;
+	public void setTipo(TipoElemento tipo) {
+		this.tipo = tipo;
+	}
+
+	public Boolean getEsPV() {
+		return esPV;
+	}
+
+	public void setEsPV(Boolean esPV) {
+		this.esPV = esPV;
+	}
+
+    public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
     @Override
