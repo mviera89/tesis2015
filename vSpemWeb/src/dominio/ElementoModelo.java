@@ -11,11 +11,13 @@ public class ElementoModelo {
     private TipoElemento tipo;
     private Boolean esPV;
     private String color;
+	private int min;
+	private int max;
 
 	public ElementoModelo() {
     }
 
-    public ElementoModelo(String id, String nombre, String imagen, TipoElemento tipo) {
+    public ElementoModelo(String id, String nombre, String imagen, TipoElemento tipo, int min, int max) {
     	this.id = id;
         this.nombre = nombre;
         this.imagen = imagen;
@@ -25,6 +27,8 @@ public class ElementoModelo {
         			 tipo == TipoElemento.VP_PHASE ||
         			 tipo == TipoElemento.VP_ITERATION);
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
+        this.min = min;
+        this.max = max;
     }
     
 	public String getId() {
@@ -73,6 +77,22 @@ public class ElementoModelo {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public void setMax(int max) {
+		this.max = max;
 	}
 
     @Override

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
@@ -46,7 +47,7 @@ public class AdaptarModeloBean {
 	private List<SelectItem> variantes;
 	private String[] variantesSeleccionadas;
 	private HashMap<String, String[]> puntosDeVariacion; // <Id del PV, Lista de Variantes elegidas>
-	
+
 	@PostConstruct
     public void init() {
     	//System.out.println("### AdaptarModeloBean - init() ###");
@@ -105,14 +106,25 @@ public class AdaptarModeloBean {
 	}
 
 	public void setVariantesSeleccionadas(String[] variantesSeleccionadas) {
-		String clave = ((ElementoModelo) this.puntoVariacionAdaptado.getData()).getId();
-		String[] variantesParaPV = this.puntosDeVariacion.get(clave);
-		if (variantesParaPV != null){
-			eliminarVariantesSeleccionadas(variantesParaPV);
+		ElementoModelo pv = ((ElementoModelo) this.puntoVariacionAdaptado.getData());
+		String error = this.validarSeleccion(variantesSeleccionadas.length, pv.getMin(), pv.getMax());
+		if (error.isEmpty()){
+			String clave = pv.getId();
+			String[] variantesParaPV = this.puntosDeVariacion.get(clave);
+			if (variantesParaPV != null){
+				eliminarVariantesSeleccionadas(variantesParaPV);
+			}
+			this.variantesSeleccionadas = variantesSeleccionadas;
+			actualizarVariantesParaPV();
+			this.redibujarModelo();
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('variantesDialog').hide()");
+			context.update("panel_principal");
 		}
-		this.variantesSeleccionadas = variantesSeleccionadas;
-		actualizarVariantesParaPV();
-		this.redibujarModelo(); 
+		else{
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, error, "");
+	        FacesContext.getCurrentInstance().addMessage(null, message);
+		}
 	}
 
     public HashMap<String, String[]> getPuntosDeVariacion() {
@@ -144,7 +156,7 @@ public class AdaptarModeloBean {
 	    	conector.setAlwaysRespectStubs(true);
 	        modelo.setDefaultConnector(conector);
 	        
-	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE));
+	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE, -1, -1));
 	        root.setY(this.y + "em");
 	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
@@ -156,7 +168,7 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 				
-	        	Element padre = new Element(new ElementoModelo(s.getElementID(), s.getNombre(), obtenerIconoPorTipo(s.getType()), s.getType()), x + "em", this.y + "em");
+	        	Element padre = new Element(new ElementoModelo(s.getElementID(), s.getNombre(), obtenerIconoPorTipo(s.getType()), s.getType(), s.getMin(), s.getMax()), x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
 		        modelo.addElement(padre);
@@ -304,7 +316,7 @@ return type;
     				tipoVariante = si.getDescription();
     			}
     		}
-			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(getTipoElemento(tipoVariante)), getTipoElemento(tipoVariante)), x + "em", this.y + "em");
+			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(getTipoElemento(tipoVariante)), getTipoElemento(tipoVariante), -1, -1), x + "em", this.y + "em");
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
@@ -319,5 +331,16 @@ return type;
 	        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
     	}
     }
+	
+	public String validarSeleccion(int cantVariantesSelec, int min, int max){
+		String res = "";
+		if (cantVariantesSelec < min){
+			res = "Debe seleccionar al menos " + min + " variante" + (min > 1 ? "s." : ".");
+		}
+		else if ((max != -1) && (cantVariantesSelec > max)){
+			res = "Debe seleccionar a lo sumo " + max + " variante" + (max > 1 ? "s." : ".");
+		}
+		return res;
+	}
 	
 }
