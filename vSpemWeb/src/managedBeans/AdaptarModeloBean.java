@@ -198,32 +198,25 @@ public class AdaptarModeloBean {
     	return icono;
     }
 
-public TipoElemento getTipoElemento(String tipo){
+public TipoElemento getTipoElemento(String t){
 		
-		if (tipo.equals(TipoElemento.ACTIVITY.toString()))
-			return TipoElemento.ACTIVITY;
-		else if (tipo.equals(TipoElemento.VP_ACTIVITY.toString()))
-			return TipoElemento.VP_ACTIVITY;
-		else if (tipo.equals(TipoElemento.VAR_ACTIVITY.toString()))
-			return TipoElemento.VAR_ACTIVITY;
-		else if (tipo.equals(TipoElemento.TASK.toString()))
-			return TipoElemento.TASK;
-		else if (tipo.equals(TipoElemento.VP_TASK.toString()))
-			return TipoElemento.VP_TASK;
-		else if (tipo.equals(TipoElemento.VAR_TASK.toString()))
-			return TipoElemento.VAR_TASK;
-		else if (tipo.equals(TipoElemento.PHASE.toString()))
-			return TipoElemento.PHASE;
-		else if (tipo.equals(TipoElemento.VP_PHASE.toString()))
-			return TipoElemento.VP_PHASE;
-		else if (tipo.equals(TipoElemento.VAR_PHASE.toString()))
-			return TipoElemento.VAR_PHASE;
-		else if (tipo.equals(TipoElemento.ITERATION.toString()))
-			return TipoElemento.ITERATION;
-		else if (tipo.equals(TipoElemento.VP_ITERATION.toString()))
-			return TipoElemento.VP_ITERATION;
-		else
-			return TipoElemento.VAR_ITERATION;
+	TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString())) ? TipoElemento.PROCESS_PACKAGE :
+   		(t.equals(TipoElemento.ACTIVITY.toString()))	    ? TipoElemento.ACTIVITY		   :
+		 	(t.equals(TipoElemento.VP_ACTIVITY.toString()))     ? TipoElemento.VP_ACTIVITY	   :
+	 		(t.equals(TipoElemento.VAR_ACTIVITY.toString()))    ? TipoElemento.VAR_ACTIVITY	   :
+	 		(t.equals(TipoElemento.TASK.toString()))    		? TipoElemento.TASK			   :
+	 		(t.equals(TipoElemento.VP_TASK.toString()))    		? TipoElemento.VP_TASK		   :
+	 		(t.equals(TipoElemento.VAR_TASK.toString()))    	? TipoElemento.VAR_TASK		   :
+	 		(t.equals(TipoElemento.ITERATION.toString()))    	? TipoElemento.ITERATION	   :
+	 		(t.equals(TipoElemento.VP_ITERATION.toString()))    ? TipoElemento.VP_ITERATION	   :
+	 		(t.equals(TipoElemento.VAR_ITERATION.toString()))   ? TipoElemento.VAR_ITERATION   :
+	 		(t.equals(TipoElemento.PHASE.toString()))    		? TipoElemento.PHASE		   :
+	 		(t.equals(TipoElemento.VP_PHASE.toString()))    	? TipoElemento.VP_PHASE		   :
+	 		(t.equals(TipoElemento.VAR_PHASE.toString()))  		? TipoElemento.VAR_PHASE	   :
+	 		
+
+			null;
+return type;
 	}
 
     private EndPoint crearEndPoint(EndPointAnchor anchor) {

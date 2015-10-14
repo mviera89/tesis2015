@@ -68,11 +68,15 @@ public class XMIParser {
 	     	            		  if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
 	   	            				   type.equals(TipoElemento.VP_PHASE.toString()) || 
 	   	            				   type.equals(TipoElemento.VP_ITERATION.toString()) ){
-	     	            			  //	min = Integer.parseInt(eHijo.getAttribute("min"));
-	     	            			  	//max = Integer.parseInt(eHijo.getAttribute("max"));
-	     	            			  
-	   	            			   //System.out.println("\t\tMin : " +eHijo.getAttribute("min"));
-	   	            			   //System.out.println("\t\tMax : " +eHijo.getAttribute("max"));
+	     	            			 if (eHijo.hasAttribute("min")) {
+	   	            				  min = Integer.parseInt(eHijo.getAttribute("min"));
+	     	            			 }
+	     	            			 if (eHijo.hasAttribute("max")) {
+	   	            				  max = Integer.parseInt(eHijo.getAttribute("max"));
+	     	            			 }
+	   	            			   	System.out.println("\t\tMin : " + min);
+	   	            			   	System.out.println("\t\tMax : " + max);
+	     	            			
 	   		               		   List<String> variantes = new ArrayList<String>();
 	   		               		        //Obtengo lista de elementos hijos del nodo
 	   		                           NodeList nHijosVar = hijo.getChildNodes();
@@ -125,11 +129,14 @@ public class XMIParser {
  	            		   int max = -1;
 	            		  
 	            		   if (type.equals(TipoElemento.VP_TASK.toString())){
-	            			   
-	            			  // min = Integer.parseInt(eHijo.getAttribute("min"));
-	            			   //max = Integer.parseInt(eHijo.getAttribute("max"));
-	            			   //System.out.println("\t\tMin : " +eHijo.getAttribute("min"));
-	            			   //System.out.println("\t\tMax : " +eHijo.getAttribute("max"));
+	            			  if (eHijo.hasAttribute("min")) {
+	            				  min = Integer.parseInt(eHijo.getAttribute("min"));
+	            			  }
+	            			  if (eHijo.hasAttribute("max")) {
+	            				  max = Integer.parseInt(eHijo.getAttribute("max"));
+	            			  }
+	            			   System.out.println("\t\tMin : " + min);
+	            			   System.out.println("\t\tMax : " + max);
 		               		   List<String> variantes = new ArrayList<String>();
 		               		        //Obtengo lista de elementos hijos del nodo
 		                           NodeList nHijosVar = nHijo.getChildNodes();
