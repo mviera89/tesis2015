@@ -215,8 +215,7 @@ public class AdaptarModeloBean {
 		ExternalContext c = fc.getExternalContext();
         String idElemSeleccionado =  c.getRequestParameterMap().get("elemSeleccionado");
 		
-<<<<<<< HEAD
-        if (idElemSeleccionado != null){
+		if (idElemSeleccionado != null){
 	        Element elemento = obtenerElemento(idElemSeleccionado);
 	        ElementoModelo e = (ElementoModelo) elemento.getData();
 	        if (e.getEsPV()){
@@ -225,20 +224,7 @@ public class AdaptarModeloBean {
 				RequestContext context = RequestContext.getCurrentInstance();
 				context.execute("PF('variantesDialog').show()");
 			}
-        }
-=======
-        Element elemento = obtenerElemento(idElemSeleccionado);
-        ElementoModelo e = (ElementoModelo) elemento.getData();
-        if (e.getType() == TipoElemento.VP_ACTIVITY 
-        		|| e.getType() == TipoElemento.VP_TASK
-        		|| e.getType() == TipoElemento.VP_PHASE
-        		|| e.getType() == TipoElemento.VP_ITERATION){
-			puntoVariacionAdaptado = elemento;
-			cargarVariantesDelPunto(idElemSeleccionado);
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('variantesDialog').show()");
 		}
->>>>>>> 8b5c82082b3407c950d4bf1fd15014287db07855
 	}
     
 	public void cargarVariantesDelPunto(String idElemSeleccionado){

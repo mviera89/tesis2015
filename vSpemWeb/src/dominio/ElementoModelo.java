@@ -20,7 +20,10 @@ public class ElementoModelo {
         this.nombre = nombre;
         this.imagen = imagen;
         this.tipo = tipo;
-        this.esPV = (tipo == TipoElemento.VP_ACTIVITY);
+        this.esPV = (tipo == TipoElemento.VP_ACTIVITY || 
+        			 tipo == TipoElemento.VP_TASK ||
+        			 tipo == TipoElemento.VP_PHASE ||
+        			 tipo == TipoElemento.VP_ITERATION);
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
     }
     

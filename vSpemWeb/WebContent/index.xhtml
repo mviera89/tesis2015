@@ -24,8 +24,8 @@
 		</div>
 	</div>
 	
-	<div class="container" style="width: 100%;">
-		<p:panel id="panel_principal" style="border-width: 0;">
+	<div class="container" style="width: 100%;background-color:#C0C0C0">
+		<p:panel id="panel_principal" style="border-width: 0; background-color:transparent">
 	  		<h:form id="form_index">
 				<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
 				    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update=":panel_principal"/>
@@ -49,8 +49,7 @@
 			</p:panelGrid>
 		</p:panel>
 	</div>
-	
-	<footer>
+	<footer style="background-color:#C0C0C0;">
 		<p>© Proyecto de Grado 2015</p>
 	</footer>
 		
