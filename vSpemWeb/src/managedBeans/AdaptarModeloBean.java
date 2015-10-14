@@ -49,7 +49,7 @@ public class AdaptarModeloBean {
 	
 	@PostConstruct
     public void init() {
-    	System.out.println("### AdaptarModeloBean - init() ###");
+    	//System.out.println("### AdaptarModeloBean - init() ###");
     	nodos = new ArrayList<Struct>();
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
@@ -173,6 +173,15 @@ public class AdaptarModeloBean {
     				   (tipo == TipoElemento.ACTIVITY)	      ? TipoElemento.ACTIVITY.getImagen()		 :
     				   (tipo == TipoElemento.VP_ACTIVITY)     ? TipoElemento.VP_ACTIVITY.getImagen()	 :
     				   (tipo == TipoElemento.VAR_ACTIVITY)    ? TipoElemento.VAR_ACTIVITY.getImagen()	 :
+    				   (tipo == TipoElemento.TASK)     	      ? TipoElemento.TASK.getImagen()	 		 :
+    				   (tipo == TipoElemento.VP_TASK)     	  ? TipoElemento.VP_TASK.getImagen()	 	 :
+    				   (tipo == TipoElemento.VAR_TASK)        ? TipoElemento.VAR_TASK.getImagen()		 :
+    				   (tipo == TipoElemento.ITERATION)    	  ? TipoElemento.ITERATION.getImagen()	   	 :
+   		   			   (tipo == TipoElemento.VP_ITERATION)    ? TipoElemento.VP_ITERATION.getImagen()	 :
+   		   			   (tipo == TipoElemento.VAR_ITERATION)   ? TipoElemento.VAR_ITERATION.getImagen()   :
+   		   			   (tipo == TipoElemento.PHASE)    		  ? TipoElemento.PHASE.getImagen()		     :
+   		   			   (tipo == TipoElemento.VP_PHASE)   	  ? TipoElemento.VP_PHASE.getImagen()		 :
+   		   			   (tipo == TipoElemento.VAR_PHASE)	      ? TipoElemento.VAR_PHASE.getImagen()	     :
     				   "";
     	return icono;
     }
@@ -206,6 +215,7 @@ public class AdaptarModeloBean {
 		ExternalContext c = fc.getExternalContext();
         String idElemSeleccionado =  c.getRequestParameterMap().get("elemSeleccionado");
 		
+<<<<<<< HEAD
         if (idElemSeleccionado != null){
 	        Element elemento = obtenerElemento(idElemSeleccionado);
 	        ElementoModelo e = (ElementoModelo) elemento.getData();
@@ -216,6 +226,19 @@ public class AdaptarModeloBean {
 				context.execute("PF('variantesDialog').show()");
 			}
         }
+=======
+        Element elemento = obtenerElemento(idElemSeleccionado);
+        ElementoModelo e = (ElementoModelo) elemento.getData();
+        if (e.getType() == TipoElemento.VP_ACTIVITY 
+        		|| e.getType() == TipoElemento.VP_TASK
+        		|| e.getType() == TipoElemento.VP_PHASE
+        		|| e.getType() == TipoElemento.VP_ITERATION){
+			puntoVariacionAdaptado = elemento;
+			cargarVariantesDelPunto(idElemSeleccionado);
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('variantesDialog').show()");
+		}
+>>>>>>> 8b5c82082b3407c950d4bf1fd15014287db07855
 	}
     
 	public void cargarVariantesDelPunto(String idElemSeleccionado){
@@ -226,7 +249,11 @@ public class AdaptarModeloBean {
 		Iterator<Struct> iterator = this.nodos.iterator();
         while (iterator.hasNext() && !fin){
         	s = iterator.next();
-        	fin = ((s.getType() == TipoElemento.VP_ACTIVITY) && (s.getElementID().equals(idElemSeleccionado)));
+        	fin = ((s.getType() == TipoElemento.VP_ACTIVITY 
+        			|| s.getType() == TipoElemento.VP_TASK
+        			|| s.getType() == TipoElemento.VP_PHASE
+        			|| s.getType() == TipoElemento.VP_ITERATION)
+        			&& (s.getElementID().equals(idElemSeleccionado)));
         }
         if (fin){
 	        Iterator<Variant> it = s.getHijos().iterator();
