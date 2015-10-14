@@ -2,8 +2,10 @@ package logica;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,6 +23,7 @@ public class XMIParser {
 	
 	public static List<Struct> getElementXMI(String nomFile){
 		List<Struct> result = new ArrayList<Struct>();
+		
 		try {
 	         File inputFile = new File(nomFile);
 	         DocumentBuilderFactory dbFactory 
@@ -28,15 +31,14 @@ public class XMIParser {
 	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	         Document doc = dBuilder.parse(inputFile);
 	         
-	         //HashMap<String, String> registroVP = new HashMap<String, String>();
 	         List<Variant> registroVar = new ArrayList<Variant>();
-	         //HashMap<String, String> registroVar = new HashMap<String, String>();
-	                  
+	         Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
+	         	                  
 	         doc.getDocumentElement().normalize();
 	                  
-	         NodeList nList = doc.getElementsByTagName("childPackages");
+	         NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");      
 	         	         
-	         //Recorro la lista de childPackages
+	         //Recorro la lista
 	         for (int temp = 0; temp < nList.getLength(); temp++) {
 	            Node nNode = nList.item(temp);
 	            	            
@@ -48,66 +50,141 @@ public class XMIParser {
 	               		
 	               		Node nHijo = nHijos.item(temp1);
 	               		
+	               		if (nHijo.getNodeName().equals("childPackages")){
+	               				               			
+	               			NodeList hijos = nHijo.getChildNodes();
+	               			for(int aux = 0; aux <hijos.getLength();aux++){
+	               				Node hijo =hijos.item(aux);
+	               				if (hijo.getNodeType() == Node.ELEMENT_NODE){
+	     	            		   Element eHijo = (Element) hijo;
+	     	            		   
+	     	            		   String nameHijo = eHijo.getAttribute("name");
+	     	            		   String type = eHijo.getAttribute("xsi:type").substring(20);
+	     	            		   String id = eHijo.getAttribute("xmi:id");
+	     	            		   int min = -1;
+	     	            		   int max = -1;
+	     	            		   
+	     	            		   //////////////////////////////////////////////
+	     	            		  if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
+	   	            				   type.equals(TipoElemento.VP_PHASE.toString()) || 
+	   	            				   type.equals(TipoElemento.VP_ITERATION.toString()) ){
+	     	            			  //	min = Integer.parseInt(eHijo.getAttribute("min"));
+	     	            			  	//max = Integer.parseInt(eHijo.getAttribute("max"));
+	     	            			  
+	   	            			   //System.out.println("\t\tMin : " +eHijo.getAttribute("min"));
+	   	            			   //System.out.println("\t\tMax : " +eHijo.getAttribute("max"));
+	   		               		   List<String> variantes = new ArrayList<String>();
+	   		               		        //Obtengo lista de elementos hijos del nodo
+	   		                           NodeList nHijosVar = hijo.getChildNodes();
+	   		                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
+	   		                           		
+	   		                           		Node nHijoVar = nHijosVar.item(temp2);
+	   		                           		                           		
+	   		                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
+	   		                        		   Element eHijoVar = (Element) nHijoVar;
+	   		                        		                           		   
+	   		                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("varp2variant")){
+	   		                        			   		    String iDVariant = eHijoVar.getAttribute("supplier");
+	   		                        			   			variantes.add(iDVariant);
+	   		                        			   	}
+	   		                           		}
+	   		            		        }
+	   		                           	vpToVar.put(id, variantes);
+	   		            		   }
+	   	            		   
+	   	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString()) 
+	   	            				   || type.equals(TipoElemento.VAR_PHASE.toString())
+	   	            				|| type.equals(TipoElemento.VAR_ITERATION.toString())){
+	   	            			               		   
+	   	            			    Variant var = new Variant(id,nameHijo,"",true);
+	   	                        	registroVar.add(var);
+	   	                        		
+	   	            		     }
+	   	            		   else if (!type.equals("RoleDescriptor")){
+	   	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
+	   		            		   result.add(nodo);
+	   	            		   }
+	   	               		  	               
+	   	               	
+	     	            		   
+	     	           ////////////////////////////////////////////////
+	               				}
+	               				
+	               			}
+	 	               			
+	               		}
+	               		else if(nHijo.getNodeName().equals("processElements")){
+	               		
 	               		if (nHijo.getNodeType() == Node.ELEMENT_NODE){
 	            		   Element eHijo = (Element) nHijo;
 	            		   
 	            		   String nameHijo = eHijo.getAttribute("name");
 	            		   String type = eHijo.getAttribute("xsi:type").substring(20);
 	            		   String id = eHijo.getAttribute("xmi:id");
-	            		   
-	            		   //if (type.equals("vpActivity")){
+	            		   int min = -1;
+ 	            		   int max = -1;
+	            		  
+	            		   if (type.equals(TipoElemento.VP_ACTIVITY.toString()) || 
+	            				   type.equals(TipoElemento.VP_TASK.toString()) ){
+	            			   
+	            			  // min = Integer.parseInt(eHijo.getAttribute("min"));
+	            			   //max = Integer.parseInt(eHijo.getAttribute("max"));
 	            			   //System.out.println("\t\tMin : " +eHijo.getAttribute("min"));
 	            			   //System.out.println("\t\tMax : " +eHijo.getAttribute("max"));
-	            			   //registroVP.put(id, nameHijo);
-	            		   //}
+		               		   List<String> variantes = new ArrayList<String>();
+		               		        //Obtengo lista de elementos hijos del nodo
+		                           NodeList nHijosVar = nHijo.getChildNodes();
+		                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
+		                           		
+		                           		Node nHijoVar = nHijosVar.item(temp2);
+		                           		                           		
+		                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
+		                        		   Element eHijoVar = (Element) nHijoVar;
+		                        		                           		   
+		                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("varp2variant")){
+		                        			   		
+		                        			   			String iDVariant = eHijoVar.getAttribute("supplier");
+		                        			   			variantes.add(iDVariant);
+		                        			   		
+		                        		   }
+		                           		}
+		            		        }
+		                           	vpToVar.put(id, variantes);
+		            		   }
 	            		   
-	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString())){
-	            			               		   
-	            			 //Obtengo lista de elementos hijos del nodo
-	                           NodeList nHijosVar = nHijo.getChildNodes();
-	                           	for (int temp2 = 0; temp2 < nHijosVar.getLength(); temp2++) {
+	            		   if (type.equals(TipoElemento.VAR_ACTIVITY.toString()) 
+	            				   || type.equals(TipoElemento.VAR_TASK.toString())){
+	            				
 	                           		
-	                           		Node nHijoVar = nHijosVar.item(temp2);
-	                           		                           		
-	                           		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
-	                        		   Element eHijoVar = (Element) nHijoVar;
-	                        		                           		   
-	                        		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("variant2varP")){
-	                        			   		//if (!registroVP.isEmpty()){
-	                        			   			String iDVarPoint = eHijoVar.getAttribute("supplier");
-	                        			   			//registroVar.put(id, nameHijo);
-	                        			   			//System.out.println("\t\tCorresponde al VarPoint:  " + varPoint);
-	                        			   			String isInclusive = eHijoVar.getAttribute("isInclusive");
-	                        			   			boolean inclusiva = false;
-	                        			   			if (isInclusive.equals("true")){
-	                        			   				inclusiva = false;
-	                        			   			}
-	                        			   			Variant var = new Variant(id,nameHijo,iDVarPoint,inclusiva);
-	                        			   			registroVar.add(var);
-	                        			   		//}
-	                        		   }
-	                           		}
-	            		        }
+	                        			Variant var = new Variant(id,nameHijo,"",true);
+	                        			registroVar.add(var);
+	                        		
+	                           	
 	            		   }
 	            		   else if (!type.equals("RoleDescriptor")){
-	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type));
+	            			   Struct nodo = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
 		            		   result.add(nodo);
 	            		   }
 	               		}
 	               
 	               	}
 	            }
+	           }
 	         }
 	         
 	         //Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
 	         Iterator<Struct> it = result.iterator();
 	         while (it.hasNext()){
 	         	Struct s = it.next();
-	         	if (s.getType() == TipoElemento.VP_ACTIVITY){
+	         	if (s.getType() == TipoElemento.VP_ACTIVITY 
+	         			|| s.getType() == TipoElemento.VP_TASK
+	         			|| s.getType() == TipoElemento.VP_PHASE
+	         			|| s.getType() == TipoElemento.VP_ITERATION){
 	         		Iterator<Variant> itaux = registroVar.iterator();
 	         		while (itaux.hasNext()){
 	         			Variant v = itaux.next();
-	         			if (v.getIDVarPoint().equals(s.getElementID())){
+	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
+	         				v.setIDVarPoint(s.getElementID());
 	         				s.getHijos().add(v);
 	         			}
 	         		}
@@ -130,6 +207,17 @@ public class XMIParser {
     				   		(t.equals(TipoElemento.ACTIVITY.toString()))	    ? TipoElemento.ACTIVITY		   :
 			   			 	(t.equals(TipoElemento.VP_ACTIVITY.toString()))     ? TipoElemento.VP_ACTIVITY	   :
 		   			 		(t.equals(TipoElemento.VAR_ACTIVITY.toString()))    ? TipoElemento.VAR_ACTIVITY	   :
+		   			 		(t.equals(TipoElemento.TASK.toString()))    		? TipoElemento.TASK			   :
+		   			 		(t.equals(TipoElemento.VP_TASK.toString()))    		? TipoElemento.VP_TASK		   :
+		   			 		(t.equals(TipoElemento.VAR_TASK.toString()))    	? TipoElemento.VAR_TASK		   :
+		   			 		(t.equals(TipoElemento.ITERATION.toString()))    	? TipoElemento.ITERATION	   :
+		   			 		(t.equals(TipoElemento.VP_ITERATION.toString()))    ? TipoElemento.VP_ITERATION	   :
+		   			 		(t.equals(TipoElemento.VAR_ITERATION.toString()))   ? TipoElemento.VAR_ITERATION   :
+		   			 		(t.equals(TipoElemento.PHASE.toString()))    		? TipoElemento.PHASE		   :
+		   			 		(t.equals(TipoElemento.VP_PHASE.toString()))    	? TipoElemento.VP_PHASE		   :
+		   			 		(t.equals(TipoElemento.VAR_PHASE.toString()))  		? TipoElemento.VAR_PHASE	   :
+		   			 		
+
 	   			 			null;
     	return type;
     }

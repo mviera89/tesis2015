@@ -11,11 +11,15 @@ public class Struct {
 	private String nombre;
 	private TipoElemento type;
 	private List<Variant> hijos;
+	private int min;
+	private int max;
 	
-	public Struct(String ID, String nombre, TipoElemento type){
+	public Struct(String ID, String nombre, TipoElemento type, int min, int max){
 		this.elementID = ID;
 		this.nombre = nombre;
 		this.type = type;
+		this.min = min;
+		this.max = max;
 		this.hijos = new ArrayList<Variant>();
 	}
 	
@@ -49,7 +53,27 @@ public class Struct {
 	}
 
 	public void setType(TipoElemento type) {
-		type = type;
+		this.type = type;
 	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public void setMax(int max) {
+		this.max = max;
+	}
+	
+	
+	
+	
 	
 }
