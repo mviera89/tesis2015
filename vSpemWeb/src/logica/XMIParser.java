@@ -114,6 +114,7 @@ public class XMIParser {
 	      		    int max = -1;
 	      		    
 	      		    //me fijo si es hijo de alguien
+	      		    boolean tienePadre = false;
 	      		    if(eHijo.hasAttribute("superActivities")){
 	      		    	String padre = eHijo.getAttribute("superActivities");
 	      		    	//veo si result tiene el padre
@@ -122,6 +123,7 @@ public class XMIParser {
 	      		    		Struct s = it.next();
 	      		    		if (s.getElementID().equals(padre)){
 	      		    			s.getHijos().add(new Struct(id, nameHijo, obtenerTipoElemento(type),min,max));
+	      		    			tienePadre = true;
 	      		    		}
 	      		    		
 	      		    	}
@@ -164,14 +166,40 @@ public class XMIParser {
           				   || type.equals(TipoElemento.VAR_PHASE.toString())
           				|| type.equals(TipoElemento.VAR_ITERATION.toString())
           				|| type.equals(TipoElemento.VAR_TASK.toString())){
+          			   
+          			 NodeList nHijosVar = nodo.getChildNodes();
+                    	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {
+                    		
+                    		Node nHijoVar = nHijosVar.item(temp3);
+                    		                           		
+                    		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
+                    				Element eHijoVar = (Element) nHijoVar;
+                 		                           		   
+		                 		   if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("variant2variant")){
+		                 			   		if (eHijoVar.hasAttribute("isInclusive")){
+			                 			   		String iDVariantInclusiva = eHijoVar.getAttribute("supplier");
+		                 			   		    Variant var = new Variant(id,nameHijo,"",true,type);
+		                 			   		    var.getInclusivas().add(iDVariantInclusiva);
+		                 			   		    System.out.println("Inclusiva: " + iDVariantInclusiva);
+		                                    	registroVar.add(var);
+		                 			   		}
+		                 			   		else {
+		                 			   		    String iDVariantExclusiva = eHijoVar.getAttribute("supplier");
+		                 			   		    Variant var = new Variant(id,nameHijo,"",true,type);
+		                 			   		    var.getExclusivas().add(iDVariantExclusiva);
+		                 			   		    System.out.println("Exclusiva: " + iDVariantExclusiva);
+		                                    	registroVar.add(var);
+		                 			   		}
+		                 			   	}
+                    		}
+     		        }
           			               		   
-          			    Variant var = new Variant(id,nameHijo,"",true,type);
-                      	registroVar.add(var);
+          			  
                       		
           		     }
 	      		    
 	      		    
-          		   else if(id != null && nameHijo != null && type != null){
+          		   else if(id != null && nameHijo != null && type != null && !tienePadre){
 					Struct nodoAux = new Struct(id, nameHijo, obtenerTipoElemento(type),min,max);
 	     		   	result.add(nodoAux);
 	      		    }
