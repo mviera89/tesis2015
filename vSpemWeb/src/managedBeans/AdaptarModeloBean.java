@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.context.RequestContext;
@@ -31,7 +27,6 @@ import org.primefaces.model.diagram.overlay.ArrowOverlay;
 
 import config.Constantes;
 import dataTypes.TipoElemento;
-import dominio.ElementoModelo;
 import dominio.Struct;
 import dominio.Variant;
 import logica.XMIParser;
@@ -50,7 +45,6 @@ public class AdaptarModeloBean {
 
 	@PostConstruct
     public void init() {
-    	//System.out.println("### AdaptarModeloBean - init() ###");
     	nodos = new ArrayList<Struct>();
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
@@ -106,10 +100,10 @@ public class AdaptarModeloBean {
 	}
 
 	public void setVariantesSeleccionadas(String[] variantesSeleccionadas) {
-		ElementoModelo pv = ((ElementoModelo) this.puntoVariacionAdaptado.getData());
+		Struct pv = ((Struct) this.puntoVariacionAdaptado.getData());
 		String error = this.validarSeleccion(variantesSeleccionadas.length, pv.getMin(), pv.getMax());
 		if (error.isEmpty()){
-			String clave = pv.getId();
+			String clave = pv.getElementID();
 			String[] variantesParaPV = this.puntosDeVariacion.get(clave);
 			if (variantesParaPV != null){
 				eliminarVariantesSeleccionadas(variantesParaPV);
@@ -156,7 +150,7 @@ public class AdaptarModeloBean {
 	    	conector.setAlwaysRespectStubs(true);
 	        modelo.setDefaultConnector(conector);
 	        
-	        Element root = new Element(new ElementoModelo("", "Inicio", obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE), TipoElemento.PROCESS_PACKAGE, -1, -1));
+	        Element root = new Element(new Struct("", "Inicio", TipoElemento.PROCESS_PACKAGE, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE)));
 	        root.setY(this.y + "em");
 	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
@@ -168,7 +162,7 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 				
-	        	Element padre = new Element(new ElementoModelo(s.getElementID(), s.getNombre(), obtenerIconoPorTipo(s.getType()), s.getType(), s.getMin(), s.getMax()), x + "em", this.y + "em");
+	        	Element padre = new Element(new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen()), x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
 		        modelo.addElement(padre);
@@ -179,26 +173,8 @@ public class AdaptarModeloBean {
 	        this.y += Constantes.distanciaEntreNiveles;
 		}
     }
-    
-    public String obtenerIconoPorTipo(TipoElemento tipo){
-    	String icono = (tipo == TipoElemento.PROCESS_PACKAGE) ? TipoElemento.PROCESS_PACKAGE.getImagen() :
-    				   (tipo == TipoElemento.ACTIVITY)	      ? TipoElemento.ACTIVITY.getImagen()		 :
-    				   (tipo == TipoElemento.VP_ACTIVITY)     ? TipoElemento.VP_ACTIVITY.getImagen()	 :
-    				   (tipo == TipoElemento.VAR_ACTIVITY)    ? TipoElemento.VAR_ACTIVITY.getImagen()	 :
-    				   (tipo == TipoElemento.TASK)     	      ? TipoElemento.TASK.getImagen()	 		 :
-    				   (tipo == TipoElemento.VP_TASK)     	  ? TipoElemento.VP_TASK.getImagen()	 	 :
-    				   (tipo == TipoElemento.VAR_TASK)        ? TipoElemento.VAR_TASK.getImagen()		 :
-    				   (tipo == TipoElemento.ITERATION)    	  ? TipoElemento.ITERATION.getImagen()	   	 :
-   		   			   (tipo == TipoElemento.VP_ITERATION)    ? TipoElemento.VP_ITERATION.getImagen()	 :
-   		   			   (tipo == TipoElemento.VAR_ITERATION)   ? TipoElemento.VAR_ITERATION.getImagen()   :
-   		   			   (tipo == TipoElemento.PHASE)    		  ? TipoElemento.PHASE.getImagen()		     :
-   		   			   (tipo == TipoElemento.VP_PHASE)   	  ? TipoElemento.VP_PHASE.getImagen()		 :
-   		   			   (tipo == TipoElemento.VAR_PHASE)	      ? TipoElemento.VAR_PHASE.getImagen()	     :
-    				   "";
-    	return icono;
-    }
 
-public TipoElemento getTipoElemento(String t){
+/*public TipoElemento getTipoElemento(String t){
 		
 	TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString())) ? TipoElemento.PROCESS_PACKAGE :
    		(t.equals(TipoElemento.ACTIVITY.toString()))	    ? TipoElemento.ACTIVITY		   :
@@ -217,7 +193,7 @@ public TipoElemento getTipoElemento(String t){
 
 			null;
 return type;
-	}
+	}*/
 
     private EndPoint crearEndPoint(EndPointAnchor anchor) {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
@@ -234,7 +210,7 @@ return type;
 		Iterator<Element> it = modelo.getElements().iterator();
 		while (it.hasNext()){
 			Element e = it.next();
-			String id = ((ElementoModelo) e.getData()).getId();
+			String id = ((Struct) e.getData()).getElementID();
 			if (id.equals(idElemento)){
 				return e;
 			}
@@ -250,8 +226,8 @@ return type;
 		
 		if (idElemSeleccionado != null){
 	        Element elemento = obtenerElemento(idElemSeleccionado);
-	        ElementoModelo e = (ElementoModelo) elemento.getData();
-	        if (e.getEsPV()){
+	        Struct s = (Struct) elemento.getData();
+	        if (s.getEsPV()){
 				puntoVariacionAdaptado = elemento;
 				cargarVariantesDelPunto(idElemSeleccionado);
 				RequestContext context = RequestContext.getCurrentInstance();
@@ -295,7 +271,7 @@ return type;
 	}
 	
 	public void actualizarVariantesParaPV(){
-		String clave = ((ElementoModelo) this.puntoVariacionAdaptado.getData()).getId();
+		String clave = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 		this.puntosDeVariacion.put(clave, this.variantesSeleccionadas);
 	}
 	
@@ -316,7 +292,8 @@ return type;
     				tipoVariante = si.getDescription();
     			}
     		}
-			Element hijo = new Element(new ElementoModelo(this.variantesSeleccionadas[i], nombreVariante, obtenerIconoPorTipo(getTipoElemento(tipoVariante)), getTipoElemento(tipoVariante), -1, -1), x + "em", this.y + "em");
+    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+			Element hijo = new Element(new Struct(this.variantesSeleccionadas[i], nombreVariante, tipo, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(tipo)), x + "em", this.y + "em");
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
