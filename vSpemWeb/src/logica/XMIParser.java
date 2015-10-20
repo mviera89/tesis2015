@@ -41,6 +41,8 @@ public class XMIParser {
 	        Iterator<Struct> it = result.iterator();
 	        while (it.hasNext()){
 	        	Struct s = it.next();
+	        	System.out.println("Tipo: " + s.getType());
+	        	System.out.println("Nombre: " + s.getNombre());
         		if (s.getType() == TipoElemento.VP_ACTIVITY ||
 	         	    s.getType() == TipoElemento.VP_TASK		||
 	         		s.getType() == TipoElemento.VP_PHASE	||
@@ -48,6 +50,7 @@ public class XMIParser {
         			Iterator<Variant> itaux = registroVar.iterator();
 	         		while (itaux.hasNext()){
          				Variant v = itaux.next();
+         				System.out.println("\t\tVariante: " + v.getName());
 	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
          					v.setIDVarPoint(s.getElementID());
      						s.getVariantes().add(v);
@@ -86,7 +89,7 @@ public class XMIParser {
 	      		    
 	      		    // Me fijo si es hijo de alguien
 	      		    boolean tienePadre = false;
-	      		    if(eHijo.hasAttribute("superActivities")){
+	      		   /* if(eHijo.hasAttribute("superActivities")){
 	      		    	String padre = eHijo.getAttribute("superActivities");
 	      		    	//veo si result tiene el padre
 	      		    	Iterator<Struct> it = result.iterator();
@@ -98,7 +101,7 @@ public class XMIParser {
 	      		    			tienePadre = true;
 	      		    		}
 	      		    	}
-	      		    }
+	      		    }*/
 	      		    
 	      		    if (type.equals(TipoElemento.VP_ACTIVITY.toString()) ||
           				type.equals(TipoElemento.VP_PHASE.toString()) ||
@@ -135,6 +138,9 @@ public class XMIParser {
           				type.equals(TipoElemento.VAR_ITERATION.toString()) ||
           				type.equals(TipoElemento.VAR_TASK.toString())){
       		    		
+	      		    	Variant var = new Variant(id,nameHijo,"",true,type);
+            			registroVar.add(var);
+	      		    	
 	      		    	NodeList nHijosVar = nodo.getChildNodes();
                     	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {
                     		Node nHijoVar = nHijosVar.item(temp3);
@@ -142,26 +148,25 @@ public class XMIParser {
                     		if ((nHijoVar.getNodeType() == Node.ELEMENT_NODE) && (nHijoVar.getNodeName().equals("client"))){
                     			Element eHijoVar = (Element) nHijoVar;
                     			
+                    			
                 				if  (eHijoVar.getAttribute("xsi:type").substring(20).equals("variant2variant")){
                 					if (eHijoVar.hasAttribute("isInclusive")){
                 						String iDVariantInclusiva = eHijoVar.getAttribute("supplier");
-                						Variant var = new Variant(id,nameHijo,"",true,type);
                 						var.getInclusivas().add(iDVariantInclusiva);
                 						System.out.println("Inclusiva: " + iDVariantInclusiva);
-                						registroVar.add(var);
+                						
                 					}
                 					else {
                 						String iDVariantExclusiva = eHijoVar.getAttribute("supplier");
-                						Variant var = new Variant(id,nameHijo,"",true,type);
                 						var.getExclusivas().add(iDVariantExclusiva);
                 						System.out.println("Exclusiva: " + iDVariantExclusiva);
-                						registroVar.add(var);
+                						
                 					}
                 				}
                     		}
                     	}
 	      		    }	    
-	      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
+	      		    else if(id != null && nameHijo != null && type != null && !tienePadre && !type.equals("RoleDescriptor")){
 	      		    	TipoElemento tipo = obtenerTipoElemento(type);
 	      		    	Struct nodoAux = new Struct(id, nameHijo, tipo,min,max, obtenerIconoPorTipo(tipo));
 	      		    	result.add(nodoAux);
