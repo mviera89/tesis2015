@@ -176,27 +176,6 @@ public class AdaptarModeloBean {
 		}
     }
 
-/*public TipoElemento getTipoElemento(String t){
-		
-	TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString())) ? TipoElemento.PROCESS_PACKAGE :
-   		(t.equals(TipoElemento.ACTIVITY.toString()))	    ? TipoElemento.ACTIVITY		   :
-		 	(t.equals(TipoElemento.VP_ACTIVITY.toString()))     ? TipoElemento.VP_ACTIVITY	   :
-	 		(t.equals(TipoElemento.VAR_ACTIVITY.toString()))    ? TipoElemento.VAR_ACTIVITY	   :
-	 		(t.equals(TipoElemento.TASK.toString()))    		? TipoElemento.TASK			   :
-	 		(t.equals(TipoElemento.VP_TASK.toString()))    		? TipoElemento.VP_TASK		   :
-	 		(t.equals(TipoElemento.VAR_TASK.toString()))    	? TipoElemento.VAR_TASK		   :
-	 		(t.equals(TipoElemento.ITERATION.toString()))    	? TipoElemento.ITERATION	   :
-	 		(t.equals(TipoElemento.VP_ITERATION.toString()))    ? TipoElemento.VP_ITERATION	   :
-	 		(t.equals(TipoElemento.VAR_ITERATION.toString()))   ? TipoElemento.VAR_ITERATION   :
-	 		(t.equals(TipoElemento.PHASE.toString()))    		? TipoElemento.PHASE		   :
-	 		(t.equals(TipoElemento.VP_PHASE.toString()))    	? TipoElemento.VP_PHASE		   :
-	 		(t.equals(TipoElemento.VAR_PHASE.toString()))  		? TipoElemento.VAR_PHASE	   :
-	 		
-
-			null;
-return type;
-	}*/
-
     private EndPoint crearEndPoint(EndPointAnchor anchor) {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
         return endPoint;
@@ -294,8 +273,10 @@ return type;
     				tipoVariante = si.getDescription();
     			}
     		}
+    		String idVariante = this.variantesSeleccionadas[i];
     		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
-			Element hijo = new Element(new Struct(this.variantesSeleccionadas[i], nombreVariante, tipo, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(tipo)), x + "em", this.y + "em");
+    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+			Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", this.y + "em");
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
@@ -327,41 +308,30 @@ return type;
 		/*** Chequeo variantes inclusivas y exclusivas ***/
 		else{
 			int i = 0;
-			while ((i < cantVariantesSelec) && (res == "")){
-				// Para cada variante seleccionada
-				Iterator<Variant> it = pv.getVariantes().iterator();
-				
-				// Obtengo las variantes exlusivas e inclusivas
-				boolean fin = false;
-				List<String> varExclusivas = null;
-				List<String> varInclusivas = null;
-				while (it.hasNext() && !fin){
-					Variant v = it.next();
-					if (v.getID().equals(variantesSeleccionadas[i])){
-						varExclusivas = v.getExclusivas();
-						varInclusivas = v.getInclusivas();
-						fin = true;
-					}
-				}
+			while ((i < cantVariantesSelec) && (res.isEmpty())){
+				// Para cada variante seleccionada obtengo las variantes exlusivas e inclusivas
+				Variant v = obtenerVarianteParaPV(pv, variantesSeleccionadas[i]);
+				List<String> varExclusivas = v.getExclusivas();
+				List<String> varInclusivas = v.getInclusivas();
 				
 				// Si las otras variantes seleccionadas están en las variantes exlusivas => Error
 				if (varExclusivas != null){
 					int j = 0;
-					while ((j < cantVariantesSelec) && (res == "")){
+					while ((j < cantVariantesSelec) && (res.isEmpty())){
 						if ((j != i) && (varExclusivas.contains(variantesSeleccionadas[j]))){
-							res = "No es posible seleccionar estas variantes";
+							res = "No es posible seleccionar las variantes '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[i]).getName() + "' y '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[j]).getName() + "' a la vez.";
 						}
 						j++;
 					}
 				}
 				
 				// Si entre las variantes seleccionadas NO están todas las variantes inclusivas => Error
-				if ((res != null) && (varInclusivas != null)){
+				if ((res.isEmpty()) && (varInclusivas != null)){
 					Iterator<String> itInclusivas = varInclusivas.iterator();
 					while (itInclusivas.hasNext()){
 						String var = itInclusivas.next();
 						if (!Arrays.asList(variantesSeleccionadas).contains(var)){
-							res = "Faltan variantes por seleccionar";
+							res = "Debe seleccionar la variante '" + obtenerVarianteParaPV(pv, var).getName() + "'.";
 						}
 					}
 				}
@@ -372,5 +342,16 @@ return type;
 		
 		return res;
 	}
-	
+
+	public Variant obtenerVarianteParaPV(Struct pv, String idVar){
+		Iterator<Variant> it = pv.getVariantes().iterator();
+		while (it.hasNext()){
+			Variant v = it.next();
+			if (v.getID().equals(idVar)){
+				return v;
+			}
+		}
+		return null;
+	}
+
 }
