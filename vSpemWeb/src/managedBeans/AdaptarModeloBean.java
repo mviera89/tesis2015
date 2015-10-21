@@ -1,6 +1,7 @@
 package managedBeans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -101,7 +102,7 @@ public class AdaptarModeloBean {
 
 	public void setVariantesSeleccionadas(String[] variantesSeleccionadas) {
 		Struct pv = ((Struct) this.puntoVariacionAdaptado.getData());
-		String error = this.validarSeleccion(variantesSeleccionadas.length, pv.getMin(), pv.getMax());
+		String error = this.validarSeleccion(variantesSeleccionadas, pv);
 		if (error.isEmpty()){
 			String clave = pv.getElementID();
 			String[] variantesParaPV = this.puntosDeVariacion.get(clave);
@@ -162,7 +163,8 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 				
-	        	Element padre = new Element(new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen()), x + "em", this.y + "em");
+	        	//Element padre = new Element(new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen()), x + "em", this.y + "em");
+	        	Element padre = new Element(s, x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
 		        modelo.addElement(padre);
@@ -309,14 +311,65 @@ return type;
     	}
     }
 	
-	public String validarSeleccion(int cantVariantesSelec, int min, int max){
+	public String validarSeleccion(String[] variantesSeleccionadas, Struct pv){
 		String res = "";
+		
+		/*** Chequeo máximos y mínimos ***/
+		int cantVariantesSelec = variantesSeleccionadas.length;
+		int min = pv.getMin();
+		int max = pv.getMax();
 		if (cantVariantesSelec < min){
 			res = "Debe seleccionar al menos " + min + " variante" + (min > 1 ? "s." : ".");
 		}
 		else if ((max != -1) && (cantVariantesSelec > max)){
 			res = "Debe seleccionar a lo sumo " + max + " variante" + (max > 1 ? "s." : ".");
 		}
+		/*** Chequeo variantes inclusivas y exclusivas ***/
+		else{
+			int i = 0;
+			while ((i < cantVariantesSelec) && (res == "")){
+				// Para cada variante seleccionada
+				Iterator<Variant> it = pv.getVariantes().iterator();
+				
+				// Obtengo las variantes exlusivas e inclusivas
+				boolean fin = false;
+				List<String> varExclusivas = null;
+				List<String> varInclusivas = null;
+				while (it.hasNext() && !fin){
+					Variant v = it.next();
+					if (v.getID().equals(variantesSeleccionadas[i])){
+						varExclusivas = v.getExclusivas();
+						varInclusivas = v.getInclusivas();
+						fin = true;
+					}
+				}
+				
+				// Si las otras variantes seleccionadas están en las variantes exlusivas => Error
+				if (varExclusivas != null){
+					int j = 0;
+					while ((j < cantVariantesSelec) && (res == "")){
+						if ((j != i) && (varExclusivas.contains(variantesSeleccionadas[j]))){
+							res = "No es posible seleccionar estas variantes";
+						}
+						j++;
+					}
+				}
+				
+				// Si entre las variantes seleccionadas NO están todas las variantes inclusivas => Error
+				if ((res != null) && (varInclusivas != null)){
+					Iterator<String> itInclusivas = varInclusivas.iterator();
+					while (itInclusivas.hasNext()){
+						String var = itInclusivas.next();
+						if (!Arrays.asList(variantesSeleccionadas).contains(var)){
+							res = "Faltan variantes por seleccionar";
+						}
+					}
+				}
+				
+				i++;
+			}
+		}
+		
 		return res;
 	}
 	
