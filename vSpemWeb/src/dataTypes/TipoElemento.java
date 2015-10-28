@@ -51,7 +51,7 @@ public enum TipoElemento {
         }
         return imagen;
     }
-	
+
 	@Override
     public String toString() {
         String valor = "";

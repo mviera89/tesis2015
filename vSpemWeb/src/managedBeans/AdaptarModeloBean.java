@@ -37,13 +37,14 @@ import logica.XMIParser;
 public class AdaptarModeloBean {
      
     private DefaultDiagramModel modelo;
+	private DefaultDiagramModel modeloAdaptado;
 	private int y;
 	private List<Struct> nodos;
 	private Element puntoVariacionAdaptado;
 	private List<SelectItem> variantes;
 	private String[] variantesSeleccionadas;
 	private HashMap<String, String[]> puntosDeVariacion; // <Id del PV, Lista de Variantes elegidas>
-
+	
 	@PostConstruct
     public void init() {
     	nodos = new ArrayList<Struct>();
@@ -62,6 +63,14 @@ public class AdaptarModeloBean {
 
     public void setModelo(DefaultDiagramModel modelo) {
 		this.modelo = modelo;
+	}
+	
+	public DefaultDiagramModel getModeloAdaptado() {
+		return modeloAdaptado;
+	}
+
+	public void setModeloAdaptado(DefaultDiagramModel modeloAdaptado) {
+		this.modeloAdaptado = modeloAdaptado;
 	}
 
 	public int getY() {
@@ -163,7 +172,6 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 				
-	        	//Element padre = new Element(new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen()), x + "em", this.y + "em");
 	        	Element padre = new Element(s, x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
@@ -174,14 +182,18 @@ public class AdaptarModeloBean {
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
 		}
+		
+		if (modelo.getElements().size() > 0){
+    		this.crearModeloFinal(this.modelo);
+    	}
     }
 
-    private EndPoint crearEndPoint(EndPointAnchor anchor) {
+    public static EndPoint crearEndPoint(EndPointAnchor anchor) {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
         return endPoint;
     }
     
-    private Connection crearConexion(EndPoint desde, EndPoint hasta) {
+    public static Connection crearConexion(EndPoint desde, EndPoint hasta) {
         Connection con = new Connection(desde, hasta);
         con.getOverlays().add(new ArrowOverlay(8, 8, 1, 1));
         return con;
@@ -290,6 +302,10 @@ public class AdaptarModeloBean {
         	
 	        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
     	}
+    	
+    	if (cantVariantes > 0){
+    		this.crearModeloFinal(this.modelo);
+    	}
     }
 	
 	public String validarSeleccion(String[] variantesSeleccionadas, Struct pv){
@@ -352,6 +368,139 @@ public class AdaptarModeloBean {
 			}
 		}
 		return null;
+	}
+
+	public void vistaPrevia(){
+		RequestContext c = RequestContext.getCurrentInstance();
+		c.execute("PF('vistaPreviaDialog').show()");
+	}
+
+	public void crearModeloFinal(DefaultDiagramModel modelo) {
+		modeloAdaptado = new DefaultDiagramModel();
+		modeloAdaptado.setMaxConnections(-1);
+		
+		FlowChartConnector conector = new FlowChartConnector();
+    	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
+    	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
+    	conector.setAlwaysRespectStubs(true);
+    	modeloAdaptado.setDefaultConnector(conector);
+        
+		Iterator<Element> it = modelo.getElements().iterator();
+		EndPoint endPointRoot = null;
+
+		float xElement = 0;
+		float yElement = Constantes.yInicial;
+		Element root = null;
+		
+		while (it.hasNext()){
+			Element e = it.next();
+			Struct s = (Struct) e.getData();
+			TipoElemento type = s.getType();
+			if (type != null){
+				
+				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
+				if (type == TipoElemento.PROCESS_PACKAGE){
+					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+					Element newE = new Element(newS, e.getX(), e.getY());
+					root = newE;
+					
+					endPointRoot = AdaptarModeloBean.crearEndPoint(EndPointAnchor.BOTTOM);
+					newE.addEndPoint(endPointRoot);
+					
+					modeloAdaptado.addElement(newE);
+					yElement += Constantes.distanciaEntreNiveles;
+				}
+				else{
+					// Si es un punto de variación, recorro las variantes y agrego las que están en el modelo
+					// Lo hago así porque sino se incluyen al final
+					if ((type == TipoElemento.VP_ACTIVITY)  ||
+		  				(type == TipoElemento.VP_PHASE)     ||
+		  				(type == TipoElemento.VP_ITERATION) ||
+		  				(type == TipoElemento.VP_TASK)){
+						
+						Iterator<Variant> itVar = s.getVariantes().iterator();
+						while (itVar.hasNext()){
+							Variant v = itVar.next();
+							if (variantePerteneceAModelo(v.getID(), modelo)){
+								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
+								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
+								Element newE = new Element(newS, xElement + "em", yElement + "em");
+								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
+							}
+						}
+						
+					}
+					
+					// Sino, si no es variante la incluyo (las variantes ya se incluyeron el el if)
+					else if ((type != TipoElemento.VAR_ACTIVITY) &&
+			  				 (type != TipoElemento.VAR_PHASE)     &&
+			  				 (type != TipoElemento.VAR_ITERATION) &&
+			  				 (type != TipoElemento.VAR_TASK)){
+						
+						Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+						Element newE = new Element(newS, xElement + "em", yElement + "em");
+						xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
+					}
+					
+				}
+			}
+		}
+		
+		if (root != null){
+			root.setX(xElement/2 + "em");
+		}
+		
+		//FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		//HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		//VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+		//vb.setModeloAdaptado(modeloAdaptado);
+		
+	}
+
+	public TipoElemento getElementoParaVarPoint(TipoElemento type){
+		if (type == TipoElemento.VAR_ACTIVITY){
+			return TipoElemento.ACTIVITY;
+		}
+		if (type == TipoElemento.VAR_PHASE){
+			return TipoElemento.PHASE;
+		}
+		if (type == TipoElemento.VAR_ITERATION){
+			return TipoElemento.ITERATION;
+		}
+		if (type == TipoElemento.VAR_TASK){
+			return TipoElemento.TASK;
+		}
+		return null;
+	}
+
+	public boolean variantePerteneceAModelo(String idVar, DefaultDiagramModel modelo){
+		Iterator<Element> it = modelo.getElements().iterator();
+		while (it.hasNext()){
+			Struct s = (Struct) it.next().getData();
+			if (s.getElementID().equals(idVar)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public float agregarElementoModeloFinal(Element e, EndPoint superior, float x){
+		// Agrego el elemento al modelo final y lo conecto con el nodo superior
+		if (e != null){
+			EndPoint endPointP1_T = AdaptarModeloBean.crearEndPoint(EndPointAnchor.TOP);
+			e.addEndPoint(endPointP1_T);
+			
+			modeloAdaptado.addElement(e);
+			modeloAdaptado.connect(AdaptarModeloBean.crearConexion(superior, endPointP1_T));
+
+			Struct s = (Struct) e.getData();
+			x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			
+			/***********************************/
+			/*** Iterar entre los hijos de e ***/
+			/***********************************/
+		}
+		return x;
 	}
 
 }

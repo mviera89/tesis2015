@@ -5,7 +5,7 @@
 	<h3 style="margin-top:1%">Importar modelo</h3>
 
 	<h:form id="importar_form">
-		<p:fileUpload fileUploadListener="#{subirArchivoBean.cargarArchivo}" allowTypes="/(\.|\/)(xmi)$/"
+		<p:fileUpload fileUploadListener="#{importarModeloBean.cargarArchivo}" allowTypes="/(\.|\/)(xmi)$/"
 					  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar" update="msg" invalidFileMessage="Formato de archivo incorrecto"/>
 		<br/>
 		<p:messages id="msg" showDetail="true"/>

@@ -1,25 +1,29 @@
 
 <html xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:p="http://primefaces.org/ui">
 	
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	
 	<h:form id="adaptar_form">
-		<p:diagram value="#{adaptarModeloBean.modelo}" style="height:600px" styleClass="ui-widget-content" var="elem">
-			<f:facet name="element">
-				<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-							   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
-					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
-					<p:ajax update=":panel_principal"/>
-					<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
-				</h:commandLink>
-			</f:facet>
-		</p:diagram>
-		<br/>
-		<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(2)}"
-						 actionListener="#{showtree.newTreeAdaptado(treeSelectionView.root3,treeSelectionView.selectedNodes2)}"
-						 update=":panel_principal" />
+		<div style="text-align: right; padding-bottom: 0.3em; ">
+			<p:commandButton value="Vista previa" action="#{adaptarModeloBean.vistaPrevia()}" update=":panel_principal" />
+		</div>
+		<div style="padding-bottom: 0.3em;">
+			<p:diagram value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
+				<f:facet name="element">
+					<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+								   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
+						<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+						<p:ajax update=":panel_principal"/>
+						<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+					</h:commandLink>
+				</f:facet>
+			</p:diagram>
+		</div>
+		<p:commandButton value="Finalizar" action="#{VistaBean.actualizarIndiceActivo(2)}" 
+					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}" update=":panel_principal"/>
 	</h:form>
 	
 	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true" 
@@ -33,6 +37,18 @@
 			<p:commandButton value="Seleccionar" update="msg" />
 			<p:commandButton value="Cancelar" immediate="true" update=":panel_principal" />
 		</h:form>
+	</p:dialog>
+	
+	<p:dialog header="Vista previa" widgetVar="vistaPreviaDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 50%; ">
+		<div style="height:400px" >
+			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="height:95%" styleClass="ui-widget-content" var="elem">
+				<f:facet name="element">
+					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+					<p:outputLabel value="#{elem.nombre}" />
+				</f:facet>
+			</p:diagram>
+			<br/>
+		 </div>
 	</p:dialog>
 	
 </html>

@@ -13,17 +13,20 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.diagram.DefaultDiagramModel;
+import org.primefaces.model.diagram.Element;
 
 import config.Constantes;
+import dataTypes.TipoElemento;
 import dominio.Document;
 import dominio.Struct;
  
 @ManagedBean
 public class ExportarModeloBean {
 	
-	public void exportarModelo(TreeNode treeAdaptado){
+	public void exportarModelo(DefaultDiagramModel modeloAdaptado){
 		try{
-			if (treeAdaptado != null){
+			if (modeloAdaptado != null){
 				File archivo = new File(Constantes.destinoExport + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 				
@@ -58,17 +61,20 @@ public class ExportarModeloBean {
 					          "<TypeOfContract></TypeOfContract>" + "\n" +
 					        "</Presentation>" + "\n";
 				
-				List<TreeNode> nodos = treeAdaptado.getChildren();
-				Iterator<TreeNode> it = nodos.iterator();
+				List<Element> elementos = modeloAdaptado.getElements();
+				Iterator<Element> it = elementos.iterator();
 				while (it.hasNext()){
-					Document nodo = (Document) it.next().getData();
-					String nombre = nodo.getName();
+					Struct s = (Struct) it.next().getData();
+					String nombre = s.getNombre();
 					String nombrePresentacion = nombre;
-					String id = nodo.getElementID();
-					texto += 
-							"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-							"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-							"</BreakdownElement>" + "\n";
+					String id = s.getElementID();
+					TipoElemento tipo = s.getType();
+					if (tipo != TipoElemento.PROCESS_PACKAGE){
+						texto += 
+								"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
+								"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
+								"</BreakdownElement>" + "\n";
+					}
 				}
 				
 				texto +=

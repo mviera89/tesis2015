@@ -4,6 +4,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.diagram.DefaultDiagramModel;
 
 @ManagedBean(name="VistaBean")
 @SessionScoped
@@ -11,7 +12,7 @@ public class VistaBean {
 
 	private int indiceActivo = 0;
 	private String nombreArchivo = "";
-	private TreeNode treeAdaptado = null;
+	//private DefaultDiagramModel modeloAdaptado = null;
 	private boolean finModelado = false;
 	
 	public int getIndiceActivo() {
@@ -30,14 +31,14 @@ public class VistaBean {
 		this.nombreArchivo = nombreArchivo;
 	}
 
-	public TreeNode getTreeAdaptado() {
-		return treeAdaptado;
+	/*public DefaultDiagramModel getModeloAdaptado() {
+		return modeloAdaptado;
 	}
 
-	public void setTreeAdaptado(TreeNode treeAdaptado) {
-		this.treeAdaptado = treeAdaptado;
-	}
-	
+	public void setModeloAdaptado(DefaultDiagramModel modeloAdaptado) {
+		this.modeloAdaptado = modeloAdaptado;
+	}*/
+
 	public boolean isFinModelado() {
 		return finModelado;
 	}
@@ -60,10 +61,11 @@ public class VistaBean {
 				res = (nombreArchivo == "");
 				break;
 			case 2:
-				res = (treeAdaptado == null);
+				/*res = (modeloAdaptado == null);
 				break;
 			case 3:
-				res = !finModelado;
+				res = !finModelado;*/
+				res = /*((modeloAdaptado == null) ||*/ !finModelado/*)*/;
 				break;
 			default:
 				break;
