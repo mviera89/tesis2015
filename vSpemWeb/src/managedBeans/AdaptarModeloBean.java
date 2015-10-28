@@ -178,6 +178,8 @@ public class AdaptarModeloBean {
 		        modelo.addElement(padre);
 		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	        	
+	        	dibujarHijos(padre, modelo);
 	        }
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
@@ -199,6 +201,34 @@ public class AdaptarModeloBean {
         return con;
     }
 
+    public void dibujarHijos(Element padre, DefaultDiagramModel modelo){
+    	List<Struct> hijos = ((Struct) padre.getData()).getHijos();
+    	
+    	if (hijos.size() > 0){
+	    	String xStr = padre.getX();
+	    	String yStr = padre.getY();
+			float x = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
+			
+			EndPoint endPointPadre = crearEndPoint(EndPointAnchor.BOTTOM);
+			padre.addEndPoint(endPointPadre);
+	        
+	        Iterator<Struct> it = hijos.iterator();
+	        while (it.hasNext()){
+	        	Struct s = it.next();
+				
+	        	Element hijo = new Element(s, x + "em", y + "em");
+		        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
+		        hijo.addEndPoint(endPointHijo);
+		        modelo.addElement(hijo);
+		        modelo.connect(crearConexion(endPointPadre, endPointHijo));
+	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	        	
+	        	dibujarHijos(hijo, modelo);
+	        }
+    	}
+    }
+    
 	public Element obtenerElemento(String idElemento){
 		Iterator<Element> it = modelo.getElements().iterator();
 		while (it.hasNext()){
@@ -301,6 +331,9 @@ public class AdaptarModeloBean {
 	        modelo.connect(crearConexion(endPointPV_B, endPointH1));
         	
 	        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	        
+	        // Dibujo los hijos de la variante
+	        dibujarHijos(hijo, modelo);
     	}
     	
     	if (cantVariantes > 0){
@@ -424,6 +457,7 @@ public class AdaptarModeloBean {
 							if (variantePerteneceAModelo(v.getID(), modelo)){
 								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
+								// ************newS.setHijos(v.getHijos()); ************
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
 							}
@@ -437,9 +471,12 @@ public class AdaptarModeloBean {
 			  				 (type != TipoElemento.VAR_ITERATION) &&
 			  				 (type != TipoElemento.VAR_TASK)){
 						
-						Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
-						Element newE = new Element(newS, xElement + "em", yElement + "em");
-						xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
+						// Si ya no se agregó al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
+						if (!variantePerteneceAModelo(s.getElementID(), modeloAdaptado)){
+							Struct newS = crearCopiaStruct(s);
+							Element newE = new Element(newS, xElement + "em", yElement + "em");
+							xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
+						}
 					}
 					
 				}
@@ -449,11 +486,6 @@ public class AdaptarModeloBean {
 		if (root != null){
 			root.setX(xElement/2 + "em");
 		}
-		
-		//FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-		//HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-		//VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
-		//vb.setModeloAdaptado(modeloAdaptado);
 		
 	}
 
@@ -496,11 +528,29 @@ public class AdaptarModeloBean {
 			Struct s = (Struct) e.getData();
 			x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			
-			/***********************************/
-			/*** Iterar entre los hijos de e ***/
-			/***********************************/
+			// Dibujo los hijos en el modelo final
+			dibujarHijos(e, modeloAdaptado);
 		}
 		return x;
 	}
 
+	public Struct crearCopiaStruct(Struct s){
+		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+		
+		// Seteo los hijos
+		List<Struct> lstHijos = s.getHijos();
+		if (lstHijos.size() > 0){
+			List<Struct> hijosNewS = new ArrayList<Struct>();
+			Iterator<Struct> itHijos = lstHijos.iterator();
+			while (itHijos.hasNext()){
+				Struct hijo = itHijos.next();
+				Struct newHijo = crearCopiaStruct(hijo);
+				hijosNewS.add(newHijo);
+			}
+			newS.setHijos(hijosNewS);
+		}
+		
+		return newS;
+	}
+	
 }

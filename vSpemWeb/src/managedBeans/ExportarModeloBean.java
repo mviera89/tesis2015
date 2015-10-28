@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class ExportarModeloBean {
 					          "<TypeOfContract></TypeOfContract>" + "\n" +
 					        "</Presentation>" + "\n";
 				
+				List<String> idsAgregados = new ArrayList<String>();
 				List<Element> elementos = modeloAdaptado.getElements();
 				Iterator<Element> it = elementos.iterator();
 				while (it.hasNext()){
@@ -69,11 +71,35 @@ public class ExportarModeloBean {
 					String nombrePresentacion = nombre;
 					String id = s.getElementID();
 					TipoElemento tipo = s.getType();
-					if (tipo != TipoElemento.PROCESS_PACKAGE){
-						texto += 
-								"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-								"<SuperActivity>_19pnYVyXEeWvU7GfTaR-Wg</SuperActivity>" + "\n" +
-								"</BreakdownElement>" + "\n";
+					if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
+						idsAgregados.add(id);
+						
+						String superactivity = "_19pnYVyXEeWvU7GfTaR-Wg";
+						if (tipo == TipoElemento.ACTIVITY){
+							texto += 
+									"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
+											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
+									"</BreakdownElement>" + "\n";
+						}
+						else if (tipo == TipoElemento.ITERATION){
+							texto += 
+									"<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
+											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
+									"</BreakdownElement>" + "\n";
+						}
+						else if (tipo == TipoElemento.PHASE){
+							texto += 
+									"<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
+											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
+									"</BreakdownElement>" + "\n";
+						}
+						else if (tipo == TipoElemento.TASK){
+							texto += 
+									"<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"false\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" isSynchronizedWithSource=\"true\">" + "\n"  +
+											"<SuperActivity>" + superactivity + "</SuperActivity>" +
+					          		"</BreakdownElement>" + "\n";
+						}
+						
 					}
 				}
 				

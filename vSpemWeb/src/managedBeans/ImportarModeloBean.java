@@ -49,6 +49,7 @@ public class ImportarModeloBean {
                 if (ab != null){
                 	ab.init();
                 }
+                vb.setFinModelado(false);
             }
             catch (IOException e) {
                 e.printStackTrace();
