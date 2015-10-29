@@ -305,20 +305,26 @@ public class AdaptarModeloBean {
 		float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
     	for (int i = 0; i < cantVariantes; i++){
     		// Creo la variante
-    		String nombreVariante = "";
-    		String tipoVariante = "";
-    		Iterator<SelectItem> it = this.variantes.iterator();
-    		while (it.hasNext() && nombreVariante.equals("") && tipoVariante.equals("")){
-    			SelectItem si = it.next();
-    			if (si.getValue().equals(this.variantesSeleccionadas[i])){
-    				nombreVariante = (String) si.getLabel();
-    				tipoVariante = si.getDescription();
-    			}
-    		}
+//    		String nombreVariante = "";
+//    		String tipoVariante = "";
+//    		Iterator<SelectItem> it = this.variantes.iterator();
+//    		while (it.hasNext() && nombreVariante.equals("") && tipoVariante.equals("")){
+//    			SelectItem si = it.next();
+//    			if (si.getValue().equals(this.variantesSeleccionadas[i])){
+//    				nombreVariante = (String) si.getLabel();
+//    				tipoVariante = si.getDescription();
+//    			}
+//    		}
+    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+    		String nombreVariante = v.getName();
+			String tipoVariante = v.getVarType();
     		String idVariante = this.variantesSeleccionadas[i];
+    		List<Struct> hijos = v.getHijos();
+    		
     		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
     		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
 			Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", this.y + "em");
+			((Struct) hijo.getData()).setHijos(hijos);
     		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
     		hijo.addEndPoint(endPointH1);
 	        modelo.addElement(hijo);
@@ -457,7 +463,7 @@ public class AdaptarModeloBean {
 							if (variantePerteneceAModelo(v.getID(), modelo)){
 								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
-								// ************newS.setHijos(v.getHijos()); ************
+								newS.setHijos(v.getHijos());
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement);
 							}
@@ -551,6 +557,31 @@ public class AdaptarModeloBean {
 		}
 		
 		return newS;
+	}
+	
+	public Variant buscarVariante(List<Struct> nodos, String Id){
+		
+		Iterator<Struct> it = nodos.iterator();
+		
+		while (it.hasNext()){
+			Struct s = it.next();
+			TipoElemento type = s.getType();
+			if ((type == TipoElemento.VP_ACTIVITY)  ||
+				(type == TipoElemento.VP_PHASE)     ||
+				(type == TipoElemento.VP_ITERATION) ||
+				(type == TipoElemento.VP_TASK)){
+				List<Variant> variantes = s.getVariantes();
+				Iterator<Variant> itH = variantes.iterator();
+				while (itH.hasNext()){
+					Variant v = itH.next();
+					if (v.getID().equals(Id)){
+						return v;
+					}
+				}
+			}
+		}
+		return null;
+		
 	}
 	
 }

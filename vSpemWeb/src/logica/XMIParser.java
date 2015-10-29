@@ -46,7 +46,7 @@ public class XMIParser {
 	        	 Entry<String, List<Struct>> e = iter.next();
 	        	 List<Struct> l = e.getValue();
 	        	 result.addAll(l);
-	        	 imprimirHijos(l);	        	
+	        	// imprimirHijos(l);	        	
 	                	 
 	         }
 	         
@@ -121,46 +121,57 @@ public class XMIParser {
 	 	      		    	if (hijosS != null){
 	 	      		    		h.getHijos().addAll(hijosS);
 	 	      		    	}
-	 	      		    	boolean elPadreEsHijo = false;
-	 	      		    	
-	 	      		    	//busco el padre en result
-	 	      		    	Struct padreS = buscoPadre(padre,result);
-	 	      		    	if (padreS != null){
-	 	      		    		
-	 	      		    		padreS.getHijos().add(h);
-	 	      		    		tienePadre = true;
-	 	      		    		
+	 	      		    	boolean esHijoDeVar = false;
+	 	      		    	//busco en las variantes
+	 	      		    	Iterator<Variant> itV = registroVar.iterator();
+	 	      		    	while (itV.hasNext()){
+	 	      		    		Variant v = itV.next();
+	 	      		    		if (v.getID().equals(padre)){
+	 	      		    			v.getHijos().add(h);
+	 	      		    			esHijoDeVar = true;
+	 	      		    		}
 	 	      		    	}
-	 	      		    	//veo si el padre ya no esta en registroHijos como hijo de alguien
-	 	      		    	else {
-	 	      		    	 Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
-	 	      		         while (iter.hasNext()){
-	 	      		        	 Entry<String, List<Struct>> e = iter.next();
-	 	      		        	 List<Struct> l = e.getValue();
-	 	      		        	 Iterator<Struct> itList = l.iterator();
-	 	      		        	 while (itList.hasNext()){
-	 	      		        		 Struct s = itList.next();
-	 	      		        		 if(s.getElementID().equals(padre)){
-	 	      		        			 s.getHijos().add(h);
-	 	      		        			 elPadreEsHijo = true;
-	 	      		        		
-	 	      		        		 } 
-	 	      		        	 }
-	 	      		         }
-	 	      		    		
-	 	      		    	}
-	      		  
-	 	      		    	if(!elPadreEsHijo){
-	 	      		    		
-		 	      		    	if (!registroHijos.containsKey(padre)){
-		 	      		    		List<Struct> l = new ArrayList<Struct>();
-		 	      		    		l.add(h);
-		 	      		    		registroHijos.put(padre, l);
+	 	      		    	if (!esHijoDeVar){
+		 	      		    	boolean elPadreEsHijo = false;
+		 	      		    	//busco el padre en result
+		 	      		    	Struct padreS = buscoPadre(padre,result);
+		 	      		    	if (padreS != null){
+		 	      		    		
+		 	      		    		padreS.getHijos().add(h);
+		 	      		    		tienePadre = true;
+		 	      		    		
 		 	      		    	}
+		 	      		    	//veo si el padre ya no esta en registroHijos como hijo de alguien
 		 	      		    	else {
-		 	      		    		registroHijos.get(padre).add(h);
+		 	      		    	 Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
+		 	      		         while (iter.hasNext()){
+		 	      		        	 Entry<String, List<Struct>> e = iter.next();
+		 	      		        	 List<Struct> l = e.getValue();
+		 	      		        	 Iterator<Struct> itList = l.iterator();
+		 	      		        	 while (itList.hasNext()){
+		 	      		        		 Struct s = itList.next();
+		 	      		        		 if(s.getElementID().equals(padre)){
+		 	      		        			 s.getHijos().add(h);
+		 	      		        			 elPadreEsHijo = true;
+		 	      		        		
+		 	      		        		 } 
+		 	      		        	 }
+		 	      		         }
+		 	      		    		
 		 	      		    	}
-	 	      		    	}    
+		      		  
+		 	      		    	if(!elPadreEsHijo){
+		 	      		    		
+			 	      		    	if (!registroHijos.containsKey(padre)){
+			 	      		    		List<Struct> l = new ArrayList<Struct>();
+			 	      		    		l.add(h);
+			 	      		    		registroHijos.put(padre, l);
+			 	      		    	}
+			 	      		    	else {
+			 	      		    		registroHijos.get(padre).add(h);
+			 	      		    	}
+		 	      		    	} 
+	 	      		    	}
 	      		  }
 
 	      		      
