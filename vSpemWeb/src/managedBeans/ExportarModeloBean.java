@@ -67,38 +67,13 @@ public class ExportarModeloBean {
 				Iterator<Element> it = elementos.iterator();
 				while (it.hasNext()){
 					Struct s = (Struct) it.next().getData();
-					String nombre = s.getNombre();
-					String nombrePresentacion = nombre;
 					String id = s.getElementID();
 					TipoElemento tipo = s.getType();
 					if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
 						idsAgregados.add(id);
 						
 						String superactivity = "_19pnYVyXEeWvU7GfTaR-Wg";
-						if (tipo == TipoElemento.ACTIVITY){
-							texto += 
-									"<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
-									"</BreakdownElement>" + "\n";
-						}
-						else if (tipo == TipoElemento.ITERATION){
-							texto += 
-									"<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
-									"</BreakdownElement>" + "\n";
-						}
-						else if (tipo == TipoElemento.PHASE){
-							texto += 
-									"<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-											"<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
-									"</BreakdownElement>" + "\n";
-						}
-						else if (tipo == TipoElemento.TASK){
-							texto += 
-									"<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"false\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" isSynchronizedWithSource=\"true\">" + "\n"  +
-											"<SuperActivity>" + superactivity + "</SuperActivity>" +
-					          		"</BreakdownElement>" + "\n";
-						}
+						texto += agregarElementoAxml(s, superactivity);
 						
 					}
 				}
@@ -217,6 +192,47 @@ public class ExportarModeloBean {
     	catch (IOException e) {
     		System.out.println(e.getMessage());
 		}
+	}
+	
+	public String agregarElementoAxml(Struct s, String superactivity){
+		String texto = "";
+		String nombre = s.getNombre();
+		String nombrePresentacion = nombre;
+		String id = s.getElementID();
+		TipoElemento tipo = s.getType();
+		
+		if (tipo == TipoElemento.ACTIVITY){
+			texto += "<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
+					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
+					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+		}
+		else if (tipo == TipoElemento.ITERATION){
+			texto += "<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
+					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
+					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+		}
+		else if (tipo == TipoElemento.PHASE){
+			texto += "<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
+					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
+					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+		}
+		else if (tipo == TipoElemento.TASK){
+			texto += "<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
+					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
+					 "isPlanned=\"false\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" isSynchronizedWithSource=\"true\">" + "\n";
+		}
+		texto += "<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+		
+		// Agrego los hijos
+		Iterator<Struct> it = s.getHijos().iterator();
+		while (it.hasNext()){
+			Struct hijo = it.next();
+			texto += agregarElementoAxml(hijo, id);
+		}
+		
+		texto += "</BreakdownElement>" + "\n";
+		
+		return texto;
 	}
 	
 }
