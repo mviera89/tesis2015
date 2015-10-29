@@ -30,23 +30,94 @@ public class ExportarModeloBean {
 			if (modeloAdaptado != null){
 				File archivo = new File(Constantes.destinoExport + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
+
+				String versionXML = "1.0";
+				String encodingXML = "UTF-8";
+				String xmlns_xsi = "http://www.w3.org/2001/XMLSchema-instance";
+				String xmlns_uma = "http://www.eclipse.org/epf/uma/1.0.3";
+				
+				String methodLibraryName = "LibraryPublish";
+				String methodLibraryId = "_ot_IIFyXEeWvU7GfTaR-Wg";
+				String methodLibraryBriefDescription = "";
+				String methodLibraryOrderingGuide = "";
+				String methodLibrarySuppressed = "false";
+				String methodLibraryAuthors = "";
+				String methodLibraryChangeDescription = "";
+				String methodLibraryVersion = "";
+				String methodLibraryTool = "epf=1.2.0";
+				
+				String methodPluginSelectionId = "_rZz1MFyXEeWvU7GfTaR-Wg";
+				String methodPluginSelectionName = "EjemploPublish1";
+				String methodPluginSelectionBriefDescription = "";
+				String methodPluginSelectionOrderingGuide = "";
+				String methodPluginSelectionSuppressed = "false";
+				String methodPluginSelectionAuthors = "";
+				String methodPluginSelectionChangeDescription = "";
+				String methodPluginSelectionVersion = "";
+				String methodPluginSelectionUserChangeable = "true";
+				
+				String customCategoryId = "_m9EDcFyfEeWvU7GfTaR-Wg";
+				String customCategoryName = "EjemploPublish1CC";
+				String customCategoryBriefDescription = "";
+				String idProcessView = "_BoAG8FyeEeWvU7GfTaR-Wg";
+				String customCategoryOrderingGuide = "";
+				String customCategorySuppressed = "false";
+				String customCategoryPresentationName = "EjemploPublish1CC";
+				String customCategoryVariabilityType = "na";
+				String categorizedElement = "_19pnYVyXEeWvU7GfTaR-Wg";
+				
+				String processName = "EjemploPublish1DP";
+				String processId = "_19pnYFyXEeWvU7GfTaR-Wg";
+				String processBriefDescription = "";
+				String processOrderingGuide = "";
+				String processSuppressed = "false";
+				String processGlobal = "false";
+				String processAuthors = "";
+				String processChangeDescription = "";
+				String processVersion = "";
+				String processPresentationName = "EjemploPublish1DP";
+				String processHasMultipleOccurrences = "false";
+				String processIsOptional = "false";
+				String processIsPlanned = "true";
+				String processPrefix = "";
+				String processIsEventDriven = "false";
+				String processIsOngoing = "false";
+				String processIsRepeatable = "false";
+				String processIsEnactable = "false";
+				String processVariabilityType = "na";
+				String deliveryProcessDescriptionId = "-CZu7P3BJkdsHiMFqE6f-zA";
+				String processExternalId = "";
+				String processUsageGuidance = "";
+				
+				String methodConfigurationName = "ConfiguracionPublish";
+				String methodConfigurationId = "_wN52UFyXEeWvU7GfTaR-Wg";
+				String methodConfigurationBriefDescription = "";
+				String methodConfigurationOrderingGuide = "";
+				String methodConfigurationSuppressed = "false";
+				String methodConfigurationAuthors = "";
+				String methodConfigurationChangeDescription = "";
+				String methodConfigurationVersion = "";
 				
 				/*** Para vEPF ***/
 				String texto =
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" +
-					"<uma:MethodLibrary xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:uma=\"http://www.eclipse.org/epf/uma/1.0.3\" name=\"LibraryPublish\" briefDescription=\"\" id=\"_ot_IIFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" tool=\"epf=1.2.0\">" + "\n" +
+					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
+					"<uma:MethodLibrary xmlns:xsi=\"" + xmlns_xsi + "\" xmlns:uma=\"" + xmlns_uma + "\" name=\"" + methodLibraryName + "\" briefDescription=\"" + methodLibraryBriefDescription + "\" id=\"" + methodLibraryId + "\" orderingGuide=\"" + methodLibraryOrderingGuide + "\" suppressed=\"" + methodLibrarySuppressed + "\" authors=\"" + methodLibraryAuthors + "\" changeDescription=\"" + methodLibraryChangeDescription + "\" version=\"" + methodLibraryVersion + "\" tool=\"" + methodLibraryTool + "\">" + "\n" +
 					  "<MethodElementProperty value=\"0\"/>" + "\n" +
-					  "<MethodElementProperty value=\"_rZz1MFyXEeWvU7GfTaR-Wg\"/>" + "\n" +
-					  "<MethodElementProperty value=\"EjemploPublish1\"/>" + "\n" +
-					  "<MethodPlugin name=\"EjemploPublish1\" briefDescription=\"\" id=\"_rZz1MFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" userChangeable=\"true\">" + "\n" +
-					    "<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"_m9EDcFyfEeWvU7GfTaR-Wg\">" + "\n" +
-					      "<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"EjemploPublish1CC\" briefDescription=\"\" id=\"_BoAG8FyeEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"EjemploPublish1CC\" variabilityType=\"na\">" + "\n" +
-					        "<CategorizedElement>_19pnYVyXEeWvU7GfTaR-Wg</CategorizedElement>" + "\n" +
+					  "<MethodElementProperty value=\"" + methodPluginSelectionId + "\"/>" + "\n" +
+					  "<MethodElementProperty value=\"" + methodPluginSelectionName + "\"/>" + "\n" +
+					  "<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n" +
+					    
+					  	// CustomCategory
+					  	"<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"" + customCategoryId + "\">" + "\n" +
+					      "<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + customCategoryName + "\" briefDescription=\"" + customCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + customCategoryOrderingGuide + "\" suppressed=\"" + customCategorySuppressed + "\" presentationName=\"" + customCategoryPresentationName + "\" variabilityType=\"" + customCategoryVariabilityType + "\">" + "\n" +
+					        "<CategorizedElement>" + categorizedElement + "</CategorizedElement>" + "\n" +
 					      "</ContentCategory>" + "\n" +
 					    "</MethodPackage>" + "\n" +
-					    "<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"EjemploPublish1DP\" briefDescription=\"\" id=\"_19pnYFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" global=\"false\" authors=\"\" changeDescription=\"\" version=\"\">" + "\n" +
-					      "<Process xsi:type=\"uma:DeliveryProcess\" name=\"EjemploPublish1DP\" briefDescription=\"\" id=\"_19pnYVyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" presentationName=\"EjemploPublish1DP\" hasMultipleOccurrences=\"false\" isOptional=\"false\" isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n" +
-					        "<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"EjemploPublish1DP,_19pnYVyXEeWvU7GfTaR-Wg\" briefDescription=\"\" id=\"-CZu7P3BJkdsHiMFqE6f-zA\" orderingGuide=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\" externalId=\"\" usageGuidance=\"\">" + "\n" +
+					    
+					    // DeliveryProcess
+					    "<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
+					      "<Process xsi:type=\"uma:DeliveryProcess\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + categorizedElement + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + "\" IsEnactable=\"" + processIsEnactable + "\" variabilityType=\"" + processVariabilityType + "\">" + "\n" +
+					        "<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"" + processName + "," + categorizedElement + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + deliveryProcessDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
 					          "<MainDescription></MainDescription>" + "\n" +
 					          "<KeyConsiderations></KeyConsiderations>" + "\n" +
 					          "<Alternatives></Alternatives>" + "\n" +
@@ -71,37 +142,25 @@ public class ExportarModeloBean {
 					TipoElemento tipo = s.getType();
 					if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
 						idsAgregados.add(id);
-						
-						String superactivity = "_19pnYVyXEeWvU7GfTaR-Wg";
-						texto += agregarElementoAxml(s, superactivity);
+						texto += agregarElementoAxml(s, categorizedElement);
 						
 					}
 				}
 				
 				texto +=
-					        "<DefaultContext>_wN52UFyXEeWvU7GfTaR-Wg</DefaultContext>" + "\n" +
-					        "<ValidContext>_wN52UFyXEeWvU7GfTaR-Wg</ValidContext>" + "\n" +
+					        "<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
+					        "<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n" +
 					      "</Process>" + "\n" +
 					    "</MethodPackage>" + "\n" +
 					  "</MethodPlugin>" + "\n" +
-					  "<MethodConfiguration name=\"ConfiguracionPublish\" briefDescription=\"\" id=\"_wN52UFyXEeWvU7GfTaR-Wg\" orderingGuide=\"\" suppressed=\"false\" authors=\"\" changeDescription=\"\" version=\"\">" + "\n" +
-					    "<MethodPluginSelection>_rZz1MFyXEeWvU7GfTaR-Wg</MethodPluginSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1PlyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1P1yXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1QVyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1MVyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1PVyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_m9EDcFyfEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1MlyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1QFyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1OVyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1M1yXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_rZz1O1yXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>_19pnYFyXEeWvU7GfTaR-Wg</MethodPackageSelection>" + "\n" +
-					    "<ProcessView>_BoAG8FyeEeWvU7GfTaR-Wg</ProcessView>" + "\n" +
+					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
+					    "<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
+					    "<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n" +
+					    "<MethodPackageSelection>" + processId + "</MethodPackageSelection>" + "\n" +
+					    "<ProcessView>" + idProcessView + "</ProcessView>" + "\n" +
 					  "</MethodConfiguration>" + "\n" +
 					"</uma:MethodLibrary>";
-
+				
 				/*** Para EPF-C ***/
 				/*String texto = 
 						"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" +
