@@ -160,7 +160,21 @@ public class AdaptarModeloBean {
 	    	conector.setAlwaysRespectStubs(true);
 	        modelo.setDefaultConnector(conector);
 	        
-	        Element root = new Element(new Struct("", "Inicio", TipoElemento.PROCESS_PACKAGE, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(TipoElemento.PROCESS_PACKAGE)));
+	        //Busco el elemento raiz en nodos
+	        Iterator<Struct> itn = nodos.iterator();
+	        Struct raiz = null;
+	        TipoElemento t = null;
+	        while (itn.hasNext()){
+	        	Struct s = itn.next();
+	        	if (s.getType().equals(TipoElemento.CAPABILITY_PATTERN) || s.getType().equals(TipoElemento.DELIVERY_PROCESS)){
+	        		raiz = s;
+	        		t = s.getType();
+	        		
+	        	}
+	        }
+	        nodos.remove(raiz);
+	        
+	        Element root = new Element(new Struct("", raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t)));
 	        root.setY(this.y + "em");
 	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);

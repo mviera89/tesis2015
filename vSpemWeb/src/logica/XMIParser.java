@@ -44,9 +44,21 @@ public class XMIParser {
 	         Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 	         while (iter.hasNext()){
 	        	 Entry<String, List<Struct>> e = iter.next();
+	        	 String padre = e.getKey();
 	        	 List<Struct> l = e.getValue();
-	        	 result.addAll(l);
-	        	// imprimirHijos(l);	        	
+	        	 boolean esHijoDeVar = false;
+	        	 Iterator<Variant> itV = registroVar.iterator();
+    		    	while (itV.hasNext()){
+    		    		Variant v = itV.next();
+    		    		if (v.getID().equals(padre)){
+    		    			v.getHijos().addAll(l);
+    		    			esHijoDeVar = true;
+    		    		}
+    		    	}
+    		    if (!esHijoDeVar){
+    		    	 
+   	        	 result.addAll(l);
+    		    }        	
 	                	 
 	         }
 	         
@@ -81,7 +93,28 @@ public class XMIParser {
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
 				Element eHijo = (Element) nodo;
-				if (nodo.getNodeName().equals("processElements")){
+				if (nodo.getNodeName().equals("process")){
+					String nameHijo = "";
+					String type = "";
+					String id = "";
+					if (eHijo.hasAttribute("name")){
+						nameHijo = eHijo.getAttribute("name");
+						System.out.println("Nombre del proceso: " + nameHijo);
+					}
+					if (eHijo.hasAttribute("xsi:type")){
+						type = eHijo.getAttribute("xsi:type").substring(20);
+					}
+					
+					if (eHijo.hasAttribute("xmi:id")){
+						id = eHijo.getAttribute("xmi:id");
+					}
+						
+					TipoElemento tipo = obtenerTipoElemento(type);
+		     		    	
+					Struct h = new Struct(id, nameHijo, tipo,-1,-1, obtenerIconoPorTipo(tipo));
+					result.add(h);
+				}
+				else if (nodo.getNodeName().equals("processElements")){
 					String nameHijo = "";
 					String type = "";
 					String id = "";
@@ -214,6 +247,7 @@ public class XMIParser {
           				type.equals(TipoElemento.VAR_TASK.toString())){
       		    		
 	      		    	Variant var = new Variant(id,nameHijo,"",true,type);
+	      		    	var.getHijos().addAll(hijosS);
             			registroVar.add(var);
 	      		    	
 	      		    	NodeList nHijosVar = nodo.getChildNodes();
@@ -270,6 +304,8 @@ public class XMIParser {
 		   			 		(t.equals(TipoElemento.PHASE.toString()))    		? TipoElemento.PHASE		   :
 		   			 		(t.equals(TipoElemento.VP_PHASE.toString()))    	? TipoElemento.VP_PHASE		   :
 		   			 		(t.equals(TipoElemento.VAR_PHASE.toString()))  		? TipoElemento.VAR_PHASE	   :
+			   			 	(t.equals(TipoElemento.CAPABILITY_PATTERN.toString()))? TipoElemento.CAPABILITY_PATTERN :
+				   			(t.equals(TipoElemento.DELIVERY_PROCESS.toString()))? TipoElemento.DELIVERY_PROCESS :
 	   			 			null;
     	return type;
     }
@@ -288,6 +324,8 @@ public class XMIParser {
    		   			   (tipo == TipoElemento.PHASE)    		  ? TipoElemento.PHASE.getImagen()		     :
    		   			   (tipo == TipoElemento.VP_PHASE)   	  ? TipoElemento.VP_PHASE.getImagen()		 :
    		   			   (tipo == TipoElemento.VAR_PHASE)	      ? TipoElemento.VAR_PHASE.getImagen()	     :
+   		   			   (tipo == TipoElemento.CAPABILITY_PATTERN)? TipoElemento.CAPABILITY_PATTERN.getImagen() :
+   		   			   (tipo == TipoElemento.DELIVERY_PROCESS)? TipoElemento.DELIVERY_PROCESS.getImagen() :
     				   "";
     	return icono;
     }
@@ -310,16 +348,6 @@ public class XMIParser {
     	return padre;
     }
     
-    public static void imprimirHijos(List<Struct> list){
-   
-    	Iterator<Struct> it = list.iterator();
-    	while (it.hasNext()){
-    	
-    		Struct s = it.next();
-    		System.out.println("Padre: " + s.getNombre());
-    		imprimirHijos(s.getHijos());
-    	}
-    }
 
 }
 

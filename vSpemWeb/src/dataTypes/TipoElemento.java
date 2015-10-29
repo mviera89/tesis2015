@@ -1,7 +1,7 @@
 package dataTypes;
 
 public enum TipoElemento {
-	PROCESS_PACKAGE, ACTIVITY, VP_ACTIVITY, VAR_ACTIVITY, TASK, VP_TASK, VAR_TASK, ITERATION, VP_ITERATION, VAR_ITERATION, PHASE, VP_PHASE, VAR_PHASE ;
+	PROCESS_PACKAGE, ACTIVITY, VP_ACTIVITY, VAR_ACTIVITY, TASK, VP_TASK, VAR_TASK, ITERATION, VP_ITERATION, VAR_ITERATION, PHASE, VP_PHASE, VAR_PHASE, CAPABILITY_PATTERN, DELIVERY_PROCESS;
 	
 	public String getImagen() {
         String imagen = "";
@@ -44,6 +44,12 @@ public enum TipoElemento {
 	            break;
 	        case 12: // VAR_PHASE
 	        	imagen = "varPhase.png";
+	            break;
+	        case 13: // CAPABILITY_PATTERN
+	        	imagen = "capabilityPattern.png";
+	            break;
+	        case 14: // DELIVERY_PROCESS
+	        	imagen = "deliveryProcess.png";
 	            break;
 	        default:
 	        	imagen = "";
@@ -94,6 +100,12 @@ public enum TipoElemento {
 	            break;
 	        case 12: // VAR_PHASE
 	        	valor = "VarPhase";
+	            break;
+	        case 13: // CAPABILITY_PATTERN
+	        	valor= "CapabilityPattern";
+	            break;
+	        case 14: // DELIVERY_PROCESS
+	        	valor = "DeliveryProcess";
 	            break;
 	        default:
 	        	valor = "";
