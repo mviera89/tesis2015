@@ -169,10 +169,11 @@ public class AdaptarModeloBean {
 	        	if (s.getType().equals(TipoElemento.CAPABILITY_PATTERN) || s.getType().equals(TipoElemento.DELIVERY_PROCESS)){
 	        		raiz = s;
 	        		t = s.getType();
+	        		itn.remove();
 	        		
 	        	}
 	        }
-	        nodos.remove(raiz);
+	      //  nodos.remove(raiz);
 	        
 	        Element root = new Element(new Struct("", raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t)));
 	        root.setY(this.y + "em");
@@ -452,7 +453,7 @@ public class AdaptarModeloBean {
 			if (type != null){
 				
 				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
-				if (type == TipoElemento.PROCESS_PACKAGE){
+				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
 					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
