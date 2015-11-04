@@ -1,16 +1,31 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-
+	
 	<h3 style="margin-top:1%">Importar modelo</h3>
-
+	
 	<h:form id="importar_form">
-		<p:fileUpload fileUploadListener="#{importarModeloBean.cargarArchivo}" allowTypes="/(\.|\/)(xmi)$/"
-					  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar" update="msg" invalidFileMessage="Formato de archivo incorrecto"/>
-		<br/>
-		<p:messages id="msg" showDetail="true"/>
-		<br/>
-		<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(1)}" disabled="" update=":panel_principal" />
+		<p:panel>
+			<h:panelGrid columns="3">
+				<p:outputLabel value="Repositorio (https://github.com/):" style="width: 150px;"/>
+				<p:inputText value="#{importarModeloBean.repositorioIngresado}" style="width: 350px; margin: 0px 10px 0px 10px;"/>
+				<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos}" update=":panel_principal" />
+			</h:panelGrid>
+			
+			<h:panelGrid columns="3">
+				<p:outputLabel value="Archivo: " style="width: 150px;" />
+				<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivo}" filter="true" style="margin: 10px 10px 0px 10px;" >
+					<f:selectItems value="#{importarModeloBean.archivosDisponibles}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
+				</p:selectOneListbox>
+				<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponibles.size() == 0}" update="msg"/>
+			</h:panelGrid>
+			
+			<br/>
+			<p:messages id="msg" showDetail="true"/>
+			<br/>
+			
+			<p:commandButton value="Siguiente" icon="ui-icon-newwin" action="#{VistaBean.actualizarIndiceActivo(1)}" disabled="" update=":panel_principal" />
+		</p:panel>
 	</h:form>
-
+	
 </html>
