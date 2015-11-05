@@ -166,16 +166,21 @@ public class AdaptarModeloBean {
 	        TipoElemento t = null;
 	        while (itn.hasNext()){
 	        	Struct s = itn.next();
-	        	if (s.getType().equals(TipoElemento.CAPABILITY_PATTERN) || s.getType().equals(TipoElemento.DELIVERY_PROCESS)){
-	        		raiz = s;
-	        		t = s.getType();
-	        		itn.remove();
-	        		
+	        	if(s.getType()!= null){
+		        	if (s.getType().equals(TipoElemento.CAPABILITY_PATTERN) || s.getType().equals(TipoElemento.DELIVERY_PROCESS)){
+		        		raiz = s;
+		        		t = s.getType();
+		        		itn.remove();
+		        		
+		        	}
 	        	}
 	        }
 	      //  nodos.remove(raiz);
+	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t));
+	        r.setDescription(raiz.getDescription());
+	        r.setPresentationName(raiz.getPresentationName());
+	        Element root = new Element(r);
 	        
-	        Element root = new Element(new Struct("", raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t)));
 	        root.setY(this.y + "em");
 	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
@@ -455,6 +460,8 @@ public class AdaptarModeloBean {
 				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
 				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
 					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+					newS.setDescription(s.getDescription());
+					newS.setPresentationName(s.getPresentationName());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					

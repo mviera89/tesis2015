@@ -19,6 +19,11 @@ public class Struct {
     private String color;
     private String imagen;
     private Boolean esPV;
+    
+    private String description;
+    private String presentationName;
+   
+    
 
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen){
 		this.elementID = ID;
@@ -34,6 +39,8 @@ public class Struct {
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
 		this.variantes = new ArrayList<Variant>();
 		this.hijos = new ArrayList<Struct>();
+		this.description = "";
+		this.presentationName = "";
 	}
 
 	public String getElementID() {
@@ -115,5 +122,23 @@ public class Struct {
 	public void setHijos(List<Struct> hijos) {
 		this.hijos = hijos;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getPresentationName() {
+		return presentationName;
+	}
+
+	public void setPresentationName(String presentationName) {
+		this.presentationName = presentationName;
+	}
+	
+	
 
 }

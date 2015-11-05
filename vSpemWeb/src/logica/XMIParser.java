@@ -97,6 +97,8 @@ public class XMIParser {
 					String nameHijo = "";
 					String type = "";
 					String id = "";
+					String description = "";
+					String presentationName = "";
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
 						System.out.println("Nombre del proceso: " + nameHijo);
@@ -108,10 +110,20 @@ public class XMIParser {
 					if (eHijo.hasAttribute("xmi:id")){
 						id = eHijo.getAttribute("xmi:id");
 					}
+					
+					if (eHijo.hasAttribute("briefDescription")){
+						description = eHijo.getAttribute("briefDescription");
+					}
+					
+					if (eHijo.hasAttribute("presentationName")){
+						presentationName = eHijo.getAttribute("presentationName");
+					}
 						
 					TipoElemento tipo = obtenerTipoElemento(type);
 		     		    	
 					Struct h = new Struct(id, nameHijo, tipo,-1,-1, obtenerIconoPorTipo(tipo));
+					h.setDescription(description);
+					h.setPresentationName(presentationName);
 					result.add(h);
 				}
 				else if (nodo.getNodeName().equals("processElements")){
@@ -146,7 +158,7 @@ public class XMIParser {
 	      		  if (eHijo.hasAttribute("superActivities") &&  !(type.equals(TipoElemento.VAR_ACTIVITY.toString())  ||
 	                  				type.equals(TipoElemento.VAR_PHASE.toString())	   ||
 	                  				type.equals(TipoElemento.VAR_ITERATION.toString()) ||
-	                  				type.equals(TipoElemento.VAR_TASK.toString())) && !type.equals("RoleDescriptor")) {
+	                  				type.equals(TipoElemento.VAR_TASK.toString()))) {
 	      		    	 // Me fijo si es hijo de alguien
 	      			  		tienePadre = true;
 	      			  		String padre = eHijo.getAttribute("superActivities");
@@ -276,7 +288,7 @@ public class XMIParser {
                     	}
 	      		    }
 	      		   
-	      		    else if(id != null && nameHijo != null && type != null && !tienePadre && !type.equals("RoleDescriptor") && !type.equals("WorkOrder")){
+	      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
 	      		    	if (hijosS != null ){
 	      		    		h.getHijos().addAll(hijosS);
 	      		    	}

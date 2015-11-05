@@ -98,6 +98,7 @@ public class ExportarModeloBean {
 				String methodConfigurationChangeDescription = "";
 				String methodConfigurationVersion = "";
 				
+				
 				/*** Para vEPF ***/
 				String texto =
 					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
@@ -140,9 +141,18 @@ public class ExportarModeloBean {
 					Struct s = (Struct) it.next().getData();
 					String id = s.getElementID();
 					TipoElemento tipo = s.getType();
-					if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
-						idsAgregados.add(id);
-						texto += agregarElementoAxml(s, categorizedElement);
+					if (tipo != null){
+						if ((tipo == TipoElemento.CAPABILITY_PATTERN) || (tipo == TipoElemento.DELIVERY_PROCESS)){
+							methodConfigurationName = s.getNombre();
+							methodConfigurationBriefDescription = s.getDescription();
+							processPresentationName = s.getPresentationName();
+							
+						}
+						else if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
+							idsAgregados.add(id);
+							texto += agregarElementoAxml(s, categorizedElement);
+							
+						}
 						
 					}
 				}
@@ -153,7 +163,7 @@ public class ExportarModeloBean {
 					      "</Process>" + "\n" +
 					    "</MethodPackage>" + "\n" +
 					  "</MethodPlugin>" + "\n" +
-					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
+					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" +"\" presentationName=\"" + processPresentationName + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
 					    "<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
 					    "<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n" +
 					    "<MethodPackageSelection>" + processId + "</MethodPackageSelection>" + "\n" +
