@@ -243,7 +243,7 @@ public class XMIParser {
      		    h.setDescription(description);
 				h.setPresentationName(presentationName);
 				
-				if (tipo.equals(TipoElemento.TASK)){
+				if (tipo == TipoElemento.TASK){
 					if (eHijo.hasAttribute("performedPrimarilyBy")){
 						perfPrimaryBy = eHijo.getAttribute("performedPrimarilyBy");
 						h.setPerformedPrimaryBy(perfPrimaryBy);
