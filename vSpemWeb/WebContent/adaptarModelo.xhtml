@@ -15,7 +15,17 @@
 				<f:facet name="element">
 					<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
 								   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
-						<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+						<div style="position: relative; display:block; margin:auto; width: 32px;">
+							<h:commandLink disabled="#{elem.hijos.size() == 0}" >
+								<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+								<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
+												rendered="#{elem.hijos.size() > 0 and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
+												rendered="#{elem.hijos.size() > 0 and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
+								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+							</h:commandLink>
+						</div>
 						<p:ajax update=":panel_principal"/>
 						<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 					</h:commandLink>

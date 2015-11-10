@@ -160,7 +160,7 @@ public class AdaptarModeloBean {
 	    	conector.setAlwaysRespectStubs(true);
 	        modelo.setDefaultConnector(conector);
 	        
-	        //Busco el elemento raiz en nodos
+	        // Busco el elemento raiz en nodos
 	        Iterator<Struct> itn = nodos.iterator();
 	        Struct raiz = null;
 	        TipoElemento t = null;
@@ -175,7 +175,7 @@ public class AdaptarModeloBean {
 		        	}
 	        	}
 	        }
-	      //  nodos.remove(raiz);
+	        
 	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t));
 	        r.setDescription(raiz.getDescription());
 	        r.setPresentationName(raiz.getPresentationName());
@@ -199,7 +199,7 @@ public class AdaptarModeloBean {
 		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        	
-	        	dibujarHijos(padre, modelo);
+	        	//mostrarHijos(padre, modelo);
 	        }
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
@@ -221,7 +221,26 @@ public class AdaptarModeloBean {
         return con;
     }
 
-    public void dibujarHijos(Element padre, DefaultDiagramModel modelo){
+	public void redibujarHijos(){
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext c = fc.getExternalContext();
+        String idElemSeleccionado =  c.getRequestParameterMap().get("elemSeleccionado");
+		
+		if (idElemSeleccionado != null){
+	        Element elemento = obtenerElemento(idElemSeleccionado);
+	        Struct s = (Struct) elemento.getData();
+	        if (!s.getEstaExpandido()){
+	        	s.setEstaExpandido(true);
+	        	mostrarHijos(elemento, modelo, false);
+	        }
+	        else{
+	        	s.setEstaExpandido(false);
+	        	ocultarHijos(elemento, modelo);
+	        }
+		}
+	}
+
+    public void mostrarHijos(Element padre, DefaultDiagramModel modelo, boolean esVistaPrevia){
     	List<Struct> hijos = ((Struct) padre.getData()).getHijos();
     	
     	if (hijos.size() > 0){
@@ -244,9 +263,25 @@ public class AdaptarModeloBean {
 		        modelo.connect(crearConexion(endPointPadre, endPointHijo));
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        	
-	        	dibujarHijos(hijo, modelo);
+	        	if (esVistaPrevia){
+	        		mostrarHijos(hijo, modelo, esVistaPrevia);
+	        	}
 	        }
     	}
+    }
+    
+    public void ocultarHijos(Element padre, DefaultDiagramModel modelo){
+    	List<Struct> hijos = ((Struct) padre.getData()).getHijos();
+    	Iterator<Struct> it = hijos.iterator();
+	    while (it.hasNext()){
+        	Struct s = it.next();
+	    	Element e = obtenerElemento(s.getElementID());
+	    	if (e != null){
+	    		ocultarHijos(e, modelo);
+	    		modelo.removeElement(e);
+	    	}
+    		s.setEstaExpandido(false);
+        }
     }
     
 	public Element obtenerElemento(String idElemento){
@@ -359,7 +394,7 @@ public class AdaptarModeloBean {
 	        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        
 	        // Dibujo los hijos de la variante
-	        dibujarHijos(hijo, modelo);
+	        // mostrarHijos(hijo, modelo);
     	}
     	
     	if (cantVariantes > 0){
@@ -557,7 +592,7 @@ public class AdaptarModeloBean {
 			x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			
 			// Dibujo los hijos en el modelo final
-			dibujarHijos(e, modeloAdaptado);
+			mostrarHijos(e, modeloAdaptado, true);
 		}
 		return x;
 	}
@@ -605,5 +640,5 @@ public class AdaptarModeloBean {
 		return null;
 		
 	}
-	
+
 }

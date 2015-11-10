@@ -19,8 +19,9 @@ public class Struct {
     private String color;
     private String imagen;
     private Boolean esPV;
-    
-    private String description;
+    private Boolean estaExpandido;
+
+	private String description;
     private String presentationName;
    
     
@@ -36,6 +37,7 @@ public class Struct {
         			 type == TipoElemento.VP_TASK ||
         			 type == TipoElemento.VP_PHASE ||
         			 type == TipoElemento.VP_ITERATION);
+        this.estaExpandido = false;
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
 		this.variantes = new ArrayList<Variant>();
 		this.hijos = new ArrayList<Struct>();
@@ -114,6 +116,14 @@ public class Struct {
 	public void setEsPV(Boolean esPV) {
 		this.esPV = esPV;
 	}
+    
+    public Boolean getEstaExpandido() {
+		return estaExpandido;
+	}
+
+	public void setEstaExpandido(Boolean estaExpandido) {
+		this.estaExpandido = estaExpandido;
+	}
 
 	public List<Struct> getHijos() {
 		return hijos;
@@ -138,7 +148,5 @@ public class Struct {
 	public void setPresentationName(String presentationName) {
 		this.presentationName = presentationName;
 	}
-	
-	
 
 }
