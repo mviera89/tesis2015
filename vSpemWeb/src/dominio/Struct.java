@@ -23,6 +23,9 @@ public class Struct {
 
 	private String description;
     private String presentationName;
+    private String performedPrimaryBy;
+    private List<String> performedAditionallyBy;
+    private List<String> mandatoryInputs;
    
     
 
@@ -36,13 +39,20 @@ public class Struct {
         this.esPV = (type == TipoElemento.VP_ACTIVITY ||
         			 type == TipoElemento.VP_TASK ||
         			 type == TipoElemento.VP_PHASE ||
-        			 type == TipoElemento.VP_ITERATION);
+        			 type == TipoElemento.VP_ITERATION ||
+        			 type == TipoElemento.VP_ROLE ||
+        			 type == TipoElemento.VP_MILESTONE ||
+        			 type == TipoElemento.VP_WORK_PRODUCT);
         this.estaExpandido = false;
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
 		this.variantes = new ArrayList<Variant>();
 		this.hijos = new ArrayList<Struct>();
 		this.description = "";
 		this.presentationName = "";
+		this.performedPrimaryBy = "";
+		this.performedAditionallyBy = null;
+		this.mandatoryInputs = null;
+				
 	}
 
 	public String getElementID() {
@@ -147,6 +157,30 @@ public class Struct {
 
 	public void setPresentationName(String presentationName) {
 		this.presentationName = presentationName;
+	}
+
+	public String getPerformedPrimaryBy() {
+		return performedPrimaryBy;
+	}
+
+	public void setPerformedPrimaryBy(String performedPrimaryBy) {
+		this.performedPrimaryBy = performedPrimaryBy;
+	}
+
+	public List<String> getPerformedAditionallyBy() {
+		return performedAditionallyBy;
+	}
+
+	public void setPerformedAditionallyBy(List<String> performedAditionallyBy) {
+		this.performedAditionallyBy = performedAditionallyBy;
+	}
+
+	public List<String> getMandatoryInputs() {
+		return mandatoryInputs;
+	}
+
+	public void setMandatoryInputs(List<String> mandatoryInputs) {
+		this.mandatoryInputs = mandatoryInputs;
 	}
 
 }

@@ -1,7 +1,10 @@
 package dataTypes;
 
 public enum TipoElemento {
-	PROCESS_PACKAGE, ACTIVITY, VP_ACTIVITY, VAR_ACTIVITY, TASK, VP_TASK, VAR_TASK, ITERATION, VP_ITERATION, VAR_ITERATION, PHASE, VP_PHASE, VAR_PHASE, CAPABILITY_PATTERN, DELIVERY_PROCESS;
+	PROCESS_PACKAGE, ACTIVITY, VP_ACTIVITY, VAR_ACTIVITY, TASK, VP_TASK, 
+	VAR_TASK, ITERATION, VP_ITERATION, VAR_ITERATION, PHASE, VP_PHASE, 
+	VAR_PHASE, CAPABILITY_PATTERN, DELIVERY_PROCESS, MILESTONE, VP_MILESTONE, VAR_MILESTONE, 
+	ROLE, VP_ROLE, VAR_ROLE, WORK_PRODUCT, VP_WORK_PRODUCT, VAR_WORK_PRODUCT;
 	
 	public String getImagen() {
         String imagen = "";
@@ -51,6 +54,33 @@ public enum TipoElemento {
 	        case 14: // DELIVERY_PROCESS
 	        	imagen = "deliveryProcess.png";
 	            break;
+	        case 15: // MILESTONE
+	        	imagen = "milestone.png";
+	            break;
+	        case 16: // VP_MILESTONE
+	        	imagen = "vpMilestone.png";
+	            break;
+	        case 17: // VAR_MILESTONE
+	        	imagen = "varMilestone.png";
+	            break;
+	        case 18: // ROLE
+	        	imagen = "roleDescriptor.png";
+	            break;
+	        case 19: // VP_ROLE
+	        	imagen = "vpRoleDescriptor.png";
+	            break;
+	        case 20: // VAR_ROLE
+	        	imagen = "varRoleDescriptor.png";
+	            break;
+	        case 21: // WORK_PRODUCT
+	        	imagen = "workproduct.png";
+	            break;
+	        case 22: // VP_WORK_PRODUCT
+	        	imagen = "vpWorkproduct.png";
+	            break;	
+	        case 23: // VAR_WORK_PRODUCT
+	        	imagen = "varWorkproduct.png";
+	            break;	
 	        default:
 	        	imagen = "";
 	            break;
@@ -106,6 +136,33 @@ public enum TipoElemento {
 	            break;
 	        case 14: // DELIVERY_PROCESS
 	        	valor = "DeliveryProcess";
+	            break;
+	        case 15: // MILESTONE
+	        	valor = "Milestone";
+	            break;
+	        case 16: // VP_MILESTONE
+	        	valor = "vpMilestone";
+	            break;
+	        case 17: // VAR_MILESTONE
+	        	valor = "varMilestone";
+	            break;
+	        case 18: // ROLE
+	        	valor = "RoleDescriptor";
+	            break;
+	        case 19: // VP_ROLE
+	        	valor = "vpRoleDescriptor";
+	            break;
+	        case 20: // VAR_ROLE
+	        	valor = "VarRoleDescriptor";
+	            break;
+	        case 21: // WORK_PRODUCT
+	        	valor = "WorkProductDescriptor";
+	            break;
+	        case 22: // VP_WORK_PRODUCT
+	        	valor = "vpWorkProductDescriptor";
+	            break;	
+	        case 23: // VAR_WORK_PRODUCT
+	        	valor = "VarWorkProductDescriptor";
 	            break;
 	        default:
 	        	valor = "";

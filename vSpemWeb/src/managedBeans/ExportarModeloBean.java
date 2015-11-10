@@ -28,7 +28,12 @@ public class ExportarModeloBean {
 	public void exportarModelo(DefaultDiagramModel modeloAdaptado){
 		try{
 			if (modeloAdaptado != null){
-				File archivo = new File(Constantes.destinoExport + Constantes.nomArchivoExport);
+				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+		        String nomArchivo = vb.getNombreArchivo();
+				
+				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 
 				String versionXML = "1.0";
@@ -249,10 +254,7 @@ public class ExportarModeloBean {
 			    FacesMessage mensaje = new FacesMessage("", "El modelo ha sido exportado correctamente.");
 	            FacesContext.getCurrentInstance().addMessage(null, mensaje);
 	            
-	            FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-	    		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-	    		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
-	    		vb.setFinModelado(true);
+	            vb.setFinModelado(true);
 			}
 			else{
 				System.out.println("##### exportarModelo - treeAdaptado: null");

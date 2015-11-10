@@ -241,6 +241,44 @@ public class AdaptarModeloBean {
 	}
 
     public void mostrarHijos(Element padre, DefaultDiagramModel modelo, boolean esVistaPrevia){
+    	/*TipoElemento type = ((Struct) padre.getData()).getType();
+    	if ((type == TipoElemento.VP_ACTIVITY)  ||
+	  				(type == TipoElemento.VP_PHASE)     ||
+	  				(type == TipoElemento.VP_ITERATION) ||
+	  				(type == TipoElemento.VP_TASK)		||
+	  				(type == TipoElemento.VP_ROLE)		||
+	  				(type == TipoElemento.VP_MILESTONE)		||
+	  				(type == TipoElemento.VP_WORK_PRODUCT)	){
+    		List<Variant> variantes = ((Struct) padre.getData()).getVariantes();
+    		
+    		if (variantes.size() > 0){
+    	    	String xStr = padre.getX();
+    	    	String yStr = padre.getY();
+    			float x = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+    			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
+    			
+    			EndPoint endPointPadre = crearEndPoint(EndPointAnchor.BOTTOM);
+    			padre.addEndPoint(endPointPadre);
+    	        
+    	        Iterator<Variant> it = variantes.iterator();
+    	        while (it.hasNext()){
+    	        	Variant s = it.next();
+    				
+    	        	Element hijo = new Element(s, x + "em", y + "em");
+    		        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
+    		        hijo.addEndPoint(endPointHijo);
+    		        modelo.addElement(hijo);
+    		        modelo.connect(crearConexion(endPointPadre, endPointHijo));
+    	        	x += s.getName().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+    	        	dibujarHijos(hijo, modelo);
+    	        }
+        	}
+        
+    		
+    		
+    		
+    	}
+    	*/
     	List<Struct> hijos = ((Struct) padre.getData()).getHijos();
     	
     	if (hijos.size() > 0){
@@ -325,7 +363,10 @@ public class AdaptarModeloBean {
         	fin = ((s.getType() == TipoElemento.VP_ACTIVITY 
         			|| s.getType() == TipoElemento.VP_TASK
         			|| s.getType() == TipoElemento.VP_PHASE
-        			|| s.getType() == TipoElemento.VP_ITERATION)
+        			|| s.getType() == TipoElemento.VP_ITERATION
+        			|| s.getType() == TipoElemento.VP_ROLE
+        			|| s.getType() == TipoElemento.VP_MILESTONE
+        			|| s.getType() == TipoElemento.VP_WORK_PRODUCT)
         			&& (s.getElementID().equals(idElemSeleccionado)));
         }
         if (fin){
@@ -360,16 +401,7 @@ public class AdaptarModeloBean {
 		float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
     	for (int i = 0; i < cantVariantes; i++){
     		// Creo la variante
-//    		String nombreVariante = "";
-//    		String tipoVariante = "";
-//    		Iterator<SelectItem> it = this.variantes.iterator();
-//    		while (it.hasNext() && nombreVariante.equals("") && tipoVariante.equals("")){
-//    			SelectItem si = it.next();
-//    			if (si.getValue().equals(this.variantesSeleccionadas[i])){
-//    				nombreVariante = (String) si.getLabel();
-//    				tipoVariante = si.getDescription();
-//    			}
-//    		}
+
     		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
     		String nombreVariante = v.getName();
 			String tipoVariante = v.getVarType();
@@ -512,7 +544,10 @@ public class AdaptarModeloBean {
 					if ((type == TipoElemento.VP_ACTIVITY)  ||
 		  				(type == TipoElemento.VP_PHASE)     ||
 		  				(type == TipoElemento.VP_ITERATION) ||
-		  				(type == TipoElemento.VP_TASK)){
+		  				(type == TipoElemento.VP_TASK)		||
+		  				(type == TipoElemento.VP_ROLE)		||
+		  				(type == TipoElemento.VP_MILESTONE)		||
+		  				(type == TipoElemento.VP_WORK_PRODUCT)	){
 						
 						Iterator<Variant> itVar = s.getVariantes().iterator();
 						while (itVar.hasNext()){
@@ -532,7 +567,10 @@ public class AdaptarModeloBean {
 					else if ((type != TipoElemento.VAR_ACTIVITY) &&
 			  				 (type != TipoElemento.VAR_PHASE)     &&
 			  				 (type != TipoElemento.VAR_ITERATION) &&
-			  				 (type != TipoElemento.VAR_TASK)){
+			  				 (type != TipoElemento.VAR_TASK)	&&
+			  				 (type != TipoElemento.VAR_ROLE)	&&
+			  				 (type != TipoElemento.VAR_MILESTONE)	&&
+			  				 (type != TipoElemento.VAR_WORK_PRODUCT)){
 						
 						// Si ya no se agregó al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
 						if (!variantePerteneceAModelo(s.getElementID(), modeloAdaptado)){
@@ -564,6 +602,15 @@ public class AdaptarModeloBean {
 		}
 		if (type == TipoElemento.VAR_TASK){
 			return TipoElemento.TASK;
+		}
+		if (type == TipoElemento.VAR_ROLE){
+			return TipoElemento.ROLE;
+		}
+		if (type == TipoElemento.VAR_MILESTONE){
+			return TipoElemento.MILESTONE;
+		}
+		if (type == TipoElemento.VAR_WORK_PRODUCT){
+			return TipoElemento.WORK_PRODUCT;
 		}
 		return null;
 	}
@@ -626,7 +673,12 @@ public class AdaptarModeloBean {
 			if ((type == TipoElemento.VP_ACTIVITY)  ||
 				(type == TipoElemento.VP_PHASE)     ||
 				(type == TipoElemento.VP_ITERATION) ||
-				(type == TipoElemento.VP_TASK)){
+				(type == TipoElemento.VP_TASK)		||
+				(type == TipoElemento.VP_MILESTONE)		||
+				(type == TipoElemento.VP_ROLE)		||
+				(type == TipoElemento.VP_WORK_PRODUCT)
+				
+					){
 				List<Variant> variantes = s.getVariantes();
 				Iterator<Variant> itH = variantes.iterator();
 				while (itH.hasNext()){

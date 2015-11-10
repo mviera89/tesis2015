@@ -2,6 +2,7 @@ package logica;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import dominio.Variant;
 
 public class XMIParser {
 
+	@SuppressWarnings("unchecked")
 	public static List<Struct> getElementXMI(String nomFile){
 		List<Struct> result = new ArrayList<Struct>();
 		
@@ -34,10 +36,13 @@ public class XMIParser {
 	        List<Variant> registroVar = new ArrayList<Variant>();
 	        Map<String, List<Struct>> registroHijos = new HashMap<String,List<Struct>>();
 	        Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
+	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
+	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
+	        Map<Struct,List<String>> workProducts = new HashMap<Struct,List<String>>();
 	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
-	        getNodos(nList, result, registroVar, vpToVar, registroHijos);
+	        getNodos(nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
 	        
 	
 	        
@@ -62,6 +67,7 @@ public class XMIParser {
 	                	 
 	         }
 	         
+	         
 	         // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
 		        Iterator<Struct> it = result.iterator();
 		        while (it.hasNext()){
@@ -69,7 +75,10 @@ public class XMIParser {
 		        	if (s.getType() == TipoElemento.VP_ACTIVITY ||
 		         	    s.getType() == TipoElemento.VP_TASK		||
 		         		s.getType() == TipoElemento.VP_PHASE	||
-		         		s.getType() == TipoElemento.VP_ITERATION){
+		         		s.getType() == TipoElemento.VP_ITERATION ||
+		         		s.getType() == TipoElemento.VP_MILESTONE ||
+		         		s.getType() == TipoElemento.VP_ROLE	||
+		         		s.getType() == TipoElemento.VP_WORK_PRODUCT){
 	        			Iterator<Variant> itaux = registroVar.iterator();
 		         		while (itaux.hasNext()){
 	         				Variant v = itaux.next();
@@ -80,6 +89,73 @@ public class XMIParser {
 		         		}
 	        		}
 		        }
+		        
+		        //Recorro performedPrimaryBy 
+		         Iterator<Entry<Struct,String>> iterator = performedPrimaryBy.entrySet().iterator();
+		         while (iterator.hasNext()){
+		        	 Entry<Struct, String> e = iterator.next();
+		        	 Struct tarea = e.getKey();
+		        	 String role = e.getValue();
+		        	 Iterator<Struct> it1 = result.iterator();
+		        	 boolean encontre = false;
+		        	 while (it1.hasNext() && !encontre){
+		        		 Struct s = it1.next();
+		        		 if(s.getElementID().equals(role)){
+		        			 tarea.getHijos().add(s);
+		        			 result.remove(s);
+		        			 encontre = true;
+		        		 }
+		        	 }
+		         }
+		         
+		         //Recorro performedAdditionallyBy 
+		         Iterator<Entry<Struct,List<String>>> itera = performedAdditionallyBy.entrySet().iterator();
+		         while (itera.hasNext()){
+		        	 Entry<Struct, List<String>> e = itera.next();
+		        	 Struct tarea = e.getKey();
+		        	 List<String> roles = e.getValue();
+		        	 Iterator<String> itRoles = roles.iterator();
+		        	 while (itRoles.hasNext()){
+		        		 String rol  = itRoles.next();
+			        	 Iterator<Struct> it2 = result.iterator();
+			        	 boolean encontre = false;
+			        	 while (it2.hasNext() && !encontre){
+			        		 Struct s = it2.next();
+			        		 if(s.getElementID().equals(rol)){
+			        			 tarea.getHijos().add(s);
+			        			 result.remove(s);
+			        			 encontre = true;
+			        		 }
+			        	 }
+			        	 
+		        	 }
+		         }
+		         
+		         
+		       //Recorro workProducts 
+		         Iterator<Entry<Struct,List<String>>> iterat = workProducts.entrySet().iterator();
+		         while (iterat.hasNext()){
+		        	 Entry<Struct, List<String>> e = iterat.next();
+		        	 Struct tarea = e.getKey();
+		        	 List<String> workProd = e.getValue();
+		        	 Iterator<String> itWP = workProd.iterator();
+		        	 while (itWP.hasNext()){
+		        		 String wp  = itWP.next();
+			        	 Iterator<Struct> it3 = result.iterator();
+			        	 boolean encontre = false;
+			        	 while (it3.hasNext() && !encontre){
+			        		 Struct s = it3.next();
+			        		 if(s.getElementID().equals(wp)){
+			        			 tarea.getHijos().add(s);
+			        			 result.remove(s);
+			        			 encontre = true;
+			        		 }
+			        	 }
+			        	 
+		        	 }
+		         }
+	
+		         
 	
 		}
 		catch (Exception e) {
@@ -88,7 +164,7 @@ public class XMIParser {
         return result;
     }
 
-	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos ){
+	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<String>> workProducts ){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -130,6 +206,11 @@ public class XMIParser {
 					String nameHijo = "";
 					String type = "";
 					String id = "";
+					String description = "";
+					String presentationName = "";
+					String perfPrimaryBy = "";
+					String perfAdditionallyBy = "";
+					String mandatoryInputs = "";
 					
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
@@ -139,6 +220,13 @@ public class XMIParser {
 					}
 					if (eHijo.hasAttribute("xmi:id")){
 						id = eHijo.getAttribute("xmi:id");
+					}
+					if (eHijo.hasAttribute("briefDescription")){
+						description = eHijo.getAttribute("briefDescription");
+					}
+					
+					if (eHijo.hasAttribute("presentationName")){
+						presentationName = eHijo.getAttribute("presentationName");
 					}
 	      		    int min = -1;
 	      		    int max = -1;
@@ -152,13 +240,53 @@ public class XMIParser {
 	      		  TipoElemento tipo = obtenerTipoElemento(type);
      		    	
      		    Struct h = new Struct(id, nameHijo, tipo,min,max, obtenerIconoPorTipo(tipo));
+     		    h.setDescription(description);
+				h.setPresentationName(presentationName);
+				
+				if (tipo.equals(TipoElemento.TASK)){
+					if (eHijo.hasAttribute("performedPrimarilyBy")){
+						perfPrimaryBy = eHijo.getAttribute("performedPrimarilyBy");
+						h.setPerformedPrimaryBy(perfPrimaryBy);
+						performedPrimaryBy.put(h, perfPrimaryBy);
+					}
+					if (eHijo.hasAttribute("additionallyPerformedBy")){
+						List<String> list = new ArrayList<String>();
+						perfAdditionallyBy = eHijo.getAttribute("additionallyPerformedBy");
+						list = Arrays.asList(perfAdditionallyBy.split("\\s"));
+						
+						h.setPerformedAditionallyBy(list);
+						performedAditionallyBy.put(h, list);
+					}
+					
+					if (eHijo.hasAttribute("mandatoryInput")){
+						List<String> list = new ArrayList<String>();
+						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
+						list = Arrays.asList(mandatoryInputs.split("\\s"));
+						h.setMandatoryInputs(list);
+						workProducts.put(h, list);
+						
+					}
+					if (eHijo.hasAttribute("optionalInput")){
+						
+					}
+					if (eHijo.hasAttribute("externalInput")){
+						
+					}
+					if (eHijo.hasAttribute("output")){
+						
+					}
+				}
+				
 	      		    
 	      		  	      		    
 	      		  boolean tienePadre =false;
 	      		  if (eHijo.hasAttribute("superActivities") &&  !(type.equals(TipoElemento.VAR_ACTIVITY.toString())  ||
 	                  				type.equals(TipoElemento.VAR_PHASE.toString())	   ||
 	                  				type.equals(TipoElemento.VAR_ITERATION.toString()) ||
-	                  				type.equals(TipoElemento.VAR_TASK.toString()))) {
+	                  				type.equals(TipoElemento.VAR_TASK.toString())      ||
+	                  				type.equals(TipoElemento.VAR_ROLE.toString())      ||
+	                  				type.equals(TipoElemento.VAR_MILESTONE.toString()) ||
+	                  				type.equals(TipoElemento.VAR_WORK_PRODUCT.toString()) )) {
 	      		    	 // Me fijo si es hijo de alguien
 	      			  		tienePadre = true;
 	      			  		String padre = eHijo.getAttribute("superActivities");
@@ -224,7 +352,10 @@ public class XMIParser {
 	      		    if (type.equals(TipoElemento.VP_ACTIVITY.toString()) ||
           				type.equals(TipoElemento.VP_PHASE.toString()) ||
           				type.equals(TipoElemento.VP_ITERATION.toString()) ||
-          				type.equals(TipoElemento.VP_TASK.toString()) ){
+          				type.equals(TipoElemento.VP_TASK.toString()) ||
+          				type.equals(TipoElemento.VP_ROLE.toString()) ||
+          				type.equals(TipoElemento.VP_MILESTONE.toString()) ||
+          				type.equals(TipoElemento.VP_WORK_PRODUCT.toString()) ){
 	      		    	if (eHijo.hasAttribute("min")) {
 	      		    		min = Integer.parseInt(eHijo.getAttribute("min"));
 	      		    		h.setMin(min);
@@ -256,7 +387,10 @@ public class XMIParser {
 	      		    if (type.equals(TipoElemento.VAR_ACTIVITY.toString())  ||
           				type.equals(TipoElemento.VAR_PHASE.toString())	   ||
           				type.equals(TipoElemento.VAR_ITERATION.toString()) ||
-          				type.equals(TipoElemento.VAR_TASK.toString())){
+          				type.equals(TipoElemento.VAR_TASK.toString()) ||
+          				type.equals(TipoElemento.VAR_ROLE.toString()) ||
+          				type.equals(TipoElemento.VAR_MILESTONE.toString()) ||
+          				type.equals(TipoElemento.VAR_WORK_PRODUCT.toString())){
       		    		
 	      		    	Variant var = new Variant(id,nameHijo,"",true,type);
 	      		    	var.getHijos().addAll(hijosS);
@@ -296,7 +430,7 @@ public class XMIParser {
 	      		    }
 				}
 				NodeList hijos = nodo.getChildNodes();
-				getNodos(hijos, result, registroVar, vpToVar, registroHijos);
+				getNodos(hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts);
 			
 		}
 		}
@@ -317,7 +451,16 @@ public class XMIParser {
 		   			 		(t.equals(TipoElemento.VP_PHASE.toString()))    	? TipoElemento.VP_PHASE		   :
 		   			 		(t.equals(TipoElemento.VAR_PHASE.toString()))  		? TipoElemento.VAR_PHASE	   :
 			   			 	(t.equals(TipoElemento.CAPABILITY_PATTERN.toString()))? TipoElemento.CAPABILITY_PATTERN :
-				   			(t.equals(TipoElemento.DELIVERY_PROCESS.toString()))? TipoElemento.DELIVERY_PROCESS :
+			   			 	(t.equals(TipoElemento.DELIVERY_PROCESS.toString()))? TipoElemento.DELIVERY_PROCESS :
+				   			(t.equals(TipoElemento.MILESTONE.toString()))		? TipoElemento.MILESTONE :
+				   			(t.equals(TipoElemento.VP_MILESTONE.toString()))? TipoElemento.VP_MILESTONE :
+				   			(t.equals(TipoElemento.VAR_MILESTONE.toString()))? TipoElemento.VAR_MILESTONE :
+				   			(t.equals(TipoElemento.ROLE.toString()))? TipoElemento.ROLE :
+				   			(t.equals(TipoElemento.VP_ROLE.toString()))? TipoElemento.VP_ROLE :
+				   			(t.equals(TipoElemento.VAR_ROLE.toString()))? TipoElemento.VAR_ROLE :
+				   			(t.equals(TipoElemento.WORK_PRODUCT.toString()))? TipoElemento.WORK_PRODUCT :
+				   			(t.equals(TipoElemento.VP_WORK_PRODUCT.toString()))? TipoElemento.VP_WORK_PRODUCT :
+				   			(t.equals(TipoElemento.VAR_WORK_PRODUCT.toString()))? TipoElemento.VAR_WORK_PRODUCT :
 	   			 			null;
     	return type;
     }
@@ -338,6 +481,15 @@ public class XMIParser {
    		   			   (tipo == TipoElemento.VAR_PHASE)	      ? TipoElemento.VAR_PHASE.getImagen()	     :
    		   			   (tipo == TipoElemento.CAPABILITY_PATTERN)? TipoElemento.CAPABILITY_PATTERN.getImagen() :
    		   			   (tipo == TipoElemento.DELIVERY_PROCESS)? TipoElemento.DELIVERY_PROCESS.getImagen() :
+   		   			   (tipo == TipoElemento.MILESTONE)		  ? TipoElemento.MILESTONE.getImagen() :
+				   	   (tipo == TipoElemento.VP_MILESTONE)	  ? TipoElemento.VP_MILESTONE.getImagen() :
+				   	   (tipo == TipoElemento.VAR_MILESTONE)   ? TipoElemento.VAR_MILESTONE.getImagen() :
+				   	   (tipo == TipoElemento.ROLE)			  ? TipoElemento.ROLE.getImagen() :
+				   	   (tipo == TipoElemento.VP_ROLE)		  ? TipoElemento.VP_ROLE.getImagen() :
+				   	   (tipo == TipoElemento.VAR_ROLE)		  ? TipoElemento.VAR_ROLE.getImagen() :
+				   	   (tipo == TipoElemento.WORK_PRODUCT)	  ? TipoElemento.WORK_PRODUCT.getImagen() :
+				   	   (tipo == TipoElemento.VP_WORK_PRODUCT) ? TipoElemento.VP_WORK_PRODUCT.getImagen() :
+				   	   (tipo == TipoElemento.VAR_WORK_PRODUCT)? TipoElemento.VAR_WORK_PRODUCT.getImagen() :   		   				   
     				   "";
     	return icono;
     }
