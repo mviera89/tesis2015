@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import dataTypes.TipoElemento;
+import dataTypes.WorkProduct;
 import dominio.Struct;
 import dominio.Variant;
 
@@ -38,7 +39,7 @@ public class XMIParser {
 	        Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
 	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
 	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
-	        Map<Struct,List<String>> workProducts = new HashMap<Struct,List<String>>();
+	        Map<Struct,WorkProduct> workProducts = new HashMap<Struct,WorkProduct>();
 	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
@@ -133,12 +134,12 @@ public class XMIParser {
 		         
 		         
 		       //Recorro workProducts 
-		         Iterator<Entry<Struct,List<String>>> iterat = workProducts.entrySet().iterator();
+		         Iterator<Entry<Struct,WorkProduct>> iterat = workProducts.entrySet().iterator();
 		         while (iterat.hasNext()){
-		        	 Entry<Struct, List<String>> e = iterat.next();
+		        	 Entry<Struct, WorkProduct> e = iterat.next();
 		        	 Struct tarea = e.getKey();
-		        	 List<String> workProd = e.getValue();
-		        	 Iterator<String> itWP = workProd.iterator();
+		        	 WorkProduct workProd = e.getValue();
+		        	 Iterator<String> itWP = workProd.getWorkProducts().iterator();
 		        	 while (itWP.hasNext()){
 		        		 String wp  = itWP.next();
 			        	 Iterator<Struct> it3 = result.iterator();
@@ -164,7 +165,7 @@ public class XMIParser {
         return result;
     }
 
-	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<String>> workProducts ){
+	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,WorkProduct> workProducts ){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -211,6 +212,9 @@ public class XMIParser {
 					String perfPrimaryBy = "";
 					String perfAdditionallyBy = "";
 					String mandatoryInputs = "";
+					String optionalInputs = "";
+					String externalInputs = "";
+					String output = "";
 					
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
@@ -263,16 +267,35 @@ public class XMIParser {
 						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
 						list = Arrays.asList(mandatoryInputs.split("\\s"));
 						h.setMandatoryInputs(list);
-						workProducts.put(h, list);
+						WorkProduct wp = new WorkProduct("mandatoryInput", list);
+						workProducts.put(h, wp);
 						
 					}
 					if (eHijo.hasAttribute("optionalInput")){
+						/*List<String> list = new ArrayList<String>();
+						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
+						list = Arrays.asList(mandatoryInputs.split("\\s"));
+						h.setMandatoryInputs(list);
+						WorkProduct wp = new WorkProduct("mandatoryInput", list);
+						workProducts.put(h, wp);*/
 						
 					}
 					if (eHijo.hasAttribute("externalInput")){
+						/*List<String> list = new ArrayList<String>();
+						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
+						list = Arrays.asList(mandatoryInputs.split("\\s"));
+						h.setMandatoryInputs(list);
+						WorkProduct wp = new WorkProduct("mandatoryInput", list);
+						workProducts.put(h, wp);*/
 						
 					}
 					if (eHijo.hasAttribute("output")){
+						/*List<String> list = new ArrayList<String>();
+						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
+						list = Arrays.asList(mandatoryInputs.split("\\s"));
+						h.setMandatoryInputs(list);
+						WorkProduct wp = new WorkProduct("mandatoryInput", list);
+						workProducts.put(h, wp);*/
 						
 					}
 				}

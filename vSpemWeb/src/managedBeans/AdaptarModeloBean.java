@@ -355,8 +355,8 @@ public class AdaptarModeloBean {
 	public void cargarVariantesDelPunto(String idElemSeleccionado){
 		variantes.clear();
 		Struct s = null;
-		boolean fin = false;
-		
+		s = buscarVP(idElemSeleccionado,this.nodos);
+		/*
 		Iterator<Struct> iterator = this.nodos.iterator();
         while (iterator.hasNext() && !fin){
         	s = iterator.next();
@@ -369,7 +369,7 @@ public class AdaptarModeloBean {
         			|| s.getType() == TipoElemento.VP_WORK_PRODUCT)
         			&& (s.getElementID().equals(idElemSeleccionado)));
         }
-        if (fin){
+        */if (s != null){
 	        Iterator<Variant> it = s.getVariantes().iterator();
 	    	while (it.hasNext()){
 	    		Variant v = it.next();
@@ -688,9 +688,42 @@ public class AdaptarModeloBean {
 					}
 				}
 			}
-		}
+			else if (s.getHijos().size() > 0){
+						return buscarVariante(s.getHijos(),Id);
+					}
+				
+			}
+		
 		return null;
 		
 	}
+	
+	public Struct buscarVP (String idElemSeleccionado, List<Struct> list) {
+		
+		Iterator<Struct> iterator = list.iterator();
+		
+        while (iterator.hasNext()){
+        	Struct s = iterator.next();
+        	if((s.getType() == TipoElemento.VP_ACTIVITY 
+        			|| s.getType() == TipoElemento.VP_TASK
+        			|| s.getType() == TipoElemento.VP_PHASE
+        			|| s.getType() == TipoElemento.VP_ITERATION
+        			|| s.getType() == TipoElemento.VP_ROLE
+        			|| s.getType() == TipoElemento.VP_MILESTONE
+        			|| s.getType() == TipoElemento.VP_WORK_PRODUCT)
+        			&& (s.getElementID().equals(idElemSeleccionado))){
+        			return s;
+        		
+        	}
+        	else{
+        		if (s.getHijos().size() > 0){
+        			return buscarVP(idElemSeleccionado, s.getHijos());
+        			
+        		}
+        	}
+        }
+        return null;
+      
 
+	}
 }
