@@ -32,6 +32,7 @@ public class ExportarModeloBean {
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		        String nomArchivo = vb.getNombreArchivo();
+		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
 				
 				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);

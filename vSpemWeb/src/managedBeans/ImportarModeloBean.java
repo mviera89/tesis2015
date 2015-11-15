@@ -74,6 +74,7 @@ public class ImportarModeloBean {
 		try{
 			// repositorio	= "mviera89/tesis2015/tree/master/upload/";
 			// repositorio* = "mviera89/tesis2015/blob/master/upload/";
+			nombreArchivo = "";
 			repositorio = repositorioIngresado;
 			archivosDisponibles.clear();
 			

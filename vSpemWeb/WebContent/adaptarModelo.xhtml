@@ -22,6 +22,7 @@
 												rendered="#{elem.hijos.size() > 0 and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
 								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
 												rendered="#{elem.hijos.size() > 0 and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+								<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
 								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 							</h:commandLink>
@@ -54,6 +55,7 @@
 			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="height:95%" styleClass="ui-widget-content" var="elem">
 				<f:facet name="element">
 					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+					<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 					<p:outputLabel value="#{elem.nombre}" />
 				</f:facet>
 			</p:diagram>

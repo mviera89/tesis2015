@@ -20,6 +20,7 @@ public class Struct {
     private String imagen;
     private Boolean esPV;
     private Boolean estaExpandido;
+    private String etiqueta; // Si es opcional, obligatorio, etc.
 
 	private String description;
     private String presentationName;
@@ -44,6 +45,7 @@ public class Struct {
         			 type == TipoElemento.VP_MILESTONE ||
         			 type == TipoElemento.VP_WORK_PRODUCT);
         this.estaExpandido = false;
+        this.etiqueta = "";
         this.color = this.esPV ? Constantes.colorVarPoint : "black";
 		this.variantes = new ArrayList<Variant>();
 		this.hijos = new ArrayList<Struct>();
@@ -133,6 +135,14 @@ public class Struct {
 
 	public void setEstaExpandido(Boolean estaExpandido) {
 		this.estaExpandido = estaExpandido;
+	}
+
+	public String getEtiqueta() {
+		return etiqueta;
+	}
+
+	public void setEtiqueta(String etiqueta) {
+		this.etiqueta = etiqueta;
 	}
 
 	public List<Struct> getHijos() {
