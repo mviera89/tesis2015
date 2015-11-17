@@ -27,6 +27,9 @@ public class Struct {
     private String performedPrimaryBy;
     private List<String> performedAditionallyBy;
     private List<String> mandatoryInputs;
+    private List<String> optionalInputs;
+    private List<String> externalInputs;
+    private List<String> outputs;
    
     
 
@@ -54,6 +57,9 @@ public class Struct {
 		this.performedPrimaryBy = "";
 		this.performedAditionallyBy = null;
 		this.mandatoryInputs = null;
+		this.optionalInputs = null;
+		this.externalInputs = null;
+		this.outputs = null;
 				
 	}
 
@@ -192,5 +198,31 @@ public class Struct {
 	public void setMandatoryInputs(List<String> mandatoryInputs) {
 		this.mandatoryInputs = mandatoryInputs;
 	}
+
+	public List<String> getOptionalInputs() {
+		return optionalInputs;
+	}
+
+	public void setOptionalInputs(List<String> optionalInputs) {
+		this.optionalInputs = optionalInputs;
+	}
+
+	public List<String> getExternalInputs() {
+		return externalInputs;
+	}
+
+	public void setExternalInputs(List<String> externalInputs) {
+		this.externalInputs = externalInputs;
+	}
+
+	public List<String> getOutputs() {
+		return outputs;
+	}
+
+	public void setOutputs(List<String> outputs) {
+		this.outputs = outputs;
+	}
+	
+	
 
 }

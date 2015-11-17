@@ -228,16 +228,22 @@ public class AdaptarModeloBean {
     	String etiqueta = "";
     	
     	String idHijo = hijo.getElementID();
-    	if (hijo.getType() == TipoElemento.ROLE){
+    	if ((hijo.getType() == TipoElemento.ROLE) || (hijo.getType() == TipoElemento.VP_ROLE)){
     		etiqueta = (padre.getPerformedPrimaryBy() != null && padre.getPerformedPrimaryBy().equals(idHijo))
     						? TipoEtiqueta.PRIMARY_PERFORMER.toString()
     						: (padre.getPerformedAditionallyBy() != null && padre.getPerformedAditionallyBy().contains(idHijo)) 
     							? TipoEtiqueta.ADDITIONAL_PERFORMER.toString()
     					   		: "";
     	}
-    	else if (hijo.getType() == TipoElemento.WORK_PRODUCT){
+    	else if ((hijo.getType() == TipoElemento.WORK_PRODUCT) || (hijo.getType() == TipoElemento.VP_WORK_PRODUCT)){
     		etiqueta = (padre.getMandatoryInputs() != null && padre.getMandatoryInputs().contains(idHijo)) 
     						? TipoEtiqueta.MANDATORY_INPUT.toString()
+    						:(padre.getOptionalInputs() != null && padre.getOptionalInputs().contains(idHijo)) 
+    	    						? TipoEtiqueta.OPTIONAL_INPUT.toString()
+    	    				:(padre.getExternalInputs() != null && padre.getExternalInputs().contains(idHijo)) 
+    	    	    				? TipoEtiqueta.EXTERNAL_INPUT.toString()
+    	    	    		:(padre.getOutputs() != null && padre.getOutputs().contains(idHijo)) 
+    	    	    				? TipoEtiqueta.OUTPUT.toString()
     						: "";
     	}
     	
@@ -647,6 +653,9 @@ public class AdaptarModeloBean {
 		newS.setPerformedPrimaryBy(s.getPerformedPrimaryBy());
 		newS.setPerformedAditionallyBy(s.getPerformedAditionallyBy());
 		newS.setMandatoryInputs(s.getMandatoryInputs());
+		newS.setOptionalInputs(s.getOptionalInputs());
+		newS.setExternalInputs(s.getExternalInputs());
+		newS.setOutputs(s.getOutputs());
 		
 		return newS;
 	}
