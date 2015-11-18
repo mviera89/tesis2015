@@ -13,6 +13,7 @@ public class Variant {
 	private List<String> inclusivas;
 	private List<String> exclusivas;
 	private List<Struct> hijos;
+    private Boolean estaExpandido;
 	
 	public Variant(String ID, String name, String IDVarPoint, boolean isInclusive, String varType){
 		this.ID = ID;
@@ -23,7 +24,7 @@ public class Variant {
 		this.inclusivas = new ArrayList<String>();
 		this.exclusivas = new ArrayList<String>();
 		this.hijos = new ArrayList<Struct>();
-		
+		this.estaExpandido = false;
 	}
 
 	public String getID() {
@@ -89,10 +90,13 @@ public class Variant {
 	public void setHijos(List<Struct> hijos) {
 		this.hijos = hijos;
 	}
-	
-	
-	
-	
-	
-		
+
+	public Boolean getEstaExpandido() {
+		return estaExpandido;
+	}
+
+	public void setEstaExpandido(Boolean estaExpandido) {
+		this.estaExpandido = estaExpandido;
+	}
+
 }

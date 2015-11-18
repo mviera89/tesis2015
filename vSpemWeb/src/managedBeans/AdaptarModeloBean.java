@@ -185,6 +185,7 @@ public class AdaptarModeloBean {
 	        root.setY(this.y + "em");
 	        EndPoint endPointRoot = crearEndPoint(EndPointAnchor.BOTTOM);
 	        root.addEndPoint(endPointRoot);
+	        root.setDraggable(false);
         	modelo.addElement(root);
 	        
         	this.y += Constantes.distanciaEntreNiveles;
@@ -196,6 +197,7 @@ public class AdaptarModeloBean {
 	        	Element padre = new Element(s, x + "em", this.y + "em");
 		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 		        padre.addEndPoint(endPointP1_T);
+		        padre.setDraggable(false);
 		        modelo.addElement(padre);
 		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
 		        String etiqueta = obtenerEtiquetaParaModelo(r, s);
@@ -283,10 +285,50 @@ public class AdaptarModeloBean {
 	        	Element hijo = new Element(s, x + "em", y + "em");
 		        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
 		        hijo.addEndPoint(endPointHijo);
+		        hijo.setDraggable(false);
 		        modelo.addElement(hijo);
 		        modelo.connect(crearConexion(endPointPadre, endPointHijo));
 		        String etiqueta = obtenerEtiquetaParaModelo(p, s);
 		        s.setEtiqueta(etiqueta);
+	        	
+	        	// Si se trata de un punto de variación y tiene variantes seleccionadas, las muestro
+	        	String[] variantesSeleccionadasParaPV = this.puntosDeVariacion.get(s.getElementID());
+	        	int cantVariantesSeleccionadasParaPV = (variantesSeleccionadasParaPV != null) ? variantesSeleccionadasParaPV.length : 0;
+	        	if ((s.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
+	        		int i = 0;
+	        		float xAnt = x;
+	    			y += Constantes.distanciaEntreNiveles;
+	        		while (i < cantVariantesSeleccionadasParaPV){
+	        			
+	        			Variant var = buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
+	        			if (var != null){
+		        			TipoElemento tipoVar = XMIParser.obtenerTipoElemento(var.getVarType());
+		    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
+		        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar);
+		        			Element e = new Element(st, x + "em", y + "em");
+		        			
+		        			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
+		    		        e.addEndPoint(endPointVar);
+		    		        e.setDraggable(false);
+		    		        modelo.addElement(e);
+		    		        
+		    		        EndPoint endPointHijoB = crearEndPoint(EndPointAnchor.BOTTOM);
+		    		        hijo.addEndPoint(endPointHijoB);
+		    		        
+		    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
+		    		        String etiquetaVar = obtenerEtiquetaParaModelo(s, st);
+		    		        st.setEtiqueta(etiquetaVar);
+		    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		    	        	
+		        			mostrarHijos(e, modelo, esVistaPrevia);
+	        			}
+	        			
+	        			i++;
+	        		}
+	        		y -= Constantes.distanciaEntreNiveles;
+	        		x = xAnt;
+	        	}
+
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        	
 	        	if (esVistaPrevia){
@@ -303,11 +345,32 @@ public class AdaptarModeloBean {
         	Struct s = it.next();
 	    	Element e = obtenerElemento(s.getElementID());
 	    	if (e != null){
-	    		ocultarHijos(e, modelo);
+	    		if (s.getHijos().size() > 0){
+	    			ocultarHijos(e, modelo);
+	    		}
+	    		else if (s.getVariantes().size() > 0){ // Es un punto de variación
+	    			ocultarVariantes(e, modelo);
+	    		}
 	    		modelo.removeElement(e);
 	    	}
     		s.setEstaExpandido(false);
         }
+    }
+    
+    public void ocultarVariantes(Element padre, DefaultDiagramModel modelo){
+    	List<Variant> variantes = ((Struct) padre.getData()).getVariantes();
+    	Iterator<Variant> it = variantes.iterator();
+    	while (it.hasNext()){
+    		Variant v = it.next();
+    		Element e = obtenerElemento(v.getID());
+    		if (e != null){
+    			if (v.getHijos().size() > 0){
+    				ocultarHijos(e, modelo);
+    			}
+    			modelo.removeElement(e);
+    		}
+    		v.setEstaExpandido(false);
+    	}
     }
     
 	public Element obtenerElemento(String idElemento){
@@ -372,8 +435,10 @@ public class AdaptarModeloBean {
 		try{
 	    	int cantVariantes = this.variantesSeleccionadas.length;
 	    	String xStr = this.puntoVariacionAdaptado.getX();
+	    	String yStr = this.puntoVariacionAdaptado.getY();
 			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
 			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
+			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
 	    	for (int i = 0; i < cantVariantes; i++){
 	    		// Creo la variante
 	
@@ -385,11 +450,12 @@ public class AdaptarModeloBean {
 	    		
 	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
 	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", this.y + "em");
+				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
 				Struct s = (Struct) hijo.getData();
 				s.setHijos(hijos);
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
+	    		hijo.setDraggable(false);
 		        modelo.addElement(hijo);
 		        
 		        // Creo el endPoint del punto de variación
@@ -515,6 +581,7 @@ public class AdaptarModeloBean {
 					root = newE;
 					
 					endPointRoot = AdaptarModeloBean.crearEndPoint(EndPointAnchor.BOTTOM);
+					newE.setDraggable(false);
 					newE.addEndPoint(endPointRoot);
 					
 					modeloAdaptado.addElement(newE);
@@ -539,6 +606,7 @@ public class AdaptarModeloBean {
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
 								newS.setHijos(v.getHijos());
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
+								newE.setDraggable(false);
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 							}
 						}
@@ -558,6 +626,7 @@ public class AdaptarModeloBean {
 						if (!variantePerteneceAModelo(s.getElementID(), modeloAdaptado)){
 							Struct newS = crearCopiaStruct(s);
 							Element newE = new Element(newS, xElement + "em", yElement + "em");
+							newE.setDraggable(false);
 							String etiqueta = obtenerEtiquetaParaModelo((Struct) root.getData(), newS);
 							xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, etiqueta);
 						}
