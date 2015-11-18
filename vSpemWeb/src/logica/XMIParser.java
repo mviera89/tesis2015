@@ -39,7 +39,7 @@ public class XMIParser {
 	        Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
 	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
 	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
-	        Map<Struct,WorkProduct> workProducts = new HashMap<Struct,WorkProduct>();
+	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
 	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
@@ -134,25 +134,28 @@ public class XMIParser {
 		         
 		         
 		       //Recorro workProducts 
-		         Iterator<Entry<Struct,WorkProduct>> iterat = workProducts.entrySet().iterator();
+		         Iterator<Entry<Struct,List<WorkProduct>>> iterat = workProducts.entrySet().iterator();
 		         while (iterat.hasNext()){
-		        	 Entry<Struct, WorkProduct> e = iterat.next();
+		        	 Entry<Struct, List<WorkProduct>> e = iterat.next();
 		        	 Struct tarea = e.getKey();
-		        	 WorkProduct workProd = e.getValue();
-		        	 Iterator<String> itWP = workProd.getWorkProducts().iterator();
-		        	 while (itWP.hasNext()){
-		        		 String wp  = itWP.next();
-			        	 Iterator<Struct> it3 = result.iterator();
-			        	 boolean encontre = false;
-			        	 while (it3.hasNext() && !encontre){
-			        		 Struct s = it3.next();
-			        		 if(s.getElementID().equals(wp)){
-			        			 tarea.getHijos().add(s);
-			        			 result.remove(s);
-			        			 encontre = true;
-			        		 }
+		        	 Iterator<WorkProduct> itwp = e.getValue().iterator();
+		        	 while (itwp.hasNext()){
+		        		 WorkProduct workProd = itwp.next();
+			        	 Iterator<String> itWP = workProd.getWorkProducts().iterator();
+			        	 while (itWP.hasNext()){
+			        		 String wp  = itWP.next();
+				        	 Iterator<Struct> it3 = result.iterator();
+				        	 boolean encontre = false;
+				        	 while (it3.hasNext() && !encontre){
+				        		 Struct s = it3.next();
+				        		 if(s.getElementID().equals(wp)){
+				        			 tarea.getHijos().add(s);
+				        			 result.remove(s);
+				        			 encontre = true;
+				        		 }
+				        	 }
+				        	 
 			        	 }
-			        	 
 		        	 }
 		         }
 	
@@ -165,7 +168,7 @@ public class XMIParser {
         return result;
     }
 
-	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,WorkProduct> workProducts ){
+	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts ){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -214,7 +217,8 @@ public class XMIParser {
 					String mandatoryInputs = "";
 					String optionalInputs = "";
 					String externalInputs = "";
-					String output = "";
+					String outputs = "";
+					List<WorkProduct> lwp = new ArrayList<WorkProduct>();
 					
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
@@ -268,36 +272,39 @@ public class XMIParser {
 						list = Arrays.asList(mandatoryInputs.split("\\s"));
 						h.setMandatoryInputs(list);
 						WorkProduct wp = new WorkProduct("mandatoryInput", list);
-						workProducts.put(h, wp);
+						lwp.add(wp);
+						
 						
 					}
 					if (eHijo.hasAttribute("optionalInput")){
-						/*List<String> list = new ArrayList<String>();
-						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
-						list = Arrays.asList(mandatoryInputs.split("\\s"));
-						h.setMandatoryInputs(list);
-						WorkProduct wp = new WorkProduct("mandatoryInput", list);
-						workProducts.put(h, wp);*/
+						List<String> list = new ArrayList<String>();
+						optionalInputs = eHijo.getAttribute("optionalInput");
+						list = Arrays.asList(optionalInputs.split("\\s"));
+						h.setOptionalInputs(list);
+						WorkProduct wp = new WorkProduct("optionalInput", list);
+						lwp.add(wp);
 						
 					}
 					if (eHijo.hasAttribute("externalInput")){
-						/*List<String> list = new ArrayList<String>();
-						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
-						list = Arrays.asList(mandatoryInputs.split("\\s"));
-						h.setMandatoryInputs(list);
-						WorkProduct wp = new WorkProduct("mandatoryInput", list);
-						workProducts.put(h, wp);*/
+						List<String> list = new ArrayList<String>();
+						externalInputs = eHijo.getAttribute("externalInput");
+						list = Arrays.asList(externalInputs.split("\\s"));
+						h.setExternalInputs(list);
+						WorkProduct wp = new WorkProduct("externalInput", list);
+						lwp.add(wp);
 						
 					}
 					if (eHijo.hasAttribute("output")){
-						/*List<String> list = new ArrayList<String>();
-						mandatoryInputs = eHijo.getAttribute("mandatoryInput");
-						list = Arrays.asList(mandatoryInputs.split("\\s"));
-						h.setMandatoryInputs(list);
-						WorkProduct wp = new WorkProduct("mandatoryInput", list);
-						workProducts.put(h, wp);*/
+						List<String> list = new ArrayList<String>();
+						outputs = eHijo.getAttribute("output");
+						list = Arrays.asList(outputs.split("\\s"));
+						h.setOutputs(list);
+						WorkProduct wp = new WorkProduct("outputs", list);
+						lwp.add(wp);
 						
 					}
+					
+					workProducts.put(h,lwp);
 				}
 				
 	      		    

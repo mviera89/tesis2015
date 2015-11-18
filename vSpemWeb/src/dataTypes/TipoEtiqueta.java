@@ -3,7 +3,7 @@ package dataTypes;
 public enum TipoEtiqueta {
 	PRIMARY_PERFORMER, ADDITIONAL_PERFORMER, 
 	MANDATORY_INPUT, OPTIONAL_INPUT, 
-	MANDATORY_OUTPUT, OPTIONAL_OUTPUT;
+	MANDATORY_OUTPUT, OPTIONAL_OUTPUT, EXTERNAL_INPUT, OUTPUT;
 
 	@Override
     public String toString() {
@@ -26,6 +26,12 @@ public enum TipoEtiqueta {
 	            break;
 	        case 5: // OPTIONAL_OUTPUT
 	        	valor = "OPT_OUT";
+	        	break;
+	        case 6: // EXTERNAL_INPUT
+	        	valor = "EXT_IN";
+	        	break;
+	        case 7: // OUTPUT
+	        	valor = "OUT";
 	        	break;
 	        default:
 	        	valor = "";

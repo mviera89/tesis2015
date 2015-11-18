@@ -144,7 +144,7 @@ public enum TipoElemento {
 	        	valor = "vpMilestone";
 	            break;
 	        case 17: // VAR_MILESTONE
-	        	valor = "varMilestone";
+	        	valor = "VarMilestone";
 	            break;
 	        case 18: // ROLE
 	        	valor = "RoleDescriptor";
