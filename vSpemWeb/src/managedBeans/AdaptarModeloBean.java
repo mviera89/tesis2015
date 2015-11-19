@@ -203,8 +203,6 @@ public class AdaptarModeloBean {
 		        String etiqueta = obtenerEtiquetaParaModelo(r, s);
 		        s.setEtiqueta(etiqueta);
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-	        	
-	        	//mostrarHijos(padre, modelo);
 	        }
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
@@ -287,13 +285,17 @@ public class AdaptarModeloBean {
 	        Iterator<Struct> it = hijos.iterator();
 	        while (it.hasNext()){
 	        	Struct s = it.next();
-				
-	        	Element hijo = new Element(s, x + "em", y + "em");
-		        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
-		        hijo.addEndPoint(endPointHijo);
-		        hijo.setDraggable(false);
-		        modelo.addElement(hijo);
-		        modelo.connect(crearConexion(endPointPadre, endPointHijo));
+	        	Element hijo = null;
+	        	
+	        	// Si NO es para la vista previa o si NO es un punto de variación, lo agrego al modelo
+	        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
+		        	hijo = new Element(s, x + "em", y + "em");
+			        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
+			        hijo.addEndPoint(endPointHijo);
+			        hijo.setDraggable(false);
+			        modelo.addElement(hijo);
+			        modelo.connect(crearConexion(endPointPadre, endPointHijo));
+	        	}
 		        String etiqueta = obtenerEtiquetaParaModelo(p, s);
 		        s.setEtiqueta(etiqueta);
 	        	
@@ -303,12 +305,14 @@ public class AdaptarModeloBean {
 	        	if ((s.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
 	        		int i = 0;
 	        		float xAnt = x;
-	    			y += Constantes.distanciaEntreNiveles;
+	        		if (hijo != null){ 
+	        			y += Constantes.distanciaEntreNiveles;
+	        		}
 	        		while (i < cantVariantesSeleccionadasParaPV){
 	        			
 	        			Variant var = buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
 	        			if (var != null){
-		        			TipoElemento tipoVar = XMIParser.obtenerTipoElemento(var.getVarType());
+	        				TipoElemento tipoVar = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(var.getVarType()));
 		    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
 		        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar);
 		        			Element e = new Element(st, x + "em", y + "em");
@@ -319,11 +323,15 @@ public class AdaptarModeloBean {
 		    		        modelo.addElement(e);
 		    		        
 		    		        EndPoint endPointHijoB = crearEndPoint(EndPointAnchor.BOTTOM);
-		    		        hijo.addEndPoint(endPointHijoB);
+		    		        if (hijo != null){
+		    		        	hijo.addEndPoint(endPointHijoB);
+		    		        }
+		    		        else{
+		    		        	padre.addEndPoint(endPointHijoB);
+		    		        }
 		    		        
 		    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
-		    		        String etiquetaVar = obtenerEtiquetaParaModelo(s, st);
-		    		        st.setEtiqueta(etiquetaVar);
+		    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
 		    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 		    	        	
 		        			mostrarHijos(e, modelo, esVistaPrevia);
@@ -331,13 +339,15 @@ public class AdaptarModeloBean {
 	        			
 	        			i++;
 	        		}
-	        		y -= Constantes.distanciaEntreNiveles;
+	        		if (hijo != null){ 
+	        			y -= Constantes.distanciaEntreNiveles;
+	        		}
 	        		x = xAnt;
 	        	}
 
 	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	        	
-	        	if (esVistaPrevia){
+	        	if (esVistaPrevia && (hijo != null)){
 	        		mostrarHijos(hijo, modelo, esVistaPrevia);
 	        	}
 	        }
@@ -470,13 +480,9 @@ public class AdaptarModeloBean {
 		        
 		        // Conecto el punto de variación con la variante
 		        modelo.connect(crearConexion(endPointPV_B, endPointH1));
-		        String etiqueta = obtenerEtiquetaParaModelo((Struct) this.puntoVariacionAdaptado.getData(), s);
-		        s.setEtiqueta(etiqueta);
-	        	
-		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
 		        
-		        // Dibujo los hijos de la variante
-		        // mostrarHijos(hijo, modelo);
+		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 	    	}
 	    	
 	    	if (cantVariantes > 0){
@@ -575,6 +581,8 @@ public class AdaptarModeloBean {
 		while (it.hasNext()){
 			Element e = it.next();
 			Struct s = (Struct) e.getData();
+			
+		System.out.println("############### " + s.getNombre());
 			TipoElemento type = s.getType();
 			if (type != null){
 				
@@ -604,19 +612,21 @@ public class AdaptarModeloBean {
 		  				(type == TipoElemento.VP_MILESTONE)		||
 		  				(type == TipoElemento.VP_WORK_PRODUCT)	){
 						
-						Iterator<Variant> itVar = s.getVariantes().iterator();
-						while (itVar.hasNext()){
-							Variant v = itVar.next();
-							if (variantePerteneceAModelo(v.getID(), modelo)){
-								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
-								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
-								newS.setHijos(v.getHijos());
-								Element newE = new Element(newS, xElement + "em", yElement + "em");
-								newE.setDraggable(false);
-								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
+						// Esto lo agrego para evitar que las variantes que van en niveles inferiores no se incluyan en los superiores
+						//if (!elementoPerteneceAModelo(s.getElementID(), modeloAdaptado)){
+							Iterator<Variant> itVar = s.getVariantes().iterator();
+							while (itVar.hasNext()){
+								Variant v = itVar.next();
+								if (elementoPerteneceAModelo(v.getID(), modelo)){
+									TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
+									Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
+									newS.setHijos(v.getHijos());
+									Element newE = new Element(newS, xElement + "em", yElement + "em");
+									newE.setDraggable(false);
+									xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
+								}
 							}
-						}
-						
+						//}
 					}
 					
 					// Sino, si no es variante la incluyo (las variantes ya se incluyeron el el if)
@@ -629,7 +639,7 @@ public class AdaptarModeloBean {
 			  				 (type != TipoElemento.VAR_WORK_PRODUCT)){
 						
 						// Si ya no se agregó al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
-						if (!variantePerteneceAModelo(s.getElementID(), modeloAdaptado)){
+						if (!elementoPerteneceAModelo(s.getElementID(), modeloAdaptado)){
 							Struct newS = crearCopiaStruct(s);
 							Element newE = new Element(newS, xElement + "em", yElement + "em");
 							newE.setDraggable(false);
@@ -673,11 +683,11 @@ public class AdaptarModeloBean {
 		return null;
 	}
 
-	public boolean variantePerteneceAModelo(String idVar, DefaultDiagramModel modelo){
+	public boolean elementoPerteneceAModelo(String id, DefaultDiagramModel modelo){
 		Iterator<Element> it = modelo.getElements().iterator();
 		while (it.hasNext()){
 			Struct s = (Struct) it.next().getData();
-			if (s.getElementID().equals(idVar)){
+			if (s.getElementID().equals(id)){
 				return true;
 			}
 		}
