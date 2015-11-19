@@ -726,7 +726,43 @@ public class AdaptarModeloBean {
 		newS.setExternalInputs(s.getExternalInputs());
 		newS.setOutputs(s.getOutputs());
 		
+		// Seteo las variantes
+		List<Variant> lstVariantes = s.getVariantes();
+		if (lstVariantes.size() > 0){
+			ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
+			Iterator<Variant> itVariantes = lstVariantes.iterator();
+			while (itVariantes.hasNext()){
+				Variant v = itVariantes.next();
+				Variant newVariant = crearCopiaVariante(v);
+				variantesNewS.add(newVariant);
+			}
+			newS.setVariantes(variantesNewS);
+		}
+		
 		return newS;
+	}
+	
+	public Variant crearCopiaVariante(Variant v){
+		Variant newV = new Variant(v.getID(), v.getName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType());
+		
+		// Seteo los hijos
+		List<Struct> lstHijos = v.getHijos();
+		if (lstHijos.size() > 0){
+			List<Struct> hijosNewV = new ArrayList<Struct>();
+			Iterator<Struct> itHijos = lstHijos.iterator();
+			while (itHijos.hasNext()){
+				Struct hijo = itHijos.next();
+				Struct newHijo = crearCopiaStruct(hijo);
+				hijosNewV.add(newHijo);
+			}
+			newV.setHijos(hijosNewV);
+		}
+		
+		// Seteo las variantes inclusivas y exclusivas
+		newV.setInclusivas(v.getInclusivas());
+		newV.setExclusivas(v.getExclusivas());
+		
+		return newV;
 	}
 
 	public Variant buscarVariante(List<Struct> nodos, String Id){

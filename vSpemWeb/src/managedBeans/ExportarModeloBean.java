@@ -152,14 +152,11 @@ public class ExportarModeloBean {
 							methodConfigurationName = s.getNombre();
 							methodConfigurationBriefDescription = s.getDescription();
 							processPresentationName = s.getPresentationName();
-							
 						}
 						else if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
 							idsAgregados.add(id);
 							texto += agregarElementoAxml(s, categorizedElement);
-							
 						}
-						
 					}
 				}
 				
@@ -169,7 +166,7 @@ public class ExportarModeloBean {
 					      "</Process>" + "\n" +
 					    "</MethodPackage>" + "\n" +
 					  "</MethodPlugin>" + "\n" +
-					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" +"\" presentationName=\"" + processPresentationName + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
+					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" /*+"\" presentationName=\"" + processPresentationName*/ + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
 					    "<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
 					    "<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n" +
 					    "<MethodPackageSelection>" + processId + "</MethodPackageSelection>" + "\n" +
@@ -293,16 +290,19 @@ public class ExportarModeloBean {
 					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
 					 "isPlanned=\"false\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" isSynchronizedWithSource=\"true\">" + "\n";
 		}
-		texto += "<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
 		
-		// Agrego los hijos
-		Iterator<Struct> it = s.getHijos().iterator();
-		while (it.hasNext()){
-			Struct hijo = it.next();
-			texto += agregarElementoAxml(hijo, id);
+		if (!texto.equals("")){
+			texto += "<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+			
+			// Agrego los hijos
+			Iterator<Struct> it = s.getHijos().iterator();
+			while (it.hasNext()){
+				Struct hijo = it.next();
+				texto += agregarElementoAxml(hijo, id);
+			}
+			
+			texto += "</BreakdownElement>" + "\n";
 		}
-		
-		texto += "</BreakdownElement>" + "\n";
 		
 		return texto;
 	}
