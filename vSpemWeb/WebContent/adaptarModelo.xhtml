@@ -19,9 +19,9 @@
 							<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 								<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 								<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{elem.hijos.size() > 0 and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
 								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{elem.hijos.size() > 0 and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
 								<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
 								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>

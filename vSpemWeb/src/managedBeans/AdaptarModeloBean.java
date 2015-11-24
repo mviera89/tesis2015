@@ -193,16 +193,19 @@ public class AdaptarModeloBean {
 	        Iterator<Struct> it = this.nodos.iterator();
 	        while (it.hasNext()){
 	        	Struct s = it.next();
-				
-	        	Element padre = new Element(s, x + "em", this.y + "em");
-		        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
-		        padre.addEndPoint(endPointP1_T);
-		        padre.setDraggable(false);
-		        modelo.addElement(padre);
-		        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
-		        String etiqueta = obtenerEtiquetaParaModelo(r, s);
-		        s.setEtiqueta(etiqueta);
-	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	        	TipoElemento tipo = s.getType();
+	        	// Este modelo NO muestra roles ni workproducts
+				if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){ 
+		        	Element padre = new Element(s, x + "em", this.y + "em");
+			        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
+			        padre.addEndPoint(endPointP1_T);
+			        padre.setDraggable(false);
+			        modelo.addElement(padre);
+			        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
+			        String etiqueta = obtenerEtiquetaParaModelo(r, s);
+			        s.setEtiqueta(etiqueta);
+		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+				}
 	        }
 	        root.setX(x/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
@@ -224,6 +227,28 @@ public class AdaptarModeloBean {
         return con;
     }
 
+    // Retorna true si tiene algún hijo DISTINTO de ROLE, VP_ROLE, WORK_PRODUCT o VP_WORK_PRODUCT.
+    public boolean tieneHijos(String id){
+    	FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext c = fc.getExternalContext();
+        String idElemSeleccionado =  id; //c.getRequestParameterMap().get("elemSeleccionado");
+    	        
+        if (idElemSeleccionado != null){
+	        Element e = obtenerElemento(idElemSeleccionado);
+	        if (e != null){
+		        Struct s = (Struct) e.getData();
+		    	Iterator<Struct> it = s.getHijos().iterator();
+		    	while (it.hasNext()){
+		    		TipoElemento t = it.next().getType();
+		    		if ((t != TipoElemento.ROLE) && (t != TipoElemento.VP_ROLE) && (t != TipoElemento.WORK_PRODUCT) && (t != TipoElemento.VP_WORK_PRODUCT)){
+		    			return true;
+		    		}
+		    	}
+	        }
+        }
+    	return false;
+    }
+    
     public String obtenerEtiquetaParaModelo(Struct padre, Struct hijo){
     	String etiqueta = "";
     	
@@ -286,69 +311,72 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 	        	Element hijo = null;
+	        	TipoElemento tipo = s.getType();
 	        	
-	        	// Si NO es para la vista previa o si NO es un punto de variación, lo agrego al modelo
-	        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
-		        	hijo = new Element(s, x + "em", y + "em");
-			        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
-			        hijo.addEndPoint(endPointHijo);
-			        hijo.setDraggable(false);
-			        modelo.addElement(hijo);
-			        modelo.connect(crearConexion(endPointPadre, endPointHijo));
-	        	}
-		        String etiqueta = obtenerEtiquetaParaModelo(p, s);
-		        s.setEtiqueta(etiqueta);
-	        	
-	        	// Si se trata de un punto de variación y tiene variantes seleccionadas, las muestro
-	        	String[] variantesSeleccionadasParaPV = this.puntosDeVariacion.get(s.getElementID());
-	        	int cantVariantesSeleccionadasParaPV = (variantesSeleccionadasParaPV != null) ? variantesSeleccionadasParaPV.length : 0;
-	        	if ((s.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
-	        		int i = 0;
-	        		float xAnt = x;
-	        		if (hijo != null){ 
-	        			y += Constantes.distanciaEntreNiveles;
-	        		}
-	        		while (i < cantVariantesSeleccionadasParaPV){
-	        			
-	        			Variant var = buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
-	        			if (var != null){
-	        				TipoElemento tipoVar = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(var.getVarType()));
-		    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
-		        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar);
-		        			Element e = new Element(st, x + "em", y + "em");
+	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
+		        	// Si NO es para la vista previa o si NO es un punto de variación, lo agrego al modelo
+		        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
+			        	hijo = new Element(s, x + "em", y + "em");
+				        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
+				        hijo.addEndPoint(endPointHijo);
+				        hijo.setDraggable(false);
+				        modelo.addElement(hijo);
+				        modelo.connect(crearConexion(endPointPadre, endPointHijo));
+		        	}
+			        String etiqueta = obtenerEtiquetaParaModelo(p, s);
+			        s.setEtiqueta(etiqueta);
+		        	
+		        	// Si se trata de un punto de variación y tiene variantes seleccionadas, las muestro
+		        	String[] variantesSeleccionadasParaPV = this.puntosDeVariacion.get(s.getElementID());
+		        	int cantVariantesSeleccionadasParaPV = (variantesSeleccionadasParaPV != null) ? variantesSeleccionadasParaPV.length : 0;
+		        	if ((s.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
+		        		int i = 0;
+		        		float xAnt = x;
+		        		if (hijo != null){ 
+		        			y += Constantes.distanciaEntreNiveles;
+		        		}
+		        		while (i < cantVariantesSeleccionadasParaPV){
 		        			
-		        			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
-		    		        e.addEndPoint(endPointVar);
-		    		        e.setDraggable(false);
-		    		        modelo.addElement(e);
-		    		        
-		    		        EndPoint endPointHijoB = crearEndPoint(EndPointAnchor.BOTTOM);
-		    		        if (hijo != null){
-		    		        	hijo.addEndPoint(endPointHijoB);
-		    		        }
-		    		        else{
-		    		        	padre.addEndPoint(endPointHijoB);
-		    		        }
-		    		        
-		    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
-		    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
-		    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-		    	        	
-		        			mostrarHijos(e, modelo, esVistaPrevia);
-	        			}
-	        			
-	        			i++;
-	        		}
-	        		if (hijo != null){ 
-	        			y -= Constantes.distanciaEntreNiveles;
-	        		}
-	        		x = xAnt;
-	        	}
-
-	        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-	        	
-	        	if (esVistaPrevia && (hijo != null)){
-	        		mostrarHijos(hijo, modelo, esVistaPrevia);
+		        			Variant var = buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
+		        			if (var != null){
+		        				TipoElemento tipoVar = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(var.getVarType()));
+			    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
+			        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar);
+			        			Element e = new Element(st, x + "em", y + "em");
+			        			
+			        			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
+			    		        e.addEndPoint(endPointVar);
+			    		        e.setDraggable(false);
+			    		        modelo.addElement(e);
+			    		        
+			    		        EndPoint endPointHijoB = crearEndPoint(EndPointAnchor.BOTTOM);
+			    		        if (hijo != null){
+			    		        	hijo.addEndPoint(endPointHijoB);
+			    		        }
+			    		        else{
+			    		        	padre.addEndPoint(endPointHijoB);
+			    		        }
+			    		        
+			    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
+			    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
+			    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			    	        	
+			        			mostrarHijos(e, modelo, esVistaPrevia);
+		        			}
+		        			
+		        			i++;
+		        		}
+		        		if (hijo != null){ 
+		        			y -= Constantes.distanciaEntreNiveles;
+		        		}
+		        		x = xAnt;
+		        	}
+	
+		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		        	
+		        	if (esVistaPrevia && (hijo != null)){
+		        		mostrarHijos(hijo, modelo, esVistaPrevia);
+		        	}
 	        	}
 	        }
     	}
@@ -582,7 +610,6 @@ public class AdaptarModeloBean {
 			Element e = it.next();
 			Struct s = (Struct) e.getData();
 			
-		System.out.println("############### " + s.getNombre());
 			TipoElemento type = s.getType();
 			if (type != null){
 				
