@@ -9,7 +9,7 @@
 	
 	<h:form id="adaptar_form">
 		<div style="text-align: right; padding-bottom: 0.3em; ">
-			<p:commandButton value="Vista previa" action="#{adaptarModeloBean.vistaPrevia()}" update=":panel_principal" />
+			<p:commandButton value="Vista previa" action="#{adaptarModeloBean.mostrarVistaPrevia()}" update=":panel_principal" />
 		</div>
 		<div style="padding-bottom: 0.3em;">
 			<p:diagram value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
@@ -20,9 +20,9 @@
 							<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 								<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 								<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
 								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
 								<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
 								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
