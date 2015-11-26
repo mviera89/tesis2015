@@ -37,7 +37,7 @@ import logica.XMIParser;
 @ManagedBean
 @SessionScoped
 public class AdaptarModeloBean {
-     
+    
     private DefaultDiagramModel modelo;
 	private DefaultDiagramModel modeloAdaptado;
 	private DefaultDiagramModel modeloRolesTareas;
@@ -46,9 +46,13 @@ public class AdaptarModeloBean {
 	private Element puntoVariacionAdaptado;
 	private List<SelectItem> variantes;
 	private String[] variantesSeleccionadas;
+
 	private HashMap<String, String[]> puntosDeVariacion; // <Id del PV, Lista de Variantes elegidas>
+	private HashMap<String, String> restriccionesPV;	 // <Id del PV, Booleano que indica si cumple restricciones del PV>
+	private List<String[]> erroresModeloFinal; 			 // Lista de parejas de string {[Nombre del PV, Texto del error]}
 	private HashMap<String, List<Struct>> rolesTareasPrimary;
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
+
 	
 	@PostConstruct
     public void init() {
@@ -56,15 +60,18 @@ public class AdaptarModeloBean {
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
     	this.puntosDeVariacion = new HashMap<String, String[]>();
+
     	this.rolesTareasPrimary = new HashMap<String, List<Struct>>();
     	this.rolesTareasAdditionally = new HashMap<String, List<Struct>>();
+    	this.restriccionesPV = new HashMap<String, String>();
+    	erroresModeloFinal = new ArrayList<String[]>();
     	this.y = Constantes.yInicial;
         crearModelo();
         crearModeloRolesTareas();
     }
 
     /*** Getters y Setters ***/
-    
+
     public DiagramModel getModelo() {
         return modelo;
     }
@@ -72,7 +79,7 @@ public class AdaptarModeloBean {
     public void setModelo(DefaultDiagramModel modelo) {
 		this.modelo = modelo;
 	}
-	
+
 	public DefaultDiagramModel getModeloAdaptado() {
 		return modeloAdaptado;
 	}
@@ -119,7 +126,7 @@ public class AdaptarModeloBean {
 	public void setVariantes(List<SelectItem> variantes) {
 		this.variantes = variantes;
 	}
-    
+   
 	public String[] getVariantesSeleccionadas() {
 		return variantesSeleccionadas;
 	}
@@ -153,9 +160,39 @@ public class AdaptarModeloBean {
 	public void setPuntosDeVariacion(HashMap<String, String[]> puntosDeVariacion) {
 		this.puntosDeVariacion = puntosDeVariacion;
 	}
-	
-	/*************************/
-	
+
+	public HashMap<String, String> getRestriccionesPV() {
+		return restriccionesPV;
+	}
+
+	public void setRestriccionesPV(HashMap<String, String> restriccionesPV) {
+		this.restriccionesPV = restriccionesPV;
+	}
+
+	public List<String[]> getErroresModeloFinal() {
+		erroresModeloFinal.clear();
+		Iterator<Entry<String, String>> it = this.restriccionesPV.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, String> entry = it.next();
+			String error = entry.getValue();
+			if (!error.isEmpty()){
+				String id = entry.getKey();
+				Element e = obtenerElemento(id);
+				if (e != null){
+					String[] errorPV = {((Struct) e.getData()).getNombre(), error};
+					erroresModeloFinal.add(errorPV);
+				}
+			}
+		} 
+		return erroresModeloFinal;
+	}
+
+	public void setErroresModeloFinal(List<String[]> erroresModeloFinal) {
+		this.erroresModeloFinal = erroresModeloFinal;
+	}
+
+	/*** Crear modelo ***/
+
     public void crearModelo(){
         modelo = new DefaultDiagramModel();
         modelo.setMaxConnections(-1);
@@ -208,13 +245,18 @@ public class AdaptarModeloBean {
 	        while (it.hasNext()){
 	        	Struct s = it.next();
 	        	TipoElemento tipo = s.getType();
+	        	// Si es un punto de variaciÃ³n => Lo agrego al hash restriccionesPV
+	        	if (esPuntoDeVariacion(tipo)){
+	        		this.restriccionesPV.put(s.getElementID(), validarSeleccion(null, s));
+	        	}
+	        	
 	        	// Este modelo NO muestra roles ni workproducts
 				if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){ 
 		        	Element padre = new Element(s, x + "em", this.y + "em");
 			        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 			        padre.addEndPoint(endPointP1_T);
 			        padre.setDraggable(false);
-			        modelo.addElement(padre);
+			        modelo.addElement(padre); 
 			        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
 			        String etiqueta = obtenerEtiquetaParaModelo(r, s);
 			        s.setEtiqueta(etiqueta);
@@ -260,59 +302,58 @@ public class AdaptarModeloBean {
     	BlankEndPoint endPoint = new BlankEndPoint(anchor);
         return endPoint;
     }
-    
+
     public static Connection crearConexion(EndPoint desde, EndPoint hasta) {
         Connection con = new Connection(desde, hasta);
         con.getOverlays().add(new ArrowOverlay(8, 8, 1, 1));
         return con;
     }
 
-    // Retorna true si tiene algún hijo DISTINTO de ROLE, VP_ROLE, WORK_PRODUCT o VP_WORK_PRODUCT.
-    public boolean tieneHijos(String id){
-    	FacesContext fc = FacesContext.getCurrentInstance();
-		ExternalContext c = fc.getExternalContext();
-        String idElemSeleccionado =  id; //c.getRequestParameterMap().get("elemSeleccionado");
-    	        
-        if (idElemSeleccionado != null){
-	        Element e = obtenerElemento(idElemSeleccionado);
-	        if (e != null){
-		        Struct s = (Struct) e.getData();
-		    	Iterator<Struct> it = s.getHijos().iterator();
-		    	while (it.hasNext()){
-		    		TipoElemento t = it.next().getType();
-		    		if ((t != TipoElemento.ROLE) && (t != TipoElemento.VP_ROLE) && (t != TipoElemento.WORK_PRODUCT) && (t != TipoElemento.VP_WORK_PRODUCT)){
-		    			return true;
-		    		}
-		    	}
-	        }
-        }
-    	return false;
-    }
-    
-    public String obtenerEtiquetaParaModelo(Struct padre, Struct hijo){
-    	String etiqueta = "";
-    	
-    	String idHijo = hijo.getElementID();
-    	if ((hijo.getType() == TipoElemento.ROLE) || (hijo.getType() == TipoElemento.VP_ROLE)){
-    		etiqueta = (padre.getPerformedPrimaryBy() != null && padre.getPerformedPrimaryBy().equals(idHijo))
-    						? TipoEtiqueta.PRIMARY_PERFORMER.toString()
-    						: (padre.getPerformedAditionallyBy() != null && padre.getPerformedAditionallyBy().contains(idHijo)) 
-    							? TipoEtiqueta.ADDITIONAL_PERFORMER.toString()
-    					   		: "";
-    	}
-    	else if ((hijo.getType() == TipoElemento.WORK_PRODUCT) || (hijo.getType() == TipoElemento.VP_WORK_PRODUCT)){
-    		etiqueta = (padre.getMandatoryInputs() != null && padre.getMandatoryInputs().contains(idHijo)) 
-    						? TipoEtiqueta.MANDATORY_INPUT.toString()
-    						:(padre.getOptionalInputs() != null && padre.getOptionalInputs().contains(idHijo)) 
-    	    						? TipoEtiqueta.OPTIONAL_INPUT.toString()
-    	    				:(padre.getExternalInputs() != null && padre.getExternalInputs().contains(idHijo)) 
-    	    	    				? TipoEtiqueta.EXTERNAL_INPUT.toString()
-    	    	    		:(padre.getOutputs() != null && padre.getOutputs().contains(idHijo)) 
-    	    	    				? TipoEtiqueta.OUTPUT.toString()
-    						: "";
-    	}
-    	
-    	return etiqueta;
+	public void redibujarModelo() {
+		try{
+	    	int cantVariantes = this.variantesSeleccionadas.length;
+	    	String xStr = this.puntoVariacionAdaptado.getX();
+	    	String yStr = this.puntoVariacionAdaptado.getY();
+			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
+			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
+	    	for (int i = 0; i < cantVariantes; i++){
+	    		// Creo la variante
+	
+	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+	    		String nombreVariante = v.getName();
+				String tipoVariante = v.getVarType();
+	    		String idVariante = this.variantesSeleccionadas[i];
+	    		List<Struct> hijos = v.getHijos();
+	    		
+	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+				Struct s = (Struct) hijo.getData();
+				s.setHijos(hijos);
+	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+	    		hijo.addEndPoint(endPointH1);
+	    		hijo.setDraggable(false);
+		        modelo.addElement(hijo);
+		        
+		        // Creo el endPoint del punto de variaciï¿½n
+		        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+		        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+		        
+		        // Conecto el punto de variaciï¿½n con la variante
+		        modelo.connect(crearConexion(endPointPV_B, endPointH1));
+		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+		        
+		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	    	}
+	    	
+	    	if (cantVariantes > 0){
+	    		this.crearModeloFinal(this.modelo);
+	    	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
 	public void redibujarHijos(){
@@ -352,8 +393,13 @@ public class AdaptarModeloBean {
 	        	Struct s = it.next();
 	        	Element hijo = null;
 	        	TipoElemento tipo = s.getType();
+	        	// Si es un punto de variaciÃ³n => Lo agrego al hash restriccionesPV
+	        	if (esPuntoDeVariacion(tipo)){
+	        		this.restriccionesPV.put(s.getElementID(), validarSeleccion(null, s));
+	        	}
 	        	
 	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
+
 	        		if (tipo == TipoElemento.TASK){
 		        		if (s.getPerformedPrimaryBy() != null){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
@@ -393,7 +439,7 @@ public class AdaptarModeloBean {
 			        String etiqueta = obtenerEtiquetaParaModelo(p, s);
 			        s.setEtiqueta(etiqueta);
 		        	
-		        	// Si se trata de un punto de variación y tiene variantes seleccionadas, las muestro
+		        	// Si se trata de un punto de variaciÃ³n y tiene variantes seleccionadas, las muestro
 		        	String[] variantesSeleccionadasParaPV = this.puntosDeVariacion.get(s.getElementID());
 		        	int cantVariantesSeleccionadasParaPV = (variantesSeleccionadasParaPV != null) ? variantesSeleccionadasParaPV.length : 0;
 		        	if ((s.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
@@ -425,7 +471,7 @@ public class AdaptarModeloBean {
 			    		        }
 			    		        
 			    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
-			    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
+			    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variaciÃ³n
 			    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			    	        	
 			        			mostrarHijos(e, modelo, esVistaPrevia);
@@ -448,7 +494,7 @@ public class AdaptarModeloBean {
 	        }
     	}
     }
-    
+
     public void ocultarHijos(Element padre, DefaultDiagramModel modelo){
     	List<Struct> hijos = ((Struct) padre.getData()).getHijos();
     	Iterator<Struct> it = hijos.iterator();
@@ -459,7 +505,7 @@ public class AdaptarModeloBean {
 	    		if (s.getHijos().size() > 0){
 	    			ocultarHijos(e, modelo);
 	    		}
-	    		else if (s.getVariantes().size() > 0){ // Es un punto de variación
+	    		else if (s.getVariantes().size() > 0){ // Es un punto de variaciÃ³n
 	    			ocultarVariantes(e, modelo);
 	    		}
 	    		modelo.removeElement(e);
@@ -467,7 +513,7 @@ public class AdaptarModeloBean {
     		s.setEstaExpandido(false);
         }
     }
-    
+
     public void ocultarVariantes(Element padre, DefaultDiagramModel modelo){
     	List<Variant> variantes = ((Struct) padre.getData()).getVariantes();
     	Iterator<Variant> it = variantes.iterator();
@@ -483,19 +529,6 @@ public class AdaptarModeloBean {
     		v.setEstaExpandido(false);
     	}
     }
-    
-	public Element obtenerElemento(String idElemento){
-		Iterator<Element> it = modelo.getElements().iterator();
-		while (it.hasNext()){
-			Element e = it.next();
-			String id = ((Struct) e.getData()).getElementID();
-			if (id.equals(idElemento)){
-				return e;
-			}
-		}
-		
-		return null;
-	}
 
 	public void seleccionarVariantes(){
 		FacesContext fc = FacesContext.getCurrentInstance();
@@ -516,7 +549,7 @@ public class AdaptarModeloBean {
 
 	public void cargarVariantesDelPunto(String idElemSeleccionado){
 		variantes.clear();
-		Struct s = buscarVP(idElemSeleccionado,this.nodos);
+		Struct s = buscarPV(idElemSeleccionado,this.nodos);
 		if (s != null){
 	        Iterator<Variant> it = s.getVariantes().iterator();
 	    	while (it.hasNext()){
@@ -536,125 +569,14 @@ public class AdaptarModeloBean {
 			}
     	}
 	}
-	
+
 	public void actualizarVariantesParaPV(){
 		String clave = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 		this.puntosDeVariacion.put(clave, this.variantesSeleccionadas);
-	}
-	
-	public void redibujarModelo() {
-		try{
-	    	int cantVariantes = this.variantesSeleccionadas.length;
-	    	String xStr = this.puntoVariacionAdaptado.getX();
-	    	String yStr = this.puntoVariacionAdaptado.getY();
-			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
-			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
-			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
-	    	for (int i = 0; i < cantVariantes; i++){
-	    		// Creo la variante
-	
-	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
-	    		String nombreVariante = v.getName();
-				String tipoVariante = v.getVarType();
-	    		String idVariante = this.variantesSeleccionadas[i];
-	    		List<Struct> hijos = v.getHijos();
-	    		
-	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
-	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
-				Struct s = (Struct) hijo.getData();
-				s.setHijos(hijos);
-	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
-	    		hijo.addEndPoint(endPointH1);
-	    		hijo.setDraggable(false);
-		        modelo.addElement(hijo);
-		        
-		        // Creo el endPoint del punto de variación
-		        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
-		        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
-		        
-		        // Conecto el punto de variación con la variante
-		        modelo.connect(crearConexion(endPointPV_B, endPointH1));
-		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
-		        
-		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-	    	}
-	    	
-	    	if (cantVariantes > 0){
-	    		this.crearModeloFinal(this.modelo);
-	    	}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-    }
-	
-	public String validarSeleccion(String[] variantesSeleccionadas, Struct pv){
-		String res = "";
-		
-		/*** Chequeo máximos y mínimos ***/
-		int cantVariantesSelec = variantesSeleccionadas.length;
-		int min = pv.getMin();
-		int max = pv.getMax();
-		if (cantVariantesSelec < min){
-			res = "Debe seleccionar al menos " + min + " variante" + (min > 1 ? "s." : ".");
-		}
-		else if ((max != -1) && (cantVariantesSelec > max)){
-			res = "Debe seleccionar a lo sumo " + max + " variante" + (max > 1 ? "s." : ".");
-		}
-		/*** Chequeo variantes inclusivas y exclusivas ***/
-		else{
-			int i = 0;
-			while ((i < cantVariantesSelec) && (res.isEmpty())){
-				// Para cada variante seleccionada obtengo las variantes exlusivas e inclusivas
-				Variant v = obtenerVarianteParaPV(pv, variantesSeleccionadas[i]);
-				List<String> varExclusivas = v.getExclusivas();
-				List<String> varInclusivas = v.getInclusivas();
-				
-				// Si las otras variantes seleccionadas están en las variantes exlusivas => Error
-				if (varExclusivas != null){
-					int j = 0;
-					while ((j < cantVariantesSelec) && (res.isEmpty())){
-						if ((j != i) && (varExclusivas.contains(variantesSeleccionadas[j]))){
-							res = "No es posible seleccionar las variantes '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[i]).getName() + "' y '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[j]).getName() + "' a la vez.";
-						}
-						j++;
-					}
-				}
-				
-				// Si entre las variantes seleccionadas NO están todas las variantes inclusivas => Error
-				if ((res.isEmpty()) && (varInclusivas != null)){
-					Iterator<String> itInclusivas = varInclusivas.iterator();
-					while (itInclusivas.hasNext()){
-						String var = itInclusivas.next();
-						if (!Arrays.asList(variantesSeleccionadas).contains(var)){
-							res = "Debe seleccionar la variante '" + obtenerVarianteParaPV(pv, var).getName() + "'.";
-						}
-					}
-				}
-				
-				i++;
-			}
-		}
-		
-		return res;
+		this.restriccionesPV.replace(clave, ""); // Si estoy agregando las variantes es porque cumple las restricciones
 	}
 
-	public Variant obtenerVarianteParaPV(Struct pv, String idVar){
-		Iterator<Variant> it = pv.getVariantes().iterator();
-		while (it.hasNext()){
-			Variant v = it.next();
-			if (v.getID().equals(idVar)){
-				return v;
-			}
-		}
-		return null;
-	}
-
-	public void vistaPrevia(){
-		RequestContext c = RequestContext.getCurrentInstance();
-		c.execute("PF('vistaPreviaDialog').show()");
-	}
+    /*** Modelo final ***/
 
 	public void crearModeloFinal(DefaultDiagramModel modelo) {
 		modeloAdaptado = new DefaultDiagramModel();
@@ -680,7 +602,7 @@ public class AdaptarModeloBean {
 			TipoElemento type = s.getType();
 			if (type != null){
 				
-				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
+				// Si es el elemento de inicio, obtengo el un Ãºnico endPoint que tiene y lo agrego al modelo final
 				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
 					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
 					newS.setDescription(s.getDescription());
@@ -696,31 +618,23 @@ public class AdaptarModeloBean {
 					yElement += Constantes.distanciaEntreNiveles;
 				}
 				else{
-					// Si es un punto de variación, recorro las variantes y agrego las que están en el modelo
-					// Lo hago así porque sino se incluyen al final
-					if ((type == TipoElemento.VP_ACTIVITY)  ||
-		  				(type == TipoElemento.VP_PHASE)     ||
-		  				(type == TipoElemento.VP_ITERATION) ||
-		  				(type == TipoElemento.VP_TASK)		||
-		  				(type == TipoElemento.VP_ROLE)		||
-		  				(type == TipoElemento.VP_MILESTONE)		||
-		  				(type == TipoElemento.VP_WORK_PRODUCT)	){
+					// Si es un punto de variaciÃ³n, recorro las variantes y agrego las que estÃ¡n en el modelo
+					// Lo hago asÃ­ porque sino se incluyen al final
+					if (esPuntoDeVariacion(type)){
 						
 						// Esto lo agrego para evitar que las variantes que van en niveles inferiores no se incluyan en los superiores
-						//if (!elementoPerteneceAModelo(s.getElementID(), modeloAdaptado)){
-							Iterator<Variant> itVar = s.getVariantes().iterator();
-							while (itVar.hasNext()){
-								Variant v = itVar.next();
-								if (elementoPerteneceAModelo(v.getID(), modelo)){
-									TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
-									Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
-									newS.setHijos(v.getHijos());
-									Element newE = new Element(newS, xElement + "em", yElement + "em");
-									newE.setDraggable(false);
-									xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
-								}
+						Iterator<Variant> itVar = s.getVariantes().iterator();
+						while (itVar.hasNext()){
+							Variant v = itVar.next();
+							if (elementoPerteneceAModelo(v.getID(), modelo)){
+								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
+								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
+								newS.setHijos(v.getHijos());
+								Element newE = new Element(newS, xElement + "em", yElement + "em");
+								newE.setDraggable(false);
+								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 							}
-						//}
+						}
 					}
 					
 					// Sino, si no es variante la incluyo (las variantes ya se incluyeron el el if)
@@ -732,7 +646,7 @@ public class AdaptarModeloBean {
 			  				 (type != TipoElemento.VAR_MILESTONE)	&&
 			  				 (type != TipoElemento.VAR_WORK_PRODUCT)){
 						
-						// Si ya no se agregó al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
+						// Si ya no se agregÃ³ al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
 						if (!elementoPerteneceAModelo(s.getElementID(), modeloAdaptado)){
 							Struct newS = crearCopiaStruct(s);
 							Element newE = new Element(newS, xElement + "em", yElement + "em");
@@ -750,42 +664,6 @@ public class AdaptarModeloBean {
 			root.setX(xElement/2 + "em");
 		}
 		
-	}
-
-	public TipoElemento getElementoParaVarPoint(TipoElemento type){
-		if (type == TipoElemento.VAR_ACTIVITY){
-			return TipoElemento.ACTIVITY;
-		}
-		if (type == TipoElemento.VAR_PHASE){
-			return TipoElemento.PHASE;
-		}
-		if (type == TipoElemento.VAR_ITERATION){
-			return TipoElemento.ITERATION;
-		}
-		if (type == TipoElemento.VAR_TASK){
-			return TipoElemento.TASK;
-		}
-		if (type == TipoElemento.VAR_ROLE){
-			return TipoElemento.ROLE;
-		}
-		if (type == TipoElemento.VAR_MILESTONE){
-			return TipoElemento.MILESTONE;
-		}
-		if (type == TipoElemento.VAR_WORK_PRODUCT){
-			return TipoElemento.WORK_PRODUCT;
-		}
-		return null;
-	}
-
-	public boolean elementoPerteneceAModelo(String id, DefaultDiagramModel modelo){
-		Iterator<Element> it = modelo.getElements().iterator();
-		while (it.hasNext()){
-			Struct s = (Struct) it.next().getData();
-			if (s.getElementID().equals(id)){
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public float agregarElementoModeloFinal(Element e, EndPoint superior, float x, String etiqueta){
@@ -806,6 +684,13 @@ public class AdaptarModeloBean {
 		}
 		return x;
 	}
+
+	public void mostrarVistaPrevia(){
+		RequestContext c = RequestContext.getCurrentInstance();
+		c.execute("PF('vistaPreviaDialog').show()");
+	}
+
+	/*** Copiar elementos ***/
 
 	public Struct crearCopiaStruct(Struct s){
 		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
@@ -845,7 +730,7 @@ public class AdaptarModeloBean {
 		
 		return newS;
 	}
-	
+
 	public Variant crearCopiaVariante(Variant v){
 		Variant newV = new Variant(v.getID(), v.getName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType());
 		
@@ -869,6 +754,116 @@ public class AdaptarModeloBean {
 		return newV;
 	}
 
+	/*** Funciones booleanas ***/
+
+    // Retorna true si tiene algÃºn hijo DISTINTO de ROLE, VP_ROLE, WORK_PRODUCT o VP_WORK_PRODUCT.
+    public boolean elementoTieneHijos(String id){
+        if (id != null){
+	        Element e = obtenerElemento(id);
+	        if (e != null){
+		        Struct s = (Struct) e.getData();
+		    	Iterator<Struct> it = s.getHijos().iterator();
+		    	while (it.hasNext()){
+		    		TipoElemento t = it.next().getType();
+		    		if ((t != TipoElemento.ROLE) && (t != TipoElemento.VP_ROLE) && (t != TipoElemento.WORK_PRODUCT) && (t != TipoElemento.VP_WORK_PRODUCT)){
+		    			return true;
+		    		}
+		    	}
+	        }
+        }
+    	return false;
+    }
+
+	public boolean elementoPerteneceAModelo(String id, DefaultDiagramModel modelo){
+		Iterator<Element> it = modelo.getElements().iterator();
+		while (it.hasNext()){
+			Struct s = (Struct) it.next().getData();
+			if (s.getElementID().equals(id)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean esPuntoDeVariacion(TipoElemento tipo){
+		return (tipo == TipoElemento.VP_ACTIVITY  ||
+        		tipo == TipoElemento.VP_TASK 	  ||
+        		tipo == TipoElemento.VP_PHASE 	  ||
+        		tipo == TipoElemento.VP_ITERATION ||
+        		tipo == TipoElemento.VP_ROLE 	  ||
+        		tipo == TipoElemento.VP_MILESTONE ||
+        		tipo == TipoElemento.VP_WORK_PRODUCT);
+	}
+
+	/*** Buscar elementos ***/
+
+    public String obtenerEtiquetaParaModelo(Struct padre, Struct hijo){
+    	String etiqueta = "";
+    	
+    	String idHijo = hijo.getElementID();
+    	if ((hijo.getType() == TipoElemento.ROLE) || (hijo.getType() == TipoElemento.VP_ROLE)){
+    		etiqueta = (padre.getPerformedPrimaryBy() != null && padre.getPerformedPrimaryBy().equals(idHijo))
+    						? TipoEtiqueta.PRIMARY_PERFORMER.toString()
+    						: (padre.getPerformedAditionallyBy() != null && padre.getPerformedAditionallyBy().contains(idHijo)) 
+    							? TipoEtiqueta.ADDITIONAL_PERFORMER.toString()
+    					   		: "";
+    	}
+    	else if ((hijo.getType() == TipoElemento.WORK_PRODUCT) || (hijo.getType() == TipoElemento.VP_WORK_PRODUCT)){
+    		etiqueta = (padre.getMandatoryInputs() != null && padre.getMandatoryInputs().contains(idHijo)) 
+    						? TipoEtiqueta.MANDATORY_INPUT.toString()
+    						:(padre.getOptionalInputs() != null && padre.getOptionalInputs().contains(idHijo)) 
+    	    						? TipoEtiqueta.OPTIONAL_INPUT.toString()
+    	    				:(padre.getExternalInputs() != null && padre.getExternalInputs().contains(idHijo)) 
+    	    	    				? TipoEtiqueta.EXTERNAL_INPUT.toString()
+    	    	    		:(padre.getOutputs() != null && padre.getOutputs().contains(idHijo)) 
+    	    	    				? TipoEtiqueta.OUTPUT.toString()
+    						: "";
+    	}
+    	
+    	return etiqueta;
+    }
+
+	public Element obtenerElemento(String idElemento){
+		Iterator<Element> it = modelo.getElements().iterator();
+		while (it.hasNext()){
+			Element e = it.next();
+			String id = ((Struct) e.getData()).getElementID();
+			if (id.equals(idElemento)){
+				return e;
+			}
+		}
+		
+		return null;
+	}
+
+	public Struct buscarPV (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if((esPuntoDeVariacion(s.getType())) && (s.getElementID().equals(idElemSeleccionado))){
+        		res = s;
+        	}
+        	else if (s.getHijos().size() > 0){
+        		res = buscarPV(idElemSeleccionado, s.getHijos());
+        	}
+        }
+        
+        return res;
+	}
+
+	public Variant obtenerVarianteParaPV(Struct pv, String idVar){
+		Iterator<Variant> it = pv.getVariantes().iterator();
+		while (it.hasNext()){
+			Variant v = it.next();
+			if (v.getID().equals(idVar)){
+				return v;
+			}
+		}
+		return null;
+	}
+
 	public Variant buscarVariante(List<Struct> nodos, String Id){
 		Iterator<Struct> it = nodos.iterator();
 		Variant res = null;
@@ -876,14 +871,7 @@ public class AdaptarModeloBean {
 		while (it.hasNext() && (res == null)){
 			Struct s = it.next();
 			TipoElemento type = s.getType();
-			if ((type == TipoElemento.VP_ACTIVITY)  ||
-				(type == TipoElemento.VP_PHASE)     ||
-				(type == TipoElemento.VP_ITERATION) ||
-				(type == TipoElemento.VP_TASK)		||
-				(type == TipoElemento.VP_MILESTONE)	||
-				(type == TipoElemento.VP_ROLE)		||
-				(type == TipoElemento.VP_WORK_PRODUCT)
-			   ){
+			if (esPuntoDeVariacion(type)){
 				List<Variant> variantes = s.getVariantes();
 				Iterator<Variant> itH = variantes.iterator();
 				while (itH.hasNext() && (res == null)){
@@ -901,30 +889,82 @@ public class AdaptarModeloBean {
 		return res;
 	}
 
-	public Struct buscarVP (String idElemSeleccionado, List<Struct> list) {
-		Iterator<Struct> iterator = list.iterator();
-		Struct res = null;
+	public TipoElemento getElementoParaVarPoint(TipoElemento type){
+		if (type == TipoElemento.VAR_ACTIVITY){
+			return TipoElemento.ACTIVITY;
+		}
+		if (type == TipoElemento.VAR_PHASE){
+			return TipoElemento.PHASE;
+		}
+		if (type == TipoElemento.VAR_ITERATION){
+			return TipoElemento.ITERATION;
+		}
+		if (type == TipoElemento.VAR_TASK){
+			return TipoElemento.TASK;
+		}
+		if (type == TipoElemento.VAR_ROLE){
+			return TipoElemento.ROLE;
+		}
+		if (type == TipoElemento.VAR_MILESTONE){
+			return TipoElemento.MILESTONE;
+		}
+		if (type == TipoElemento.VAR_WORK_PRODUCT){
+			return TipoElemento.WORK_PRODUCT;
+		}
+		return null;
+	}
+
+	/*** Validar ****/
+
+	public String validarSeleccion(String[] variantesSeleccionadas, Struct pv){
+		String res = "";
 		
-        while (iterator.hasNext() && (res == null)){
-        	Struct s = iterator.next();
-        	if((s.getType() == TipoElemento.VP_ACTIVITY ||
-        		s.getType() == TipoElemento.VP_TASK ||
-        		s.getType() == TipoElemento.VP_PHASE ||
-        		s.getType() == TipoElemento.VP_ITERATION ||
-        		s.getType() == TipoElemento.VP_ROLE ||
-        		s.getType() == TipoElemento.VP_MILESTONE ||
-        		s.getType() == TipoElemento.VP_WORK_PRODUCT) &&
-        	   (s.getElementID().equals(idElemSeleccionado))
-        	  ){
-        		res = s;
-        	}
-        	else {
-        		if (s.getHijos().size() > 0){
-        			res = buscarVP(idElemSeleccionado, s.getHijos());
-        		}
-        	}
-        }
-        return res;
+		/*** Chequeo mÃ¡ximos y mÃ­nimos ***/
+		int cantVariantesSelec = (variantesSeleccionadas != null) ? variantesSeleccionadas.length : 0;
+		int min = pv.getMin();
+		int max = pv.getMax();
+		if (cantVariantesSelec < min){
+			res = "Debe seleccionar al menos " + min + " variante" + (min > 1 ? "s." : ".");
+		}
+		else if ((max != -1) && (cantVariantesSelec > max)){
+			res = "Debe seleccionar a lo sumo " + max + " variante" + (max > 1 ? "s." : ".");
+		}
+		/*** Chequeo variantes inclusivas y exclusivas ***/
+		else{
+			int i = 0;
+			while ((i < cantVariantesSelec) && (res.isEmpty())){
+				// Para cada variante seleccionada obtengo las variantes exlusivas e inclusivas
+				Variant v = obtenerVarianteParaPV(pv, variantesSeleccionadas[i]);
+				List<String> varExclusivas = v.getExclusivas();
+				List<String> varInclusivas = v.getInclusivas();
+				
+				// Si las otras variantes seleccionadas estÃ¡n en las variantes exlusivas => Error
+				if (varExclusivas != null){
+					int j = 0;
+					while ((j < cantVariantesSelec) && (res.isEmpty())){
+						if ((j != i) && (varExclusivas.contains(variantesSeleccionadas[j]))){
+							res = "No es posible seleccionar las variantes '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[i]).getName() + "' y '" + obtenerVarianteParaPV(pv, variantesSeleccionadas[j]).getName() + "' a la vez.";
+						}
+						j++;
+					}
+				}
+				
+				// Si entre las variantes seleccionadas NO estÃ¡n todas las variantes inclusivas => Error
+				if ((res.isEmpty()) && (varInclusivas != null)){
+					Iterator<String> itInclusivas = varInclusivas.iterator();
+					while (itInclusivas.hasNext()){
+						String var = itInclusivas.next();
+						if (!Arrays.asList(variantesSeleccionadas).contains(var)){
+							res = "Debe seleccionar la variante '" + obtenerVarianteParaPV(pv, var).getName() + "'.";
+						}
+					}
+				}
+				
+				i++;
+			}
+		}
+		
+		return res;
 	}
 	
 	public Struct buscarRol (String idElemSeleccionado, List<Struct> list) {

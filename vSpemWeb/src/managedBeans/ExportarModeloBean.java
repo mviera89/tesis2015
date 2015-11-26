@@ -13,13 +13,11 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
 import config.Constantes;
 import dataTypes.TipoElemento;
-import dominio.Document;
 import dominio.Struct;
  
 @ManagedBean
@@ -32,7 +30,7 @@ public class ExportarModeloBean {
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		        String nomArchivo = vb.getNombreArchivo();
-		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
+		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensiï¿½n
 				
 				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);

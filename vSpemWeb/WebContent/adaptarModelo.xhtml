@@ -2,7 +2,8 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
 	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
-	  xmlns:p="http://primefaces.org/ui">
+	  xmlns:p="http://primefaces.org/ui"
+      xmlns:a4j="http://richfaces.org/a4j">
 	
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	
@@ -10,7 +11,7 @@
 	  <p:tabView>	
 	    <p:tab title="Modelo">
 		<div style="text-align: right; padding-bottom: 0.3em; ">
-			<p:commandButton value="Vista previa" action="#{adaptarModeloBean.vistaPrevia()}" update=":panel_principal" />
+			<p:commandButton value="Vista previa" action="#{adaptarModeloBean.mostrarVistaPrevia()}" update=":panel_principal" />
 		</div>
 		<div style="padding-bottom: 0.3em;">
 			<p:diagram value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
@@ -21,9 +22,9 @@
 							<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 								<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 								<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
 								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
 								<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
 								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
@@ -39,16 +40,16 @@
 	    <p:tab title="Roles-Tareas">
 	    	<div style="padding-bottom: 0.3em;">
 			<p:diagram value="#{adaptarModeloBean.modeloRolesTareas}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
-						<f:facet name="element">
+				<f:facet name="element">
 					<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
 								   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
 						<div style="position: relative; display:block; margin:auto; width: 32px;">
 							<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 								<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 								<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
 								<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
-												rendered="#{adaptarModeloBean.tieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+												rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
 								<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 								<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
 								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
@@ -57,7 +58,7 @@
 						<p:ajax update=":panel_principal"/>
 						<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 					</h:commandLink>
-				</f:facet>
+				</f:facet>		
 			</p:diagram>
 		</div>
 	    </p:tab>
@@ -66,8 +67,11 @@
 	    <p:tab title="Tareas-WorkProducts">
 	    </p:tab>
 	  </p:tabView>
-		<p:commandButton value="Finalizar" action="#{VistaBean.actualizarIndiceActivo(2)}" 
-					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}" update=":panel_principal"/>
+		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() == 0}" update=":panel_principal"
+					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}"
+					 	 action="#{VistaBean.actualizarIndiceActivo(2)}" />
+		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() > 0}"
+						 onclick="PF('erroresDialog').show(); return false;" />
 	</h:form>
 	
 	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true" 
@@ -94,6 +98,17 @@
 			</p:diagram>
 			<br/>
 		 </div>
+	</p:dialog>
+	
+	<p:dialog header="Adaptar modelo" widgetVar="erroresDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 25%; ">
+		<h:form id="erroresDialog_form">
+			<p:outputLabel value="No es posible finalizar la adaptación del modeo debido a los siguientes errores:" />
+			<ui:repeat var="error" value="#{adaptarModeloBean.erroresModeloFinal}"> 
+			   <li><b>#{error[0]}: </b>#{error[1]}</li>
+			</ui:repeat>
+			<br/>
+			<p:commandButton value="Cerrar" immediate="true" update=":panel_principal" />
+		</h:form>
 	</p:dialog>
 	
 </html>
