@@ -310,7 +310,8 @@ public class XMIParser {
 	      		    
 	      		  	      		    
 	      		  boolean tienePadre =false;
-	      		  if (eHijo.hasAttribute("superActivities") &&  !(type.equals(TipoElemento.VAR_ACTIVITY.toString())  ||
+	      		  if (eHijo.hasAttribute("superActivities") &&  !(type.equals(TipoElemento.VAR_ACTIVITY.toString())
+	      				  && !(type.equals("WorkOrder")) ||
 	                  				type.equals(TipoElemento.VAR_PHASE.toString())	   ||
 	                  				type.equals(TipoElemento.VAR_ITERATION.toString()) ||
 	                  				type.equals(TipoElemento.VAR_TASK.toString())      ||
@@ -452,7 +453,7 @@ public class XMIParser {
                     	}
 	      		    }
 	      		   
-	      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
+	      		    else if(id != null && nameHijo != null && type != null && !tienePadre && !(type.equals("WorkOrder"))){
 	      		    	if (hijosS != null ){
 	      		    		h.getHijos().addAll(hijosS);
 	      		    	}
