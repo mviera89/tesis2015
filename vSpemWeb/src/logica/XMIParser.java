@@ -24,7 +24,7 @@ import dominio.Variant;
 
 public class XMIParser {
 
-	@SuppressWarnings("unchecked")
+	
 	public static List<Struct> getElementXMI(String nomFile){
 		List<Struct> result = new ArrayList<Struct>();
 		
@@ -144,13 +144,13 @@ public class XMIParser {
 			        	 Iterator<String> itWP = workProd.getWorkProducts().iterator();
 			        	 while (itWP.hasNext()){
 			        		 String wp  = itWP.next();
-				        	 Iterator<Struct> it3 = result.iterator();
+			        		 Iterator<Struct> it3 = result.iterator();
 				        	 boolean encontre = false;
 				        	 while (it3.hasNext() && !encontre){
 				        		 Struct s = it3.next();
 				        		 if(s.getElementID().equals(wp)){
 				        			 tarea.getHijos().add(s);
-				        			 result.remove(s);
+				        			 //result.remove(s);
 				        			 encontre = true;
 				        		 }
 				        	 }
