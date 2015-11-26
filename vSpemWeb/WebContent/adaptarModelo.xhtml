@@ -2,7 +2,8 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
 	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
-	  xmlns:p="http://primefaces.org/ui">
+	  xmlns:p="http://primefaces.org/ui"
+      xmlns:a4j="http://richfaces.org/a4j">
 	
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	
@@ -33,8 +34,13 @@
 				</f:facet>
 			</p:diagram>
 		</div>
-		<p:commandButton value="Finalizar" action="#{VistaBean.actualizarIndiceActivo(2)}" 
-					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}" update=":panel_principal"/>
+		
+		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() == 0}" update=":panel_principal"
+					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}"
+					 	 action="#{VistaBean.actualizarIndiceActivo(2)}" />
+		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() > 0}"
+						 onclick="PF('erroresDialog').show(); return false;" />
+		
 	</h:form>
 	
 	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true" 
@@ -61,6 +67,17 @@
 			</p:diagram>
 			<br/>
 		 </div>
+	</p:dialog>
+	
+	<p:dialog header="Adaptar modelo" widgetVar="erroresDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 25%; ">
+		<h:form id="erroresDialog_form">
+			<p:outputLabel value="No es posible finalizar la adaptación del modeo debido a los siguientes errores:" />
+			<ui:repeat var="error" value="#{adaptarModeloBean.erroresModeloFinal}"> 
+			   <li>#{error}</li>
+			</ui:repeat>
+			<br/>
+			<p:commandButton value="Cerrar" immediate="true" update=":panel_principal" />
+		</h:form>
 	</p:dialog>
 	
 </html>
