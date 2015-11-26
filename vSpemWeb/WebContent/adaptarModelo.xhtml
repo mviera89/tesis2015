@@ -73,7 +73,7 @@
 		<h:form id="erroresDialog_form">
 			<p:outputLabel value="No es posible finalizar la adaptación del modeo debido a los siguientes errores:" />
 			<ui:repeat var="error" value="#{adaptarModeloBean.erroresModeloFinal}"> 
-			   <li>#{error}</li>
+			   <li><b>#{error[0]}: </b>#{error[1]}</li>
 			</ui:repeat>
 			<br/>
 			<p:commandButton value="Cerrar" immediate="true" update=":panel_principal" />

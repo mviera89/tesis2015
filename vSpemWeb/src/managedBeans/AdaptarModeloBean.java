@@ -47,7 +47,7 @@ public class AdaptarModeloBean {
 	private String[] variantesSeleccionadas;
 	private HashMap<String, String[]> puntosDeVariacion; // <Id del PV, Lista de variantes elegidas>
 	private HashMap<String, String> restriccionesPV;	 // <Id del PV, Booleano que indica si cumple restricciones del PV>
-	private List<String> erroresModeloFinal;
+	private List<String[]> erroresModeloFinal; 			 // Lista de parejas de string {[Nombre del PV, Texto del error]}
 
 	@PostConstruct
     public void init() {
@@ -56,7 +56,7 @@ public class AdaptarModeloBean {
     	variantesSeleccionadas = null;
     	this.puntosDeVariacion = new HashMap<String, String[]>();
     	this.restriccionesPV = new HashMap<String, String>();
-    	erroresModeloFinal = new ArrayList<String>();
+    	erroresModeloFinal = new ArrayList<String[]>();
     	this.y = Constantes.yInicial;
         crearModelo();
     }
@@ -153,7 +153,7 @@ public class AdaptarModeloBean {
 		this.restriccionesPV = restriccionesPV;
 	}
 	
-	public List<String> getErroresModeloFinal() {
+	public List<String[]> getErroresModeloFinal() {
 		erroresModeloFinal.clear();
 		Iterator<Entry<String, String>> it = this.restriccionesPV.entrySet().iterator();
 		while (it.hasNext()){
@@ -163,14 +163,15 @@ public class AdaptarModeloBean {
 				String id = entry.getKey();
 				Element e = obtenerElemento(id);
 				if (e != null){
-					erroresModeloFinal.add(((Struct) e.getData()).getNombre() + ": " + error);
+					String[] errorPV = {((Struct) e.getData()).getNombre(), error};
+					erroresModeloFinal.add(errorPV);
 				}
 			}
 		} 
 		return erroresModeloFinal;
 	}
 
-	public void setErroresModeloFinal(List<String> erroresModeloFinal) {
+	public void setErroresModeloFinal(List<String[]> erroresModeloFinal) {
 		this.erroresModeloFinal = erroresModeloFinal;
 	}
 
