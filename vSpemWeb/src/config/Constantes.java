@@ -12,9 +12,9 @@ public class Constantes {
 	public static final String URL_GITHUB_DEFAULT = "mviera89/tesis2015/tree/master/upload/";
 	public static final String URL_GITHUB_DOWNLOAD = "https://raw.githubusercontent.com/";
 	
-	// Constantes para la representaci�n del modelo
-	public static final int min_default = -1; // Valor por defecto asignado al m�nimo de variantes que se pueden seleccionar para un punto de variaci�n
-	public static final int max_default = -1; // Valor por defecto asignado al m�ximo de variantes que se pueden seleccionar para un punto de variaci�n
+	// Constantes para la representación del modelo
+	public static final int min_default = -1; // Valor por defecto asignado al mínimo de variantes que se pueden seleccionar para un punto de variación
+	public static final int max_default = -1; // Valor por defecto asignado al máximo de variantes que se pueden seleccionar para un punto de variación
 	public static final int distanciaEntreNiveles = 10;
 	public static final int yInicial = 0;
 	public static final float distanciaEntreElemsMismoNivel = (float) 2.0;
@@ -26,5 +26,6 @@ public class Constantes {
 	public static final String MENSAJE_URL_NULL = "Debe ingresar la URL correspondiente al repositorio github donde se encuentra el XMI a importar.";
 	public static final String MENSAJE_URL_NO_ACCESIBLE = "No se pudo acceder a la URL ";
 	public static final String MENSAJE_ARCHIVO_NULL = "Debe seleccionar el archivo que desea cargar.";
+	public static final String MENSAJE_ARCHIVO_INCORRECTO = "El archivo seleccionado no tiene un modelo válido definido.";
 
 }

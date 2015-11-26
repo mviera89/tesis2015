@@ -212,6 +212,20 @@ public class AdaptarModeloBean {
 	        	}
 	        }
 	        
+	        // Si no encuentro el elemento raíz => Modelo inválido
+	        if (raiz == null){
+	        	// Si llegó acá, hay cargado un mensaje de que el archivo fue cargado correctamente, pero no quiero que se muestre.
+	        	Iterator<FacesMessage> it = FacesContext.getCurrentInstance().getMessages();
+	        	while ( it.hasNext() ) {
+	        	    it.next();
+	        	    it.remove();
+	        	}
+	        	// Cargo el mensaje de error
+	        	FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, Constantes.MENSAJE_ARCHIVO_INCORRECTO, "");
+		        FacesContext.getCurrentInstance().addMessage(null, message);
+	        	return;
+	        }
+	        
 	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t));
 	        r.setDescription(raiz.getDescription());
 	        r.setPresentationName(raiz.getPresentationName());
