@@ -30,10 +30,11 @@ import org.primefaces.model.diagram.overlay.ArrowOverlay;
 import config.Constantes;
 import dataTypes.TipoElemento;
 import dataTypes.TipoEtiqueta;
+import dataTypes.TipoRolesTareas;
 import dominio.Struct;
 import dominio.Variant;
 import logica.XMIParser;
- 
+
 @ManagedBean
 @SessionScoped
 public class AdaptarModeloBean {
@@ -53,9 +54,70 @@ public class AdaptarModeloBean {
 	private HashMap<String, List<Struct>> rolesTareasPrimary;
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
 
+
+	/**************************/
+	
+	private List<TipoRolesTareas> rolesTareas;
+	public void Prueba(){
+		rolesTareas = new ArrayList<TipoRolesTareas>();
+		
+		Element r1 = new Element(new Struct("R1", "Rol 1", TipoElemento.ROLE, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.ROLE)));
+		Element e1 = new Element(new Struct("S1", "Struct 1", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
+		Element e2 = new Element(new Struct("S2", "Struct 2", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
+		Element e3 = new Element(new Struct("S3", "Struct 3", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
+		Element e4 = new Element(new Struct("S4", "Struct 4", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
+		
+		DefaultDiagramModel primary1 = new DefaultDiagramModel();
+		DefaultDiagramModel additionally1 = new DefaultDiagramModel();
+		
+		primary1.addElement(r1);
+		primary1.addElement(e1);
+		primary1.addElement(e2);
+		additionally1.addElement(r1);
+		additionally1.addElement(e3);
+		additionally1.addElement(e4);
+		
+		TipoRolesTareas trt1 = new TipoRolesTareas();
+		trt1.setRol((Struct) r1.getData());
+		trt1.setPrimary(primary1);
+		trt1.setAdditionally(additionally1);
+		
+		/*** Segundo rol con las tareas asignadas ***/
+		
+		Element r2 = new Element(new Struct("R2", "Rol 2", TipoElemento.ROLE, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.ROLE)));
+		Element e5 = new Element(new Struct("S5", "Struct 5", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
+		Element e6 = new Element(new Struct("S6", "Struct 6", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
+		Element e7 = new Element(new Struct("S7", "Struct 7", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
+		Element e8 = new Element(new Struct("S8", "Struct 8", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
+		
+		DefaultDiagramModel primary2 = new DefaultDiagramModel();
+		DefaultDiagramModel additionally2 = new DefaultDiagramModel();
+
+		primary2.addElement(r2);
+		primary2.addElement(e5);
+		primary2.addElement(e6);
+		additionally2.addElement(r2);
+		additionally2.addElement(e7);
+		additionally2.addElement(e8);
+		
+		TipoRolesTareas trt2 = new TipoRolesTareas();
+		trt2.setRol((Struct) r2.getData());
+		trt2.setPrimary(primary2);
+		trt2.setAdditionally(additionally2);
+		
+		/*** Agrego los hash a la lista ***/
+		rolesTareas.add(trt1);
+		rolesTareas.add(trt2);
+		
+	}
+	public List<TipoRolesTareas> getRolesTareas() {
+        return rolesTareas;
+    }
+	/**************************/
 	
 	@PostConstruct
     public void init() {
+		this.Prueba(); /*********************/
     	nodos = new ArrayList<Struct>();
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
@@ -441,7 +503,7 @@ public class AdaptarModeloBean {
 		        		}
 		        	}
 	        		
-	        		// Si NO es para la vista previa o si NO es un punto de variación, lo agrego al modelo
+	        		// Si NO es para la vista previa o si NO es un punto de variaciï¿½n, lo agrego al modelo
 		        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
 			        	hijo = new Element(s, x + "em", y + "em");
 				        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
