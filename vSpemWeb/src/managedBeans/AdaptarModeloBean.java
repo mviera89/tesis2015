@@ -427,7 +427,7 @@ public class AdaptarModeloBean {
 		        		}
 		        	}
 	        		
-	        		// Si NO es para la vista previa o si NO es un punto de variación, lo agrego al modelo
+	        		// Si NO es para la vista previa o si NO es un punto de variaciï¿½n, lo agrego al modelo
 		        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
 			        	hijo = new Element(s, x + "em", y + "em");
 				        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
@@ -993,30 +993,30 @@ public class AdaptarModeloBean {
 		modeloRolesTareas = new DefaultDiagramModel();
 		modeloRolesTareas.setMaxConnections(-1);
 		
-//////////////
+
 		FlowChartConnector conector = new FlowChartConnector();
     	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
     	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
     	conector.setAlwaysRespectStubs(true);
     	modeloRolesTareas.setDefaultConnector(conector);
-        
+    	float y = 0;
+    	
         Iterator<Entry<String,List<Struct>>> itera = rolesTareasPrimary.entrySet().iterator();
         while (itera.hasNext()){
        	 Entry<String, List<Struct>> e = itera.next();
        	 String rol = e.getKey();
        	 List<Struct> tareas = e.getValue();
        	 float x = 0;
-       
-       	 float y = 0;
+       	
        	 //buscar rol
        	 if (rol != null){
 	       	 Struct rolS = buscarRol(rol, nodos);
 	       	 if (rolS != null){
-		       	 if (rolS.getNombre() != null){
-		       		 x += rolS.getNombre().length();
-		       	 }
-		       	 else
-		       		 x=0;
+		       	 //if (rolS.getNombre() != null){
+		       	//	 x += rolS.getNombre().length();
+		       	// }
+		       	// else
+		       	//	 x=0;
 		       	 //crear nodo
 			     Element rolE = new Element(rolS);
 				 rolE.setY(y + "em");
@@ -1024,28 +1024,65 @@ public class AdaptarModeloBean {
 				 rolE.addEndPoint(endPointRoot);
 				 rolE.setDraggable(false);
 				 modeloRolesTareas.addElement(rolE);
-				 
+				 x += rolS.getNombre().length();
 		       	 
 		       	 Iterator<Struct> iter = tareas.iterator();
-		       	 while (iter.hasNext()){
+		    	 Struct tareaInicial = iter.next();
+	       		 //crear nodo y conexion
+		       	 Element tareaAsociada = new Element(tareaInicial, x + "em", y + "em");
+			     EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.LEFT);
+			     tareaAsociada.addEndPoint(endPointP1_T);
+			     tareaAsociada.setDraggable(false);
+			     modeloRolesTareas.addElement(tareaAsociada);
+			     modeloRolesTareas.connect(crearConexion(endPointRoot, endPointP1_T));
+			     x += tareaInicial.getNombre().length();
+		      // 	 Struct t = iter.next();
+		       //	 while (iter.hasNext()){
 		       		 Struct tarea = iter.next();
-		       		 //crear nodo y conexion
-		       		Element tareaAsociada = new Element(tarea, x + "em", y + "em");
-			        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.LEFT);
-			        tareaAsociada.addEndPoint(endPointP1_T);
-			        tareaAsociada.setDraggable(false);
-			        modeloRolesTareas.addElement(tareaAsociada);
-			        modeloRolesTareas.connect(crearConexion(endPointRoot, endPointP1_T));
+		       		 //crear nodo
+		       		//Element tareaAsoc = new Element(tarea, x + "em", y + "em");
+			        //modeloRolesTareas.addElement(tareaAsoc);
+			        //x += tarea.getNombre().length();	 
+		       	// }
+		       	 
+		       //agrego tareas adicionales
+		       	 if (rolesTareasAdditionally.containsKey(rolS.getElementID())){
+		       		 if (rolesTareasAdditionally.get(rolS.getElementID()) != null){
+		       			 y += Constantes.distanciaEntreNiveles;
+		       			 x += rolS.getNombre().length();
+		       			 List<Struct> tareasAdicionales = rolesTareasAdditionally.get(rolS.getElementID());
+		       			 //////
+		       			 Struct tareaAdInicial = tareasAdicionales.get(0);
+			       		 //crear nodo y conexion
+				       	 Element tareaAdAsociada = new Element(tareaInicial, x + "em", y + "em");
+					     EndPoint endPointP1_TAd = crearEndPoint(EndPointAnchor.LEFT);
+					     tareaAdAsociada.addEndPoint(endPointP1_TAd);
+					     tareaAdAsociada.setDraggable(false);
+					     modeloRolesTareas.addElement(tareaAdAsociada);
+					     modeloRolesTareas.connect(crearConexion(endPointRoot, endPointP1_TAd));
+					     x += tareaAdInicial.getNombre().length();
+				       	 
+				       	 Iterator<Struct> iterAd = tareasAdicionales.iterator();
+				       	 iterAd.next();
+				       	 while (iterAd.hasNext()){
+				       		 Struct tareaAd = iterAd.next();
+				       		 //crear nodo
+				       		Element tareaAsocAd = new Element(tareaAd, x + "em", y + "em");
+					        modeloRolesTareas.addElement(tareaAsocAd);
+					        x += tareaAd.getNombre().length();	 
+				       	 }
+				
+		       			 ///////
+		       			 
+		       		 }
 		       		 
 		       	 }
-		
+		       	 
 		        }
-		         //this.y += Constantes.distanciaEntreNiveles;
-			
-		
-				//////////
+		         
        	 }
+       	 y += Constantes.distanciaEntreNiveles;
         }
-       }
+       }	
 
 }
