@@ -1,10 +1,14 @@
-
 <html xmlns:h="http://java.sun.com/jsf/html"
 	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:p="http://primefaces.org/ui"
       xmlns:a4j="http://richfaces.org/a4j">
 	
+	<style type="text/css">
+	    .column1{width: 20%; height:auto}
+		.column2{width: 80%; height:auto}
+	</style>
+
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	
 	<h:form id="adaptar_form">
@@ -63,6 +67,67 @@
 		</div>
 	    </p:tab>
 	    <p:tab title="Roles-WorkProducts">
+	    	
+	    	<p:accordionPanel value="#{adaptarModeloBean.rolesTareas}" var="rolTarea">
+		        <p:tab>
+		        	<!-- Muestro el nombre del rol en el encabezado -->
+		        	<f:facet name="title">
+					   <h:graphicImage value="/imagenes/#{rolTarea.rol.imagen}" />
+		               <h:outputText value="#{rolTarea.rol.nombre}"/>
+		            </f:facet>
+		            
+		        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
+			            
+			            <h:panelGroup>
+			               <h:commandLink disabled="#{!rolTarea.rol.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+										  value="#{rolTarea.rol.nombre}" title="#{rolTarea.rol.esPV ? 'Seleccionar variantes' : ''}" style="color: #{rolTarea.rol.color}; position: absolute; left: 8%;">
+								<p:graphicImage value="/imagenes/#{rolTarea.rol.imagen}" style="display:block; margin:auto;" />
+								<p:ajax update=":panel_principal"/>
+								<f:param name="elemSeleccionado" value="#{rolTarea.rol.elementID}"/>
+							</h:commandLink>
+						</h:panelGroup>
+						
+		               	<h:panelGroup>
+		               		
+		               		<p:fieldset style="margin-bottom:20px">
+		               			<legend>Realiza</legend>
+					            <!-- Muestro las tareas primarias del rol -->
+					            <p:diagram value="#{rolTarea.primary}" style="height: 100px;" var="elem">
+									<f:facet name="element">
+										<h:panelGroup rendered="#{elem.type.toString() != 'vpRoleDescriptor' and elem.type.toString() != 'RoleDescriptor'}">
+											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+														   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+												<p:ajax update=":panel_principal"/>
+												<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+											</h:commandLink>
+										</h:panelGroup>
+									</f:facet>
+								</p:diagram>
+							</p:fieldset>
+							
+		               		<p:fieldset style="margin-bottom:20px">
+		               			<legend>Realiza además</legend>
+								<!-- Muestro las tareas adicionales del rol -->
+					            <p:diagram value="#{rolTarea.additionally}" style="height: 100px;" var="elem">
+									<f:facet name="element">
+										<h:panelGroup rendered="#{elem.type.toString() != 'vpRoleDescriptor' and elem.type.toString() != 'RoleDescriptor'}">
+											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+														   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+												<p:ajax update=":panel_principal"/>
+												<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+											</h:commandLink>
+										</h:panelGroup>
+									</f:facet>		
+								</p:diagram>
+							</p:fieldset>
+							
+						</h:panelGroup>
+						
+		        	</h:panelGrid>
+		        </p:tab>
+		    </p:accordionPanel>
 	    </p:tab>
 	    <p:tab title="Tareas-WorkProducts">
 	    </p:tab>
