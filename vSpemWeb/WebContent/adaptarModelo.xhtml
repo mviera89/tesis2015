@@ -13,6 +13,7 @@
 	
 	<h:form id="adaptar_form">
 		<p:tabView>
+			<p:ajax event="tabChange" listener="#{adaptarModeloBean.onTabChange}"/>
 	  
 		    <p:tab id="tab1" title="Modelo">
 				<div style="text-align: right; padding-bottom: 0.3em; ">

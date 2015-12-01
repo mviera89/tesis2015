@@ -42,7 +42,7 @@ public class AdaptarModeloBean {
     
     private DefaultDiagramModel modelo;
 	private DefaultDiagramModel modeloAdaptado;
-	private DefaultDiagramModel modeloRolesTareas;
+	//private DefaultDiagramModel modeloRolesTareas;
 	private int y;
 	private List<Struct> nodos;
 	private Element puntoVariacionAdaptado;
@@ -96,13 +96,14 @@ public class AdaptarModeloBean {
 		this.modeloAdaptado = modelo;
 	}
 
-	public DefaultDiagramModel getModeloRolesTareas() {
+	/*public DefaultDiagramModel getModeloRolesTareas() {
 		return modeloRolesTareas;
 	}
 
 	public void setModeloRolesTareas(DefaultDiagramModel modelo) {
 		this.modeloRolesTareas = modelo;
-	}
+	}*/
+
 	public int getY() {
 		return y;
 	}
@@ -709,39 +710,56 @@ public class AdaptarModeloBean {
 			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
 			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
 			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
-	    	for (int i = 0; i < cantVariantes; i++){
-	    		// Creo la variante
-	
-	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
-	    		String nombreVariante = v.getName();
-				String tipoVariante = v.getVarType();
-	    		String idVariante = this.variantesSeleccionadas[i];
-	    		List<Struct> hijos = v.getHijos();
-	    		
-	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
-	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
-				Struct s = (Struct) hijo.getData();
-				s.setHijos(hijos);
-	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
-	    		hijo.addEndPoint(endPointH1);
-	    		hijo.setDraggable(false);
-		        modeloRolesTareas.addElement(hijo);
-		        
-		        // Creo el endPoint del punto de variación
-		        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
-		        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
-		        
-		        // Conecto el punto de variación con la variante
-		        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
-		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
-		        
-		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-	    	}
-	    	
-	    	/*if (cantVariantes > 0){
-	    		this.crearModeloFinal(this.modelo);
-	    	}*/
+			
+    		// Busco el modelo en el que debo agregarlo
+    		DefaultDiagramModel modeloRolesTareas = null;
+			String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
+			Iterator<TipoRolesTareas> it = rolesTareas.iterator();
+			while (it.hasNext()){
+				TipoRolesTareas trt = it.next();
+				Element e = trt.getRol().getElements().get(0); // El PV es siempre el primer elemento de la lista
+				Struct s = (Struct) e.getData();
+				if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+					modeloRolesTareas = trt.getRol();
+				}
+			}
+    					
+			if (modeloRolesTareas != null){
+		    	for (int i = 0; i < cantVariantes; i++){
+		    		// Creo la variante
+		
+		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+		    		String nombreVariante = v.getName();
+					String tipoVariante = v.getVarType();
+		    		String idVariante = this.variantesSeleccionadas[i];
+		    		List<Struct> hijos = v.getHijos();
+		    		
+		    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+		    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+					Struct s = (Struct) hijo.getData();
+					s.setHijos(hijos);
+		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+		    		hijo.addEndPoint(endPointH1);
+		    		hijo.setDraggable(false);
+		    		
+			        modeloRolesTareas.addElement(hijo);
+			        
+			        // Creo el endPoint del punto de variación
+			        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+			        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+			        
+			        // Conecto el punto de variación con la variante
+			        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
+			        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+			        
+			        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		    	}
+		    	
+		    	/*if (cantVariantes > 0){
+		    		this.crearModeloFinal(this.modelo);
+		    	}*/
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
