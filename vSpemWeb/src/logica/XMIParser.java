@@ -218,6 +218,8 @@ public class XMIParser {
 					String optionalInputs = "";
 					String externalInputs = "";
 					String outputs = "";
+					String responsableDe = "";
+					String modifica = "";
 					List<WorkProduct> lwp = new ArrayList<WorkProduct>();
 					
 					if (eHijo.hasAttribute("name")){
@@ -251,7 +253,7 @@ public class XMIParser {
      		    h.setDescription(description);
 				h.setPresentationName(presentationName);
 				
-				if (tipo == TipoElemento.TASK){
+				if (tipo == TipoElemento.TASK || tipo == TipoElemento.VP_TASK){
 					if (eHijo.hasAttribute("performedPrimarilyBy")){
 						perfPrimaryBy = eHijo.getAttribute("performedPrimarilyBy");
 						h.setPerformedPrimaryBy(perfPrimaryBy);
@@ -305,6 +307,21 @@ public class XMIParser {
 					}
 					
 					workProducts.put(h,lwp);
+				}
+				
+				if (tipo == TipoElemento.ROLE || tipo == TipoElemento.VP_ROLE){
+					if (eHijo.hasAttribute("responsibleFor")){
+						List<String> list = new ArrayList<String>();
+						responsableDe = eHijo.getAttribute("responsibleFor");
+						list = Arrays.asList(responsableDe.split("\\s"));
+						h.setResponsableDe(list);						
+					}
+					if (eHijo.hasAttribute("modifies")){
+						List<String> list = new ArrayList<String>();
+						modifica = eHijo.getAttribute("modifies");
+						list = Arrays.asList(modifica.split("\\s"));
+						h.setModifica(list);						
+					}
 				}
 				
 	      		    

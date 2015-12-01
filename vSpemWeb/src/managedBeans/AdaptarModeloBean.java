@@ -337,8 +337,8 @@ public class AdaptarModeloBean {
 			        String etiqueta = obtenerEtiquetaParaModelo(r, s);
 			        s.setEtiqueta(etiqueta);
 		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-		        	if (tipo == TipoElemento.TASK){
-		        		if (s.getPerformedPrimaryBy() != null){
+		        	if (tipo == TipoElemento.TASK || tipo == TipoElemento.VP_TASK){
+		        		if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
 		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
 		        			}
@@ -476,8 +476,8 @@ public class AdaptarModeloBean {
 	        	
 	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
 
-	        		if (tipo == TipoElemento.TASK){
-		        		if (s.getPerformedPrimaryBy() != null){
+	        		if (tipo == TipoElemento.TASK || tipo == TipoElemento.VP_TASK){
+		        		if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
 		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
 		        			}
@@ -1145,10 +1145,11 @@ public class AdaptarModeloBean {
 		         		}
 		   	       	 }
 		         	rolesTareasAdditionally.remove(rol);
-		          }
-
+		         	
+	       	 }
+	       	y += Constantes.distanciaEntreNiveles;
 		    }
-       	 y += Constantes.distanciaEntreNiveles;
+       	 
         }	
         
         //recorro roles adicionales restantes
