@@ -32,6 +32,7 @@ import config.Constantes;
 import dataTypes.TipoElemento;
 import dataTypes.TipoEtiqueta;
 import dataTypes.TipoRolesTareas;
+import dataTypes.WorkProduct;
 import dominio.Struct;
 import dominio.Variant;
 import logica.XMIParser;
@@ -54,6 +55,8 @@ public class AdaptarModeloBean {
 	private List<String[]> erroresModeloFinal; 			 // Lista de parejas de string {[Nombre del PV, Texto del error]}
 	private HashMap<String, List<Struct>> rolesTareasPrimary;
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
+	private HashMap<String, List<WorkProduct>> rolesWPResponsable;
+	private HashMap<String, List<WorkProduct>> rolesWPModifica;
 
 
 	/**************************/
