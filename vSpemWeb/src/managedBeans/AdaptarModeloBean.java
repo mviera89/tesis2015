@@ -17,6 +17,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.diagram.Connection;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.DiagramModel;
@@ -56,68 +57,97 @@ public class AdaptarModeloBean {
 
 
 	/**************************/
+	String idTab = "";
+	public String getIdTab() {
+		return idTab;
+	}
+	public void setIdTab(String idTab) {
+		this.idTab = idTab;
+	}
+	public void onTabChange(TabChangeEvent event) {
+		idTab = event.getTab().getId();
+	}
 	
 	private List<TipoRolesTareas> rolesTareas;
-	public void Prueba(){
+	public void prueba(){
 		rolesTareas = new ArrayList<TipoRolesTareas>();
 		
-		Element r1 = new Element(new Struct("R1", "Rol 1", TipoElemento.ROLE, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.ROLE)));
-		Element e1 = new Element(new Struct("S1", "Struct 1", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
-		Element e2 = new Element(new Struct("S2", "Struct 2", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
-		Element e3 = new Element(new Struct("S3", "Struct 3", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
-		Element e4 = new Element(new Struct("S4", "Struct 4", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
+		List<String> rolesAgregados = new ArrayList<String>();
 		
-		DefaultDiagramModel primary1 = new DefaultDiagramModel();
-		DefaultDiagramModel additionally1 = new DefaultDiagramModel();
+		// Agrego las tareas primarias
+		Iterator<Entry<String, List<Struct>>> it = rolesTareasPrimary.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<Struct>> entry = it.next();
+			String idRol = entry.getKey();
+			List<Struct> tareas = entry.getValue();
+			if ((idRol != null) && (!idRol.equals(""))){
+				Struct rol = buscarRol(idRol, nodos);
+		       	if (rol != null){
+		       		rolesAgregados.add(idRol);
+		    		TipoRolesTareas trt = new TipoRolesTareas();
+		    		DefaultDiagramModel rolModel = crearModeloParaRol(rol);
+		       		trt.setRol(rolModel);
+		       		trt.setPrimary(tareas);
+		       		rolesTareas.add(trt);
+		       	}
+			}
+		}
 		
-		primary1.addElement(r1);
-		primary1.addElement(e1);
-		primary1.addElement(e2);
-		additionally1.addElement(r1);
-		additionally1.addElement(e3);
-		additionally1.addElement(e4);
-		
-		TipoRolesTareas trt1 = new TipoRolesTareas();
-		trt1.setRol((Struct) r1.getData());
-		trt1.setPrimary(primary1);
-		trt1.setAdditionally(additionally1);
-		
-		/*** Segundo rol con las tareas asignadas ***/
-		
-		Element r2 = new Element(new Struct("R2", "Rol 2", TipoElemento.ROLE, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.ROLE)));
-		Element e5 = new Element(new Struct("S5", "Struct 5", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
-		Element e6 = new Element(new Struct("S6", "Struct 6", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
-		Element e7 = new Element(new Struct("S7", "Struct 7", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "10em", "0em");
-		Element e8 = new Element(new Struct("S8", "Struct 8", TipoElemento.TASK, -1, -1, XMIParser.obtenerIconoPorTipo(TipoElemento.TASK)), "20em", "0em");
-		
-		DefaultDiagramModel primary2 = new DefaultDiagramModel();
-		DefaultDiagramModel additionally2 = new DefaultDiagramModel();
-
-		primary2.addElement(r2);
-		primary2.addElement(e5);
-		primary2.addElement(e6);
-		additionally2.addElement(r2);
-		additionally2.addElement(e7);
-		additionally2.addElement(e8);
-		
-		TipoRolesTareas trt2 = new TipoRolesTareas();
-		trt2.setRol((Struct) r2.getData());
-		trt2.setPrimary(primary2);
-		trt2.setAdditionally(additionally2);
-		
-		/*** Agrego los hash a la lista ***/
-		rolesTareas.add(trt1);
-		rolesTareas.add(trt2);
-		
+		// Agrego las tareas adicionales
+		it = rolesTareasAdditionally.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<Struct>> entry = it.next();
+			String idRol = entry.getKey();
+			List<Struct> tareas = entry.getValue();
+			if ((idRol != null) && (!idRol.equals(""))){
+				Struct rol = buscarRol(idRol, nodos);
+		       	if (rol != null){
+		       		if (!rolesAgregados.contains(idRol)){
+			       		rolesAgregados.add(idRol);
+			    		TipoRolesTareas trt = new TipoRolesTareas();
+			    		DefaultDiagramModel rolModel = crearModeloParaRol(rol);
+			       		trt.setRol(rolModel);
+			       		trt.setPrimary(tareas);
+			       		rolesTareas.add(trt);
+		       		}
+		       		else{
+		       			Iterator<TipoRolesTareas> iter = rolesTareas.iterator();
+		       			while (iter.hasNext()){
+		       				TipoRolesTareas trt = iter.next();
+		       				Struct s = (Struct) trt.getRol().getElements().get(0).getData();
+		       				if (s.getElementID().equals(idRol)){
+		       					trt.setAdditionally(tareas);
+		       				}
+		       			}
+		       		}
+		       	}
+			}
+		}
 	}
 	public List<TipoRolesTareas> getRolesTareas() {
         return rolesTareas;
     }
+	public DefaultDiagramModel crearModeloParaRol(Struct rol){
+		DefaultDiagramModel modeloRol = new DefaultDiagramModel();
+        modeloRol.setMaxConnections(-1);
+	   	
+    	FlowChartConnector conector = new FlowChartConnector();
+    	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
+    	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
+    	conector.setAlwaysRespectStubs(true);
+        modeloRol.setDefaultConnector(conector);
+        
+        // Agrego el rol como elemento raiz
+        Element root = new Element(rol);
+        root.setDraggable(false);
+    	modeloRol.addElement(root);
+    	
+    	return modeloRol;
+	}
 	/**************************/
 	
 	@PostConstruct
     public void init() {
-		this.Prueba(); /*********************/
     	nodos = new ArrayList<Struct>();
     	variantes = new ArrayList<SelectItem>();
     	variantesSeleccionadas = null;
@@ -129,7 +159,8 @@ public class AdaptarModeloBean {
     	erroresModeloFinal = new ArrayList<String[]>();
     	this.y = Constantes.yInicial;
         crearModelo();
-        crearModeloRolesTareas();
+       // crearModeloRolesTareas();
+        prueba(); /****************************/
     }
 
     /*** Getters y Setters ***/
@@ -204,7 +235,16 @@ public class AdaptarModeloBean {
 			}
 			this.variantesSeleccionadas = variantesSeleccionadas;
 			actualizarVariantesParaPV();
-			this.redibujarModelo();
+			if (idTab.equals("tab1")){
+				this.redibujarModelo();
+			}
+			else if (idTab.equals("tab2")){
+			}
+			else if (idTab.equals("tab3")){
+				this.redibujarModeloRoles();
+			}
+			else if (idTab.equals("tab4")){
+			}
 			RequestContext context = RequestContext.getCurrentInstance();
 			context.execute("PF('variantesDialog').hide()");
 			context.update("panel_principal");
@@ -337,8 +377,8 @@ public class AdaptarModeloBean {
 			        String etiqueta = obtenerEtiquetaParaModelo(r, s);
 			        s.setEtiqueta(etiqueta);
 		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
-		        	if (tipo == TipoElemento.TASK){
-		        		if (s.getPerformedPrimaryBy() != null){
+		        	if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
+		        		if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
 		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
 		        			}
@@ -432,6 +472,59 @@ public class AdaptarModeloBean {
 		}
     }
 
+	public void redibujarModeloRoles() {
+		try{
+	    	int cantVariantes = this.variantesSeleccionadas.length;
+	    	String xStr = this.puntoVariacionAdaptado.getX(); 
+	    	if (xStr == null) {
+	    		xStr = "0em";
+	    	}
+	    	String yStr = this.puntoVariacionAdaptado.getY();
+	    	if (yStr == null) {
+	    		yStr = "0em";
+	    	}
+			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
+			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
+	    	for (int i = 0; i < cantVariantes; i++){
+	    		// Creo la variante
+	
+	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+	    		String nombreVariante = v.getName();
+				String tipoVariante = v.getVarType();
+	    		String idVariante = this.variantesSeleccionadas[i];
+	    		List<Struct> hijos = v.getHijos();
+	    		
+	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+				Struct s = (Struct) hijo.getData();
+				s.setHijos(hijos);
+	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+	    		hijo.addEndPoint(endPointH1);
+	    		hijo.setDraggable(false);
+		        modeloRolesTareas.addElement(hijo);
+		        
+		        // Creo el endPoint del punto de variación
+		        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+		        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+		        
+		        // Conecto el punto de variación con la variante
+		        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
+		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+		        
+		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+	    	}
+	    	
+	    	/*if (cantVariantes > 0){
+	    		this.crearModeloFinal(this.modelo);
+	    	}*/
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
 	public void redibujarHijos(){
 		FacesContext fc = FacesContext.getCurrentInstance();
 		ExternalContext c = fc.getExternalContext();
@@ -476,8 +569,8 @@ public class AdaptarModeloBean {
 	        	
 	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
 
-	        		if (tipo == TipoElemento.TASK){
-		        		if (s.getPerformedPrimaryBy() != null){
+	        		if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
+	        			if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
 		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
 		        			}
