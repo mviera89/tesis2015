@@ -30,6 +30,8 @@ public class Struct {
     private List<String> optionalInputs;
     private List<String> externalInputs;
     private List<String> outputs;
+    private List<String> responsableDe;
+    private List<String> modifica;
    
     
 
@@ -60,6 +62,8 @@ public class Struct {
 		this.optionalInputs = null;
 		this.externalInputs = null;
 		this.outputs = null;
+		this.responsableDe = null;
+		this.modifica = null;
 				
 	}
 
@@ -222,6 +226,23 @@ public class Struct {
 	public void setOutputs(List<String> outputs) {
 		this.outputs = outputs;
 	}
+
+	public List<String> getResponsableDe() {
+		return responsableDe;
+	}
+
+	public void setResponsableDe(List<String> responsableDe) {
+		this.responsableDe = responsableDe;
+	}
+
+	public List<String> getModifica() {
+		return modifica;
+	}
+
+	public void setModifica(List<String> modifica) {
+		this.modifica = modifica;
+	}
+	
 	
 	
 

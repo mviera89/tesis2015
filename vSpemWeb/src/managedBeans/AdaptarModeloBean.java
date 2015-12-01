@@ -568,7 +568,7 @@ public class AdaptarModeloBean {
 	        	}
 	        	
 	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
-
+	        		
 	        		if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
 	        			if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
@@ -1238,10 +1238,11 @@ public class AdaptarModeloBean {
 		         		}
 		   	       	 }
 		         	rolesTareasAdditionally.remove(rol);
-		          }
-
+		         	
+	       	 }
+	       	y += Constantes.distanciaEntreNiveles;
 		    }
-       	 y += Constantes.distanciaEntreNiveles;
+       	 
         }	
         
         //recorro roles adicionales restantes
