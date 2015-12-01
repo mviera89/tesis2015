@@ -297,7 +297,41 @@ public class AdaptarModeloBean {
 	        	}
 	        	
 	        	// Este modelo NO muestra roles ni workproducts
-				if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){ 
+	        	//Si en un rol me fijo en los workproducts
+	        	if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VP_ROLE)){
+	        		/////////////
+	        		if (s.getResponsableDe() != null){
+	        		}/*
+	        		}
+	        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
+	        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
+	        			}
+	        			else{
+	        				List<Struct> list = new ArrayList<Struct>();
+	        				list.add(s);
+	        				rolesTareasPrimary.put(s.getPerformedPrimaryBy(), list);
+	        			}
+	        		}
+	        		if (s.getPerformedAditionallyBy() != null){
+	        			Iterator<String> it1 = s.getPerformedAditionallyBy().iterator();
+	        			while(it1.hasNext()){
+	        				String rol = it1.next();
+		        			if (rolesTareasAdditionally.containsKey(rol)){
+		        				rolesTareasAdditionally.get(rol).add(s);
+		        			}
+		        			else{
+		        				List<Struct> list = new ArrayList<Struct>();
+		        				list.add(s);
+		        				rolesTareasAdditionally.put(rol, list);
+		        			}
+	        			}
+	        		}
+	    */
+	        		
+	        		////////////////
+	        		
+	        	}
+	        	else if ((tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){ 
 		        	Element padre = new Element(s, x + "em", this.y + "em");
 			        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 			        padre.addEndPoint(endPointP1_T);
