@@ -16,6 +16,7 @@ public class Constantes {
 	public static final int min_default = -1; // Valor por defecto asignado al mínimo de variantes que se pueden seleccionar para un punto de variación
 	public static final int max_default = -1; // Valor por defecto asignado al máximo de variantes que se pueden seleccionar para un punto de variación
 	public static final int distanciaEntreNiveles = 10;
+	public static final int distanciaEntreNivelesMismoRol = 5;
 	public static final int yInicial = 0;
 	public static final float distanciaEntreElemsMismoNivel = (float) 2.0;
 	public static final String colorVarPoint = "mediumblue";
