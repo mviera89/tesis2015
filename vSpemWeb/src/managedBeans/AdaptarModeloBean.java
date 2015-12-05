@@ -581,13 +581,15 @@ public class AdaptarModeloBean {
 		
 		if (idElemSeleccionado != null){
 	        Element elemento = obtenerElemento(idElemSeleccionado);
-	        Struct s = (Struct) elemento.getData();
-	        if (s.getEsPV()){
-				puntoVariacionAdaptado = elemento;
-				cargarVariantesDelPunto(idElemSeleccionado);
-				RequestContext context = RequestContext.getCurrentInstance();
-				context.execute("PF('variantesDialog').show()");
-			}
+	        if (elemento != null){
+		        Struct s = (Struct) elemento.getData();
+		        if (s.getEsPV()){
+					puntoVariacionAdaptado = elemento;
+					cargarVariantesDelPunto(idElemSeleccionado);
+					RequestContext context = RequestContext.getCurrentInstance();
+					context.execute("PF('variantesDialog').show()");
+				}
+	        }
 		}
 	}
 
