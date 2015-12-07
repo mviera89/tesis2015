@@ -5,16 +5,17 @@
       xmlns:a4j="http://richfaces.org/a4j">
 	
 	<style type="text/css">
-	    .column1{width: 20%; height:auto}
-		.column2{width: 80%; height:auto}
+	    .column1{width: 20%; height:auto;}
+		.column2{width: 80%; height:auto;}
+		.ui-datagrid-content{border: 0px;}
 	</style>
-
+	
 	<h3 style="margin-top:1%">Adaptar modelo</h3>
 	
 	<h:form id="adaptar_form">
 		<p:tabView>
 			<p:ajax event="tabChange" listener="#{adaptarModeloBean.onTabChange}"/>
-	  
+	  		
 		    <p:tab id="tab1" title="Modelo">
 				<div style="text-align: right; padding-bottom: 0.3em; ">
 					<p:commandButton value="Vista previa" action="#{adaptarModeloBean.mostrarVistaPrevia()}" update=":panel_principal" />
@@ -27,9 +28,9 @@
 								<div style="position: relative; display:block; margin:auto; width: 32px;">
 									<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 										<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-										<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;" 
+										<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;"
 														rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
-										<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;" 
+										<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;"
 														rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
 										<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
 										<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
@@ -56,7 +57,7 @@
 			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
 				            
 				            <h:panelGroup>
-								<p:diagram value="#{rolTarea.rol}" style="height: 360px;" var="elem">
+								<p:diagram value="#{rolTarea.rol}" style="height: #{(rolTarea.rol.connections.size() + 1) * 110}px;" var="elem">
 									<f:facet name="element">
 										<h:panelGroup>
 											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
@@ -74,30 +75,27 @@
 			               		<p:fieldset style="margin-bottom:20px" rendered="#{rolTarea.primary.size() > 0}">
 			               			<legend>Realiza</legend>
 			               			<!-- Muestro las tareas principales del rol -->
-			               			<p:dataList value="#{rolTarea.primary}" var="elem" type="definition">
-								        <h:panelGroup>
-								        	<h:outputLabel value="#{elem.nombre}" >
-												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-											</h:outputLabel>
-										</h:panelGroup>
-								    </p:dataList>
+			               			<p:dataGrid value="#{rolTarea.primary}" var="elem" columns="#{rolTarea.primary.size() > 4 ? 4 : rolTarea.primary.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
 								</p:fieldset>
 								
 			               		<p:fieldset style="margin-bottom:20px" rendered="#{rolTarea.additionally.size() > 0}">
 			               			<legend>Realiza además</legend>
 									<!-- Muestro las tareas adicionales del rol -->
-			               			<p:dataList value="#{rolTarea.additionally}" var="elem" type="definition">
-								        <h:panelGroup>
-								        	<h:outputLabel value="#{elem.nombre}" >
-												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-											</h:outputLabel>
-										</h:panelGroup>
-								    </p:dataList>
+			               			<p:dataGrid value="#{rolTarea.additionally}" var="elem" columns="#{rolTarea.additionally.size() > 4 ? 4: rolTarea.additionally.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
 								</p:fieldset>
 								
 							</h:panelGroup>
 							
 			        	</h:panelGrid>
+			        	
 			        </p:tab>
 			    </p:accordionPanel>
 		    </p:tab>
@@ -117,10 +115,10 @@
 						 onclick="PF('erroresDialog').show(); return false;" />
 	</h:form>
 	
-	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true" 
+	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true"
 			  style="min-width: 25%; ">
 		<h:form id="seleccionarVariante_form">
-			<p:selectManyCheckbox id="variantesCheck" value="#{adaptarModeloBean.variantesSeleccionadas}" layout="grid" columns="1" 
+			<p:selectManyCheckbox id="variantesCheck" value="#{adaptarModeloBean.variantesSeleccionadas}" layout="grid" columns="1"
 								  style="margin-bottom: 5%;">
 				<f:selectItems value="#{adaptarModeloBean.variantes}" var="var" itemLabel="#{var.label}" itemValue="#{var.value}" />
 			</p:selectManyCheckbox>
@@ -146,7 +144,7 @@
 	<p:dialog header="Adaptar modelo" widgetVar="erroresDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 25%; ">
 		<h:form id="erroresDialog_form">
 			<p:outputLabel value="No es posible finalizar la adaptación del modeo debido a los siguientes errores:" />
-			<ui:repeat var="error" value="#{adaptarModeloBean.erroresModeloFinal}"> 
+			<ui:repeat var="error" value="#{adaptarModeloBean.erroresModeloFinal}">
 			   <li><b>#{error[0]}: </b>#{error[1]}</li>
 			</ui:repeat>
 			<br/>
