@@ -55,7 +55,7 @@ public class AdaptarModeloBean {
 	private HashMap<String, List<Struct>> rolesTareasPrimary;
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
 
-	String idTab = "";
+	String idTab = "tab1";
 	private List<TipoRolesTareas> rolesTareas;
 
 	@PostConstruct
@@ -147,7 +147,7 @@ public class AdaptarModeloBean {
 			String clave = pv.getElementID();
 			String[] variantesParaPV = this.puntosDeVariacion.get(clave);
 			if (variantesParaPV != null){
-				eliminarVariantesSeleccionadas(variantesParaPV);
+				eliminarVariantesSeleccionadas(variantesParaPV, idTab);
 			}
 			this.variantesSeleccionadas = variantesSeleccionadas;
 			actualizarVariantesParaPV();
@@ -308,7 +308,15 @@ public class AdaptarModeloBean {
 		        	if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
 		        		if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
-		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
+		        				Iterator<Struct> itStruct = rolesTareasPrimary.get(s.getPerformedPrimaryBy()).iterator();
+		        				boolean fin = false;
+		        				while (itStruct.hasNext() && !fin){
+		        					Struct st = (Struct) itStruct.next();
+		        					fin = (st.getElementID().equals(s.getElementID()));
+		        				}
+		        				if (!fin){ // La tarea no está => La agrego
+		        					rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
+		        				}
 		        			}
 		        			else{
 		        				List<Struct> list = new ArrayList<Struct>();
@@ -321,7 +329,15 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String rol = it1.next();
 			        			if (rolesTareasAdditionally.containsKey(rol)){
-			        				rolesTareasAdditionally.get(rol).add(s);
+			        				Iterator<Struct> itStruct = rolesTareasAdditionally.get(rol).iterator();
+			        				boolean fin = false;
+			        				while (itStruct.hasNext() && !fin){
+			        					Struct st = (Struct) itStruct.next();
+			        					fin = (st.getElementID().equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					rolesTareasAdditionally.get(rol).add(s);
+			        				}
 			        			}
 			        			else{
 			        				List<Struct> list = new ArrayList<Struct>();
@@ -363,7 +379,7 @@ public class AdaptarModeloBean {
 			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
 	    	for (int i = 0; i < cantVariantes; i++){
 	    		// Creo la variante
-	
+	    		
 	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
 	    		String nombreVariante = v.getName();
 				String tipoVariante = v.getVarType();
@@ -447,7 +463,15 @@ public class AdaptarModeloBean {
 	        		if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
 	        			if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
-		        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
+		        				Iterator<Struct> itStruct = rolesTareasPrimary.get(s.getPerformedPrimaryBy()).iterator();
+		        				boolean fin = false;
+		        				while (itStruct.hasNext() && !fin){
+		        					Struct st = (Struct) itStruct.next();
+		        					fin = (st.getElementID().equals(s.getElementID()));
+		        				}
+		        				if (!fin){ // La tarea no está => La agrego
+		        					rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
+		        				}
 		        			}
 		        			else{
 		        				List<Struct> list = new ArrayList<Struct>();
@@ -460,7 +484,15 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String rol = it1.next();
 			        			if (rolesTareasAdditionally.containsKey(rol)){
-			        				rolesTareasAdditionally.get(rol).add(s);
+			        				Iterator<Struct> itStruct = rolesTareasAdditionally.get(rol).iterator();
+			        				boolean fin = false;
+			        				while (itStruct.hasNext() && !fin){
+			        					Struct st = (Struct) itStruct.next();
+			        					fin = (st.getElementID().equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					rolesTareasAdditionally.get(rol).add(s);
+			        				}
 			        			}
 			        			else{
 			        				List<Struct> list = new ArrayList<Struct>();
@@ -605,13 +637,34 @@ public class AdaptarModeloBean {
         }
 	}
 
-	public void eliminarVariantesSeleccionadas(String[] variantesParaPV){
+	public void eliminarVariantesSeleccionadas(String[] variantesParaPV, String idTab){
     	int i = 0;
     	int cantVariantes = variantesParaPV.length;
 		for (i = 0; i < cantVariantes; i++){
 			Element e = obtenerElemento(variantesParaPV[i]);
 			if (e != null){
-				modelo.removeElement(e);
+				if (idTab.equals("tab1")){
+					modelo.removeElement(e);
+				}
+				else if (idTab.equals("tab2")){
+					// Busco el modelo en el que debo agregarlo
+		    		DefaultDiagramModel modeloRolesTareas = null;
+					String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
+					Iterator<TipoRolesTareas> it = rolesTareas.iterator();
+					while ((it.hasNext()) && (modeloRolesTareas == null)){
+						TipoRolesTareas trt = it.next();
+						Element elem = trt.getRol().getElements().get(0); // El PV es siempre el primer elemento de la lista
+						Struct s = (Struct) elem.getData();
+						if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+							modeloRolesTareas = trt.getRol();
+						}
+					}
+					modeloRolesTareas.removeElement(e);
+				}
+				else if (idTab.equals("tab3")){
+				}
+				else if (idTab.equals("tab4")){
+				}
 			}
     	}
 	}
@@ -717,7 +770,7 @@ public class AdaptarModeloBean {
     		DefaultDiagramModel modeloRolesTareas = null;
 			String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 			Iterator<TipoRolesTareas> it = rolesTareas.iterator();
-			while (it.hasNext()){
+			while ((it.hasNext()) && (modeloRolesTareas == null)){
 				TipoRolesTareas trt = it.next();
 				Element e = trt.getRol().getElements().get(0); // El PV es siempre el primer elemento de la lista
 				Struct s = (Struct) e.getData();
@@ -729,7 +782,7 @@ public class AdaptarModeloBean {
 			if (modeloRolesTareas != null){
 		    	for (int i = 0; i < cantVariantes; i++){
 		    		// Creo la variante
-		
+		    		
 		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
 		    		String nombreVariante = v.getName();
 					String tipoVariante = v.getVarType();
