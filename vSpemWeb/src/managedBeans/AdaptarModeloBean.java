@@ -32,6 +32,7 @@ import config.Constantes;
 import dataTypes.TipoElemento;
 import dataTypes.TipoEtiqueta;
 import dataTypes.TipoRolesTareas;
+import dataTypes.TipoRolesWorkProducts;
 import dataTypes.WorkProduct;
 import dominio.Struct;
 import dominio.Variant;
@@ -55,11 +56,12 @@ public class AdaptarModeloBean {
 	private List<String[]> erroresModeloFinal; 			 // Lista de parejas de string {[Nombre del PV, Texto del error]}
 	private HashMap<String, List<Struct>> rolesTareasPrimary;
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
-	private HashMap<String, List<WorkProduct>> rolesWPResponsable;
-	private HashMap<String, List<WorkProduct>> rolesWPModifica;
+	private HashMap<String, List<String>> rolesWPResponsable;
+	private HashMap<String, List<String>> rolesWPModifica;
 
 	String idTab = "";
 	private List<TipoRolesTareas> rolesTareas;
+	private List<TipoRolesWorkProducts> rolesWP;
 
 	@PostConstruct
     public void init() {
@@ -70,11 +72,14 @@ public class AdaptarModeloBean {
 
     	this.rolesTareasPrimary = new HashMap<String, List<Struct>>();
     	this.rolesTareasAdditionally = new HashMap<String, List<Struct>>();
+    	this.rolesWPResponsable = new HashMap<String, List<String>>();
+    	this.rolesWPModifica = new HashMap<String, List<String>>();
     	this.restriccionesPV = new HashMap<String, String>();
     	erroresModeloFinal = new ArrayList<String[]>();
     	this.y = Constantes.yInicial;
         crearModelo();
         crearModeloRolesTareas();
+        crearModeloRolesWorkProducts();
     }
 
 	public void onTabChange(TabChangeEvent event) {
@@ -161,6 +166,7 @@ public class AdaptarModeloBean {
 				this.redibujarModeloRoles();
 			}
 			else if (idTab.equals("tab3")){
+				this.redibujarModeloWPS();
 			}
 			else if (idTab.equals("tab4")){
 			}
@@ -223,6 +229,16 @@ public class AdaptarModeloBean {
 	public List<TipoRolesTareas> getRolesTareas() {
         return rolesTareas;
     }
+	
+	
+
+	public List<TipoRolesWorkProducts> getRolesWP() {
+		return rolesWP;
+	}
+
+	public void setRolesWP(List<TipoRolesWorkProducts> rolesWP) {
+		this.rolesWP = rolesWP;
+	}
 
 	/*** Crear modelo ***/
 
@@ -298,36 +314,40 @@ public class AdaptarModeloBean {
 	        	}
 	        	
 	        	// Este modelo NO muestra roles ni workproducts
-	        	//Si en un rol me fijo en los workproducts
+	        	//Si en un wp me fijo en los roles
 	        	if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VP_ROLE)){
 	        		/////////////
 	        		if (s.getResponsableDe() != null){
-	        		}/*
-	        		}
-	        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
-	        				rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
-	        			}
-	        			else{
-	        				List<Struct> list = new ArrayList<Struct>();
-	        				list.add(s);
-	        				rolesTareasPrimary.put(s.getPerformedPrimaryBy(), list);
-	        			}
-	        		}
-	        		if (s.getPerformedAditionallyBy() != null){
-	        			Iterator<String> it1 = s.getPerformedAditionallyBy().iterator();
+
+	        			Iterator<String> it1 = s.getResponsableDe().iterator();
 	        			while(it1.hasNext()){
-	        				String rol = it1.next();
-		        			if (rolesTareasAdditionally.containsKey(rol)){
-		        				rolesTareasAdditionally.get(rol).add(s);
+	        				String wp = it1.next();
+		        			if (rolesWPResponsable.containsKey(s.getElementID())){
+		        				rolesWPResponsable.get(s.getElementID()).add(wp);
 		        			}
 		        			else{
-		        				List<Struct> list = new ArrayList<Struct>();
-		        				list.add(s);
-		        				rolesTareasAdditionally.put(rol, list);
+		        				List<String> list = new ArrayList<String>();
+		        				list.add(wp);
+		        				rolesWPResponsable.put(s.getElementID(), list);
 		        			}
 	        			}
-	        		}
-	    */
+	        		}		
+	        		
+	        		if (s.getModifica() != null){
+
+	        			Iterator<String> it1 = s.getModifica().iterator();
+	        			while(it1.hasNext()){
+	        				String wp = it1.next();
+		        			if (rolesWPModifica.containsKey(s.getElementID())){
+		        				rolesWPModifica.get(s.getElementID()).add(wp);
+		        			}
+		        			else{
+		        				List<String> list = new ArrayList<String>();
+		        				list.add(wp);
+		        				rolesWPModifica.put(s.getElementID(), list);
+		        			}
+	        			}
+	        		}		
 	        		
 	        		////////////////
 	        		
@@ -368,6 +388,7 @@ public class AdaptarModeloBean {
 		        			}
 		        		}
 		        	}
+		        	buscoVPRolesEnHijos(s.getHijos());
 				}
 	        }
 	        root.setX(x/2 + "em");
@@ -377,6 +398,50 @@ public class AdaptarModeloBean {
 		if (modelo.getElements().size() > 0){
     		this.crearModeloFinal(this.modelo);
     	}
+    }
+    
+    public void buscoVPRolesEnHijos(List<Struct> list){
+    	Iterator<Struct> it = list.iterator();
+    	while (it.hasNext()){
+    		Struct s = it.next();
+    		if(s.getType() == TipoElemento.VP_ROLE){
+    			if (s.getResponsableDe() != null){
+
+        			Iterator<String> it1 = s.getResponsableDe().iterator();
+        			while(it1.hasNext()){
+        				String wp = it1.next();
+	        			if (rolesWPResponsable.containsKey(s.getElementID())){
+	        				rolesWPResponsable.get(s.getElementID()).add(wp);
+	        			}
+	        			else{
+	        				List<String> list2 = new ArrayList<String>();
+	        				list2.add(wp);
+	        				rolesWPResponsable.put(s.getElementID(), list2);
+	        			}
+        			}
+        		}		
+        		
+        		if (s.getModifica() != null){
+
+        			Iterator<String> it1 = s.getModifica().iterator();
+        			while(it1.hasNext()){
+        				String wp = it1.next();
+	        			if (rolesWPModifica.containsKey(s.getElementID())){
+	        				rolesWPModifica.get(s.getElementID()).add(wp);
+	        			}
+	        			else{
+	        				List<String> list2 = new ArrayList<String>();
+	        				list2.add(wp);
+	        				rolesWPModifica.put(s.getElementID(), list2);
+	        			}
+        			}
+        		}		
+
+    			
+    		}
+    	}
+    	
+    	
     }
 
     public static EndPoint crearEndPoint(EndPointAnchor anchor) {
@@ -479,7 +544,7 @@ public class AdaptarModeloBean {
 	        		this.restriccionesPV.put(s.getElementID(), validarSeleccion(null, s));
 	        	}
 	        	
-	        	if ((tipo != TipoElemento.ROLE) && (tipo != TipoElemento.VP_ROLE) && (tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
+	        	if ((tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
 	        		
 	        		if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
 	        			if (!s.getPerformedPrimaryBy().equals("")){
@@ -507,9 +572,44 @@ public class AdaptarModeloBean {
 		        			}
 		        		}
 		        	}
+		        	if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VP_ROLE)){
+		        		/////////////
+		        		if (s.getResponsableDe() != null){
+
+		        			Iterator<String> it1 = s.getResponsableDe().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (rolesWPResponsable.containsKey(s.getElementID())){
+			        				rolesWPResponsable.get(s.getElementID()).add(wp);
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				rolesWPResponsable.put(s.getElementID(), list);
+			        			}
+		        			}
+		        		}		
+		        		
+		        		if (s.getModifica() != null){
+
+		        			Iterator<String> it1 = s.getModifica().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (rolesWPModifica.containsKey(s.getElementID())){
+			        				rolesWPModifica.get(s.getElementID()).add(wp);
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				rolesWPModifica.put(s.getElementID(), list);
+			        			}
+		        			}
+		        		}		
+		        	}
+	        		////////////////
 	        		
 	        		// Si NO es para la vista previa o si NO es un punto de variaci�n, lo agrego al modelo
-		        	if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
+		        	else if ((!esVistaPrevia) || (s.getVariantes().size() == 0)){
 			        	hijo = new Element(s, x + "em", y + "em");
 				        EndPoint endPointHijo = crearEndPoint(EndPointAnchor.TOP);
 				        hijo.addEndPoint(endPointHijo);
@@ -805,6 +905,188 @@ public class AdaptarModeloBean {
 		}
     }
 
+	/*** Modelo Roles WorkProducts ***/
+	
+	public DefaultDiagramModel crearModeloParaWPS(List<String> wps){
+		DefaultDiagramModel modeloWps = new DefaultDiagramModel();
+		modeloWps.setMaxConnections(-1);
+	   	
+    	FlowChartConnector conector = new FlowChartConnector();
+    	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
+    	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
+    	conector.setAlwaysRespectStubs(true);
+    	modeloWps.setDefaultConnector(conector);
+    	float x = 0;
+    	float y = 0;
+    	//Para cada wp lo busco y lo agrego
+    	Iterator<String> itWP = wps.iterator();
+    	while (itWP.hasNext()){
+    		String wp = itWP.next();
+    		Struct wpS = buscarWP(wp, nodos);
+    		if (wpS != null){
+		        Element root = new Element(wpS, x + "em", y + "em");
+		        root.setDraggable(false);
+		        modeloWps.addElement(root);
+		        x += wpS.getNombre().length();
+    		}
+    	}
+    	return modeloWps;
+	}
+	
+	public void crearModeloRolesWorkProducts(){
+		rolesWP = new ArrayList<TipoRolesWorkProducts>();
+		
+		List<String> rolesAgregados = new ArrayList<String>();
+		
+		// Agrego los wp que es responsable
+		Iterator<Entry<String, List<String>>> it = rolesWPResponsable.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<String>> entry = it.next();
+			String idRol = entry.getKey();
+			List<String> wps = entry.getValue();
+			if ((idRol != null) && (!idRol.equals(""))){
+				Struct rol = buscarRol(idRol, nodos);
+		       	if (rol != null){
+		       		rolesAgregados.add(idRol);
+		       		TipoRolesWorkProducts trt = new TipoRolesWorkProducts();
+		       		//crear modelo para wps
+		       		DefaultDiagramModel wpsModel = crearModeloParaWPS(wps);
+		       		trt.setRol(rol);
+		       		trt.setResponsableDe(wpsModel);
+		       		rolesWP.add(trt);
+		       	}
+			}
+		}
+		
+		// Agrego los wp que modifica
+		it = rolesWPModifica.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<String>> entry = it.next();
+			String idRol = entry.getKey();
+			List<String> wps = entry.getValue();
+			if ((idRol != null) && (!idRol.equals(""))){
+				Struct rol = buscarRol(idRol, nodos);
+		       	if (rol != null){
+		       		if (!rolesAgregados.contains(idRol)){
+			       		rolesAgregados.add(idRol);
+			       		TipoRolesWorkProducts trt = new TipoRolesWorkProducts();
+			       		//crear modelo para wps
+			       		DefaultDiagramModel wpsModel = crearModeloParaWPS(wps);
+			       		trt.setRol(rol);
+			       		trt.setModifica(wpsModel);
+			       		rolesWP.add(trt);
+		       		}
+		       		else{
+		       			Iterator<TipoRolesWorkProducts> iter = rolesWP.iterator();
+		       			while (iter.hasNext()){
+		       				TipoRolesWorkProducts trt = iter.next();
+		       				Struct s = trt.getRol();		       			
+		       				if (s.getElementID().equals(idRol)){
+		       					DefaultDiagramModel wpsModel = crearModeloParaWPS(wps);
+		       					trt.setModifica(wpsModel);
+		       				}
+		       			}
+		       		}
+		       	}
+			}
+		}
+	}
+	
+	public void redibujarModeloWPS() {
+		try{
+	    	int cantVariantes = this.variantesSeleccionadas.length;
+	    	String xStr = this.puntoVariacionAdaptado.getX(); 
+	    	if (xStr == null) {
+	    		xStr = "0em";
+	    	}
+	    	String yStr = this.puntoVariacionAdaptado.getY();
+	    	if (yStr == null) {
+	    		yStr = "0em";
+	    	}
+			float xIni = Float.valueOf(xStr.substring(0, xStr.length() - 2));
+			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
+			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
+			
+    		// Busco el modelo en el que debo agregarlo
+    		DefaultDiagramModel modeloRolesWPS = null;
+			String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
+			Iterator<TipoRolesWorkProducts> it = rolesWP.iterator();
+			while (it.hasNext()){
+				TipoRolesWorkProducts trt = it.next();
+				DefaultDiagramModel responsable = trt.getResponsableDe();
+				DefaultDiagramModel modifica = trt.getModifica();
+				//busco idPuntoVariacionAdaptado en los modelos
+				Iterator<Element> itResp = responsable.getElements().iterator();
+				boolean encontre = false;
+				while(itResp.hasNext() && !encontre){
+					Element e = itResp.next();
+					Struct s = (Struct) e.getData();
+					if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+						encontre = true;
+						modeloRolesWPS = responsable;
+					}
+				}
+				if (!encontre){
+					Iterator<Element> itMod = modifica.getElements().iterator();
+					while(itMod.hasNext()){
+						Element e = itMod.next();
+						Struct s = (Struct) e.getData();
+						if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+							modeloRolesWPS = modifica;
+						}
+					}
+					
+				}
+				
+			}
+    					
+			if (modeloRolesWPS != null){
+		    	for (int i = 0; i < cantVariantes; i++){
+		    		// Creo la variante
+		
+		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+		    		String nombreVariante = v.getName();
+					String tipoVariante = v.getVarType();
+		    		String idVariante = this.variantesSeleccionadas[i];
+		    		List<Struct> hijos = v.getHijos();
+		    		
+		    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+		    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+					Struct s = (Struct) hijo.getData();
+					s.setHijos(hijos);
+		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+		    		hijo.addEndPoint(endPointH1);
+		    		hijo.setDraggable(false);
+		    		
+		    		modeloRolesWPS.addElement(hijo);
+			        
+			        // Creo el endPoint del punto de variación
+			        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+			        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+			        
+			        // Conecto el punto de variación con la variante
+			        modeloRolesWPS.connect(crearConexion(endPointPV_B, endPointH1));
+			        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+			        
+			        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		    	}
+		    	
+		    	/*if (cantVariantes > 0){
+		    		this.crearModeloFinal(this.modelo);
+		    	}*/
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+
+	  
+	 
+	 
+	
     /*** Modelo final ***/
 
 	public void crearModeloFinal(DefaultDiagramModel modelo) {
@@ -943,6 +1225,9 @@ public class AdaptarModeloBean {
 		newS.setOptionalInputs(s.getOptionalInputs());
 		newS.setExternalInputs(s.getExternalInputs());
 		newS.setOutputs(s.getOutputs());
+		
+		newS.setResponsableDe(s.getResponsableDe());
+		newS.setModifica(s.getModifica());
 		
 		// Seteo las variantes
 		List<Variant> lstVariantes = s.getVariantes();
@@ -1232,6 +1517,27 @@ public class AdaptarModeloBean {
         	else {
         		if (s.getHijos().size() > 0){
         			res = buscarRol(idElemSeleccionado, s.getHijos());
+        		}
+        	}
+        }
+        return res;
+	}
+	
+	public Struct buscarWP (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if((s.getType() == TipoElemento.VP_WORK_PRODUCT ||
+        			s.getType() == TipoElemento.WORK_PRODUCT) &&
+        	   (s.getElementID().equals(idElemSeleccionado))){
+       
+        		res = s;
+        	}
+        	else {
+        		if (s.getHijos().size() > 0){
+        			res = buscarWP(idElemSeleccionado, s.getHijos());
         		}
         	}
         }

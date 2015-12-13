@@ -9,6 +9,7 @@ public class TipoRolesWorkProducts {
 	private Struct rol;
 	private DefaultDiagramModel responsableDe;
 	private DefaultDiagramModel modifica;
+	
 	public Struct getRol() {
 		return rol;
 	}
