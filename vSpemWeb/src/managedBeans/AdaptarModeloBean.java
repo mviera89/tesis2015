@@ -968,6 +968,7 @@ public class AdaptarModeloBean {
 
 	public void cargarVariantesDelPunto(String idElemSeleccionado){
 		variantes.clear();
+		variantesSeleccionadas = null;
 		Struct s = buscarPV(idElemSeleccionado,this.nodos);
 		if (s != null){
 	        Iterator<Variant> it = s.getVariantes().iterator();
@@ -975,6 +976,16 @@ public class AdaptarModeloBean {
 	    		Variant v = it.next();
 	    		variantes.add(new SelectItem(v.getID(), v.getName(),v.getVarType()));
 	    	}
+	    	
+	    	// Si había seleccionado alguna variante => La muestro marcada
+			String[] variantesParaPV = this.puntosDeVariacion.get(s.getElementID());
+			if (variantesParaPV != null){
+				int n = variantesParaPV.length;
+				variantesSeleccionadas = new String[n];
+				for (int i = 0; i < n; i++){
+					variantesSeleccionadas[i] = variantesParaPV[i];
+				}
+			}
         }
 	}
 
