@@ -70,7 +70,7 @@ public class ExportarModeloBean {
 				String customCategoryVariabilityType = "na";
 				String categorizedElement = "_19pnYVyXEeWvU7GfTaR-Wg";
 				
-				String processName = "EjemploPublish1DP";
+				//String processName = "EjemploPublish1DP";
 				String processId = "_19pnYFyXEeWvU7GfTaR-Wg";
 				String processBriefDescription = "";
 				String processOrderingGuide = "";
@@ -79,7 +79,6 @@ public class ExportarModeloBean {
 				String processAuthors = "";
 				String processChangeDescription = "";
 				String processVersion = "";
-				String processPresentationName = "EjemploPublish1DP";
 				String processHasMultipleOccurrences = "false";
 				String processIsOptional = "false";
 				String processIsPlanned = "true";
@@ -89,7 +88,7 @@ public class ExportarModeloBean {
 				String processIsRepeatable = "false";
 				String processIsEnactable = "false";
 				String processVariabilityType = "na";
-				String deliveryProcessDescriptionId = "-CZu7P3BJkdsHiMFqE6f-zA";
+				String processDescriptionId = "-CZu7P3BJkdsHiMFqE6f-zA";
 				String processExternalId = "";
 				String processUsageGuidance = "";
 				
@@ -107,36 +106,10 @@ public class ExportarModeloBean {
 				String texto =
 					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
 					"<uma:MethodLibrary xmlns:xsi=\"" + xmlns_xsi + "\" xmlns:uma=\"" + xmlns_uma + "\" name=\"" + methodLibraryName + "\" briefDescription=\"" + methodLibraryBriefDescription + "\" id=\"" + methodLibraryId + "\" orderingGuide=\"" + methodLibraryOrderingGuide + "\" suppressed=\"" + methodLibrarySuppressed + "\" authors=\"" + methodLibraryAuthors + "\" changeDescription=\"" + methodLibraryChangeDescription + "\" version=\"" + methodLibraryVersion + "\" tool=\"" + methodLibraryTool + "\">" + "\n" +
-					  "<MethodElementProperty value=\"0\"/>" + "\n" +
-					  "<MethodElementProperty value=\"" + methodPluginSelectionId + "\"/>" + "\n" +
-					  "<MethodElementProperty value=\"" + methodPluginSelectionName + "\"/>" + "\n" +
-					  "<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n" +
-					    
-					  	// CustomCategory
-					  	"<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"" + customCategoryId + "\">" + "\n" +
-					      "<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + customCategoryName + "\" briefDescription=\"" + customCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + customCategoryOrderingGuide + "\" suppressed=\"" + customCategorySuppressed + "\" presentationName=\"" + customCategoryPresentationName + "\" variabilityType=\"" + customCategoryVariabilityType + "\">" + "\n" +
-					        "<CategorizedElement>" + categorizedElement + "</CategorizedElement>" + "\n" +
-					      "</ContentCategory>" + "\n" +
-					    "</MethodPackage>" + "\n" +
-					    
-					    // DeliveryProcess
-					    "<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
-					      "<Process xsi:type=\"uma:DeliveryProcess\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + categorizedElement + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + "\" IsEnactable=\"" + processIsEnactable + "\" variabilityType=\"" + processVariabilityType + "\">" + "\n" +
-					        "<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"" + processName + "," + categorizedElement + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + deliveryProcessDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
-					          "<MainDescription></MainDescription>" + "\n" +
-					          "<KeyConsiderations></KeyConsiderations>" + "\n" +
-					          "<Alternatives></Alternatives>" + "\n" +
-					          "<HowToStaff></HowToStaff>" + "\n" +
-					          "<Purpose></Purpose>" + "\n" +
-					          "<Scope></Scope>" + "\n" +
-					          "<UsageNotes></UsageNotes>" + "\n" +
-					          "<Scale></Scale>" + "\n" +
-					          "<ProjectCharacteristics></ProjectCharacteristics>" + "\n" +
-					          "<RiskLevel></RiskLevel>" + "\n" +
-					          "<EstimatingTechnique></EstimatingTechnique>" + "\n" +
-					          "<ProjectMemberExpertise></ProjectMemberExpertise>" + "\n" +
-					          "<TypeOfContract></TypeOfContract>" + "\n" +
-					        "</Presentation>" + "\n";
+						"\t<MethodElementProperty value=\"0\"/>" + "\n" +
+						"\t<MethodElementProperty value=\"" + methodPluginSelectionId + "\"/>" + "\n" +
+						"\t<MethodElementProperty value=\"" + methodPluginSelectionName + "\"/>" + "\n" +
+						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
 				
 				List<String> idsAgregados = new ArrayList<String>();
 				List<Element> elementos = modeloAdaptado.getElements();
@@ -147,9 +120,55 @@ public class ExportarModeloBean {
 					TipoElemento tipo = s.getType();
 					if (tipo != null){
 						if ((tipo == TipoElemento.CAPABILITY_PATTERN) || (tipo == TipoElemento.DELIVERY_PROCESS)){
+							String processName = s.getNombre();
+							String processPresentationName = s.getPresentationName();
+							
 							methodConfigurationName = s.getNombre();
 							methodConfigurationBriefDescription = s.getDescription();
-							processPresentationName = s.getPresentationName();
+							//processPresentationName = s.getPresentationName();
+
+					  		// CustomCategory
+							texto +=
+				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"" + customCategoryId + "\">" + "\n" +
+					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + customCategoryName + "\" briefDescription=\"" + customCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + customCategoryOrderingGuide + "\" suppressed=\"" + customCategorySuppressed + "\" presentationName=\"" + customCategoryPresentationName + "\" variabilityType=\"" + customCategoryVariabilityType + "\">" + "\n" +
+					  				"\t\t\t\t<CategorizedElement>" + categorizedElement + "</CategorizedElement>" + "\n" +
+				  				"\t\t\t</ContentCategory>" + "\n" +
+			  				"\t\t</MethodPackage>" + "\n";
+							
+							texto +=
+		    				"\t\t<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
+	    						"\t\t\t<Process xsi:type=\"uma:" + tipo.toString() + "\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + categorizedElement + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + "\" IsEnactable=\"" + processIsEnactable + "\" variabilityType=\"" + processVariabilityType + "\">" + "\n";
+							
+							if (tipo == TipoElemento.DELIVERY_PROCESS){
+							    texto +=
+						    		"\t\t\t\t<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"" + processName + "," + categorizedElement + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
+					    				"\t\t\t\t\t<MainDescription></MainDescription>" + "\n" +
+					    				"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n" +
+					    				"\t\t\t\t\t<Alternatives></Alternatives>" + "\n" +
+					    				"\t\t\t\t\t<HowToStaff></HowToStaff>" + "\n" +
+					    				"\t\t\t\t\t<Purpose></Purpose>" + "\n" +
+					    				"\t\t\t\t\t<Scope></Scope>" + "\n" +
+					    				"\t\t\t\t\t<UsageNotes></UsageNotes>" + "\n" +
+					    				"\t\t\t\t\t<Scale></Scale>" + "\n" +
+					    				"\t\t\t\t\t<ProjectCharacteristics></ProjectCharacteristics>" + "\n" +
+					    				"\t\t\t\t\t<RiskLevel></RiskLevel>" + "\n" +
+					    				"\t\t\t\t\t<EstimatingTechnique></EstimatingTechnique>" + "\n" +
+					    				"\t\t\t\t\t<ProjectMemberExpertise></ProjectMemberExpertise>" + "\n" +
+					    				"\t\t\t\t\t<TypeOfContract></TypeOfContract>" + "\n" +
+				    				"\t\t\t\t</Presentation>" + "\n";
+							}
+							else{
+								texto +=
+							    		"\t\t\t\t<Presentation xsi:type=\"uma:ProcessDescription\" name=\"" + processName + "," + categorizedElement + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
+					    					"\t\t\t\t\t<MainDescription></MainDescription>" + "\n" +
+					    					"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n" +
+					    					"\t\t\t\t\t<Alternatives></Alternatives>" + "\n" +
+					    					"\t\t\t\t\t<HowToStaff></HowToStaff>" + "\n" +
+					    					"\t\t\t\t\t<Purpose></Purpose>" + "\n" +
+					    					"\t\t\t\t\t<Scope></Scope>" + "\n" +
+					    					"\t\t\t\t\t<UsageNotes></UsageNotes>" + "\n" +
+				    					"\t\t\t\t</Presentation>" + "\n";
+							}
 						}
 						else if ((tipo != TipoElemento.PROCESS_PACKAGE) && (!idsAgregados.contains(id))){
 							idsAgregados.add(id);
@@ -159,17 +178,17 @@ public class ExportarModeloBean {
 				}
 				
 				texto +=
-					        "<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
-					        "<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n" +
-					      "</Process>" + "\n" +
-					    "</MethodPackage>" + "\n" +
-					  "</MethodPlugin>" + "\n" +
-					  "<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" /*+"\" presentationName=\"" + processPresentationName*/ + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
-					    "<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
-					    "<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n" +
-					    "<MethodPackageSelection>" + processId + "</MethodPackageSelection>" + "\n" +
-					    "<ProcessView>" + idProcessView + "</ProcessView>" + "\n" +
-					  "</MethodConfiguration>" + "\n" +
+					        		"\t\t\t\t<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
+			        				"\t\t\t\t<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n" +
+		        				"\t\t\t</Process>" + "\n" +
+	        				"\t\t</MethodPackage>" + "\n" +
+        				"\t</MethodPlugin>" + "\n" +
+        				"\t<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" /*+"\" presentationName=\"" + processPresentationName*/ + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
+					    	"\t\t<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
+					    	"\t\t<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n" +
+					    	"\t\t<MethodPackageSelection>" + processId + "</MethodPackageSelection>" + "\n" +
+					    	"\t\t<ProcessView>" + idProcessView + "</ProcessView>" + "\n" +
+					    "\t</MethodConfiguration>" + "\n" +
 					"</uma:MethodLibrary>";
 				
 				/*** Para EPF-C ***/
@@ -264,42 +283,99 @@ public class ExportarModeloBean {
 	public String agregarElementoAxml(Struct s, String superactivity){
 		String texto = "";
 		String nombre = s.getNombre();
-		String nombrePresentacion = nombre;
+		String nombrePresentacion = s.getPresentationName();
 		String id = s.getElementID();
 		TipoElemento tipo = s.getType();
 		
+		String briefDescription = "";
+		String orderingGuide = "";
+		String suppressed = "false";
+		String hasMultipleOccurrences = "false";
+		String isOptional = "false";
+		String isPlanned = "true";
+		String prefix = "";
+		String isEventDriven = "false";
+		String isOngoing = "false";
+		String isRepeatable = "false";
+		String isEnactable = "false";
+		String variabilityType = "na";
+		String isSynchronizedWithSource = "true";
+		
 		if (tipo == TipoElemento.ACTIVITY){
-			texto += "<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
-					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
-					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 		}
 		else if (tipo == TipoElemento.ITERATION){
-			texto += "<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
-					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
-					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 		}
 		else if (tipo == TipoElemento.PHASE){
-			texto += "<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
-					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
-					 "isPlanned=\"true\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" IsEnactable=\"false\" variabilityType=\"na\">" + "\n";
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 		}
 		else if (tipo == TipoElemento.TASK){
-			texto += "<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"\" id=\"" + id + "\" orderingGuide=\"\" " +
-					 "suppressed=\"false\" presentationName=\"" + nombrePresentacion + "\" hasMultipleOccurrences=\"false\" isOptional=\"false\" " +
-					 "isPlanned=\"false\" prefix=\"\" isEventDriven=\"false\" isOngoing=\"false\" isRepeatable=\"false\" isSynchronizedWithSource=\"true\">" + "\n";
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
+					"\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
+		}
+		else if (tipo == TipoElemento.ROLE){
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:RoleDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
 		}
 		
 		if (!texto.equals("")){
-			texto += "<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+			texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+			
+			// Si tiene asignado un rol principal, se lo agrego
+			String performedPrimaryBy = s.getPerformedPrimaryBy();
+			if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
+				texto += "\t\t\t\t\t<PerformedPrimarilyBy>" + performedPrimaryBy + "</PerformedPrimarilyBy>" + "\n";
+			}
+			
+			// Si tiene asignado un rol adicional, se lo agrego
+			List<String> performedAditionallyBy = s.getPerformedAditionallyBy();
+			if ((performedAditionallyBy != null) && (performedAditionallyBy.size() > 0)){
+				Iterator<String> it = performedAditionallyBy.iterator();
+				while (it.hasNext()){
+					texto += "\t\t\t\t\t<AdditionallyPerformedBy>" + it.next() + "</AdditionallyPerformedBy>" + "\n";
+				}
+			}
 			
 			// Agrego los hijos
+			List<Struct> roles = new ArrayList<Struct>();
 			Iterator<Struct> it = s.getHijos().iterator();
 			while (it.hasNext()){
 				Struct hijo = it.next();
-				texto += agregarElementoAxml(hijo, id);
+				if (hijo.getType() != TipoElemento.ROLE){
+					texto += agregarElementoAxml(hijo, id);
+				}
+				else{
+					roles.add(hijo);
+				}
 			}
 			
-			texto += "</BreakdownElement>" + "\n";
+			texto += "\t\t\t\t</BreakdownElement>" + "\n";
+			
+			// Agrego los roles
+			if (roles.size() > 0){
+				it = roles.iterator();
+				while (it.hasNext()){
+					texto += agregarElementoAxml(it.next(), superactivity);
+				}
+			}
 		}
 		
 		return texto;
