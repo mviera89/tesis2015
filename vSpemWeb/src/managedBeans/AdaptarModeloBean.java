@@ -33,6 +33,7 @@ import dataTypes.TipoElemento;
 import dataTypes.TipoEtiqueta;
 import dataTypes.TipoRolesTareas;
 import dataTypes.TipoRolesWorkProducts;
+import dataTypes.TipoTareasWorkProducts;
 import dataTypes.WorkProduct;
 import dominio.Struct;
 import dominio.Variant;
@@ -58,10 +59,16 @@ public class AdaptarModeloBean {
 	private HashMap<String, List<Struct>> rolesTareasAdditionally;
 	private HashMap<String, List<String>> rolesWPResponsable;
 	private HashMap<String, List<String>> rolesWPModifica;
-
+	private HashMap<String,List<String>> tareasWPMandatoryInputs;
+	private HashMap<String,List<String>> tareasWPOptionalInputs;
+	private HashMap<String,List<String>> tareasWPExternalInputs;
+	private HashMap<String,List<String>> tareasWPOutputs;
+	
+	
 	String idTab = "tab1";
 	private List<TipoRolesTareas> rolesTareas;
 	private List<TipoRolesWorkProducts> rolesWP;
+	private List<TipoTareasWorkProducts> tareasWP;
 
 	@PostConstruct
     public void init() {
@@ -74,12 +81,18 @@ public class AdaptarModeloBean {
     	this.rolesTareasAdditionally = new HashMap<String, List<Struct>>();
     	this.rolesWPResponsable = new HashMap<String, List<String>>();
     	this.rolesWPModifica = new HashMap<String, List<String>>();
+    	this.tareasWPMandatoryInputs = new HashMap<String, List<String>>();
+    	this.tareasWPOptionalInputs = new HashMap<String, List<String>>();
+    	this.tareasWPExternalInputs = new HashMap<String, List<String>>();
+    	this.tareasWPOutputs = new HashMap<String, List<String>>();
+    	
     	this.restriccionesPV = new HashMap<String, String>();
     	erroresModeloFinal = new ArrayList<String[]>();
     	this.y = Constantes.yInicial;
         crearModelo();
         crearModeloRolesTareas();
         crearModeloRolesWorkProducts();
+        crearModeloTareasWPS();
     }
 
 	public void onTabChange(TabChangeEvent event) {
@@ -238,6 +251,14 @@ public class AdaptarModeloBean {
 
 	public void setRolesWP(List<TipoRolesWorkProducts> rolesWP) {
 		this.rolesWP = rolesWP;
+	}
+
+	public List<TipoTareasWorkProducts> getTareasWP() {
+		return tareasWP;
+	}
+
+	public void setTareasWP(List<TipoTareasWorkProducts> tareasWP) {
+		this.tareasWP = tareasWP;
 	}
 
 	/*** Crear modelo ***/
@@ -402,6 +423,99 @@ public class AdaptarModeloBean {
 			        				rolesTareasAdditionally.put(rol, list);
 			        			}
 		        			}
+		        		}
+		        		
+		        		if(s.getMandatoryInputs() != null){
+		        			Iterator<String> it1 = s.getMandatoryInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPMandatoryInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPMandatoryInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        			
+		        		}
+		        		if(s.getOptionalInputs() != null){
+		        			Iterator<String> it1 = s.getOptionalInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPOptionalInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPOptionalInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPOptionalInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        		}
+		        		if(s.getExternalInputs() != null){
+		        			Iterator<String> it1 = s.getExternalInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPExternalInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPExternalInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPExternalInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        			
+		        		}
+		        		if(s.getOutputs() != null){
+		        			Iterator<String> it1 = s.getOutputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPOutputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPOutputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPOutputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        	
+		        			
 		        		}
 		        	}
 		        	buscoVPRolesEnHijos(s.getHijos());
@@ -600,6 +714,96 @@ public class AdaptarModeloBean {
 			        				List<Struct> list = new ArrayList<Struct>();
 			        				list.add(s);
 			        				rolesTareasAdditionally.put(rol, list);
+			        			}
+		        			}
+		        		}
+		        		if(s.getMandatoryInputs() != null){
+		        			Iterator<String> it1 = s.getMandatoryInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPMandatoryInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPMandatoryInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        			
+		        		}
+		        		if(s.getOptionalInputs() != null){
+		        			Iterator<String> it1 = s.getOptionalInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPOptionalInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPOptionalInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPOptionalInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        		}
+		        		if(s.getExternalInputs() != null){
+		        			Iterator<String> it1 = s.getExternalInputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPExternalInputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPExternalInputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPExternalInputs.put(s.getElementID(), list);
+			        			}
+		        			}
+		        			
+		        		}
+		        		if(s.getOutputs() != null){
+		        			Iterator<String> it1 = s.getOutputs().iterator();
+		        			while(it1.hasNext()){
+		        				String wp = it1.next();
+			        			if (tareasWPOutputs.containsKey(s.getElementID())){
+			        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
+			        				boolean fin = false;
+			        				while (itWP.hasNext() && !fin){
+			        					String st = itWP.next();
+			        					fin = (st.equals(s.getElementID()));
+			        				}
+			        				if (!fin){ // La tarea no está => La agrego
+			        					tareasWPOutputs.get(s.getElementID()).add(wp);
+			        				}
+			        			}
+			        			else{
+			        				List<String> list = new ArrayList<String>();
+			        				list.add(wp);
+			        				tareasWPOutputs.put(s.getElementID(), list);
 			        			}
 		        			}
 		        		}
@@ -921,36 +1125,38 @@ public class AdaptarModeloBean {
 		    		// Creo la variante
 		    		
 		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
-		    		String nombreVariante = v.getName();
-					String tipoVariante = v.getVarType();
-		    		String idVariante = this.variantesSeleccionadas[i];
-		    		List<Struct> hijos = v.getHijos();
-		    		
-		    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
-		    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
-					Struct s = (Struct) hijo.getData();
-					s.setHijos(hijos);
-		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
-		    		hijo.addEndPoint(endPointH1);
-		    		hijo.setDraggable(false);
-		    		
-			        modeloRolesTareas.addElement(hijo);
-			        
-			        // Creo el endPoint del punto de variación
-			        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
-			        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
-			        
-			        // Conecto el punto de variación con la variante
-			        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
-			        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
-			        
-			        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		    		if (v != null){
+			    		String nombreVariante = v.getName();
+						String tipoVariante = v.getVarType();
+			    		String idVariante = this.variantesSeleccionadas[i];
+			    		List<Struct> hijos = v.getHijos();
+			    		
+			    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+			    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+						Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+						Struct s = (Struct) hijo.getData();
+						s.setHijos(hijos);
+			    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+			    		hijo.addEndPoint(endPointH1);
+			    		hijo.setDraggable(false);
+			    		
+				        modeloRolesTareas.addElement(hijo);
+				        
+				        // Creo el endPoint del punto de variación
+				        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+				        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+				        
+				        // Conecto el punto de variación con la variante
+				        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
+				        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+				        
+				        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			    	}
+			    	
+			    	/*if (cantVariantes > 0){
+			    		this.crearModeloFinal(this.modelo);
+			    	}*/
 		    	}
-		    	
-		    	/*if (cantVariantes > 0){
-		    		this.crearModeloFinal(this.modelo);
-		    	}*/
 			}
 		}
 		catch (Exception e) {
@@ -1135,6 +1341,161 @@ public class AdaptarModeloBean {
 		}
     }
 
+	/*** Modelo tareas ***/
+
+	public void crearModeloTareasWPS(){
+		tareasWP = new ArrayList<TipoTareasWorkProducts>();
+		
+		List<String> tareasAgregadas = new ArrayList<String>();
+		
+		// Agrego los workproducts mandatoryInputs
+		Iterator<Entry<String, List<String>>> it = tareasWPMandatoryInputs.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<String>> entry = it.next();
+			String idtarea = entry.getKey();
+			List<String> wps = entry.getValue();
+			Iterator<String> itWP = wps.iterator();
+			List<Struct> mandatoryInputs = new ArrayList<Struct>();
+			while (itWP.hasNext()){
+				String wp = itWP.next();
+				Struct wpS = buscarWP(wp, nodos);
+				if(wps != null){
+					mandatoryInputs.add(wpS);
+				}
+				
+			}
+			if ((idtarea != null) && (!idtarea.equals(""))){
+				Struct tarea = buscarTarea(idtarea, nodos);
+		       	if (tarea != null){
+		       		tareasAgregadas.add(idtarea);
+		    		TipoTareasWorkProducts trt = new TipoTareasWorkProducts();
+		       		trt.setTarea(tarea);
+		       		trt.setMandatoryInputs(mandatoryInputs);
+		       		tareasWP.add(trt);
+		       	}
+			}
+		}
+		
+		// Agrego los wps optionalInputs
+		it = tareasWPOptionalInputs.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<String>> entry = it.next();
+			String idtarea = entry.getKey();
+			List<String> wps = entry.getValue();
+			Iterator<String> itWP = wps.iterator();
+			List<Struct> optionalInputs = new ArrayList<Struct>();
+			while (itWP.hasNext()){
+				String wp = itWP.next();
+				Struct wpS = buscarWP(wp, nodos);
+				if(wps != null){
+					optionalInputs.add(wpS);
+				}
+				
+			}
+			if ((idtarea != null) && (!idtarea.equals(""))){
+				Struct tarea = buscarTarea(idtarea, nodos);
+		       	if (tarea != null){
+		       		if (!tareasAgregadas.contains(idtarea)){
+		       			tareasAgregadas.add(idtarea);
+		       			TipoTareasWorkProducts trt = new TipoTareasWorkProducts();
+			       		trt.setTarea(tarea);
+			       		trt.setOptionalInputs(optionalInputs);
+			       		tareasWP.add(trt);
+		       		}
+		       		else{
+		       			Iterator<TipoTareasWorkProducts> iter = tareasWP.iterator();
+		       			while (iter.hasNext()){
+		       				TipoTareasWorkProducts trt = iter.next();
+		       				Struct s = (Struct) trt.getTarea();
+		       				if (s.getElementID().equals(idtarea)){
+		       					trt.setOptionalInputs(optionalInputs);
+		       				}
+		       			}
+		       		}
+		       	}
+			}
+		}
+		
+		// Agrego los wps externalInputs
+				it = tareasWPExternalInputs.entrySet().iterator();
+				while (it.hasNext()){
+					Entry<String, List<String>> entry = it.next();
+					String idtarea = entry.getKey();
+					List<String> wps = entry.getValue();
+					Iterator<String> itWP = wps.iterator();
+					List<Struct> externalInputs = new ArrayList<Struct>();
+					while (itWP.hasNext()){
+						String wp = itWP.next();
+						Struct wpS = buscarWP(wp, nodos);
+						if(wps != null){
+							externalInputs.add(wpS);
+						}
+						
+					}
+					if ((idtarea != null) && (!idtarea.equals(""))){
+						Struct tarea = buscarTarea(idtarea, nodos);
+				       	if (tarea != null){
+				       		if (!tareasAgregadas.contains(idtarea)){
+				       			tareasAgregadas.add(idtarea);
+				       			TipoTareasWorkProducts trt = new TipoTareasWorkProducts();
+					       		trt.setTarea(tarea);
+					       		trt.setExternalInputs(externalInputs);
+					       		tareasWP.add(trt);
+				       		}
+				       		else{
+				       			Iterator<TipoTareasWorkProducts> iter = tareasWP.iterator();
+				       			while (iter.hasNext()){
+				       				TipoTareasWorkProducts trt = iter.next();
+				       				Struct s = (Struct) trt.getTarea();
+				       				if (s.getElementID().equals(idtarea)){
+				       					trt.setExternalInputs(externalInputs);
+				       				}
+				       			}
+				       		}
+				       	}
+					}
+				}
+				
+				// Agrego los wps outputs
+				it = tareasWPOutputs.entrySet().iterator();
+				while (it.hasNext()){
+					Entry<String, List<String>> entry = it.next();
+					String idtarea = entry.getKey();
+					List<String> wps = entry.getValue();
+					Iterator<String> itWP = wps.iterator();
+					List<Struct> outputs = new ArrayList<Struct>();
+					while (itWP.hasNext()){
+						String wp = itWP.next();
+						Struct wpS = buscarWP(wp, nodos);
+						if(wps != null){
+							outputs.add(wpS);
+						}
+						
+					}
+					if ((idtarea != null) && (!idtarea.equals(""))){
+						Struct tarea = buscarTarea(idtarea, nodos);
+				       	if (tarea != null){
+				       		if (!tareasAgregadas.contains(idtarea)){
+				       			tareasAgregadas.add(idtarea);
+				       			TipoTareasWorkProducts trt = new TipoTareasWorkProducts();
+					       		trt.setTarea(tarea);
+					       		trt.setOutputs(outputs);
+					       		tareasWP.add(trt);
+				       		}
+				       		else{
+				       			Iterator<TipoTareasWorkProducts> iter = tareasWP.iterator();
+				       			while (iter.hasNext()){
+				       				TipoTareasWorkProducts trt = iter.next();
+				       				Struct s = (Struct) trt.getTarea();
+				       				if (s.getElementID().equals(idtarea)){
+				       					trt.setOutputs(outputs);
+				       				}
+				       			}
+				       		}
+				       	}
+					}
+				}
+	}
 
 	  
 	 
@@ -1575,6 +1936,28 @@ public class AdaptarModeloBean {
         }
         return res;
 	}
+	
+	public Struct buscarTarea (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if((s.getType() == TipoElemento.VP_TASK ||
+        			s.getType() == TipoElemento.TASK) &&
+        	   (s.getElementID().equals(idElemSeleccionado))){
+       
+        		res = s;
+        	}
+        	else {
+        		if (s.getHijos().size() > 0){
+        			res = buscarTarea(idElemSeleccionado, s.getHijos());
+        		}
+        	}
+        }
+        return res;
+	}
+	
 	
 	public Struct buscarWP (String idElemSeleccionado, List<Struct> list) {
 		Iterator<Struct> iterator = list.iterator();
