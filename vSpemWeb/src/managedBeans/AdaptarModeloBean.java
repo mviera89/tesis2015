@@ -286,7 +286,7 @@ public class AdaptarModeloBean {
 	        Iterator<Struct> itn = nodos.iterator();
 	        Struct raiz = null;
 	        TipoElemento t = null;
-	        while (itn.hasNext()){
+	        while (itn.hasNext() && (raiz == null)){
 	        	Struct s = itn.next();
 	        	if(s.getType()!= null){
 		        	if (s.getType().equals(TipoElemento.CAPABILITY_PATTERN) || s.getType().equals(TipoElemento.DELIVERY_PROCESS)){
@@ -430,14 +430,16 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPMandatoryInputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPMandatoryInputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
 			        			else{
@@ -498,14 +500,16 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOutputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPOutputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPOutputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPOutputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
 			        			else{
@@ -1575,6 +1579,8 @@ public class AdaptarModeloBean {
 								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
 								newS.setHijos(v.getHijos());
+								newS.setDescription(s.getDescription());
+								newS.setPresentationName(s.getPresentationName());
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
 								newE.setDraggable(false);
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
@@ -1639,6 +1645,9 @@ public class AdaptarModeloBean {
 
 	public Struct crearCopiaStruct(Struct s){
 		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+		
+		newS.setDescription(s.getDescription());
+		newS.setPresentationName(s.getPresentationName());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
