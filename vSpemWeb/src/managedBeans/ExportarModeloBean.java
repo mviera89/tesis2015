@@ -30,7 +30,7 @@ public class ExportarModeloBean {
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		        String nomArchivo = vb.getNombreArchivo();
-		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensi�n
+		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
 				
 				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
@@ -300,6 +300,8 @@ public class ExportarModeloBean {
 		String isEnactable = "false";
 		String variabilityType = "na";
 		String isSynchronizedWithSource = "true";
+		String activityEntryState = "";
+		String activityExitState = "";
 		
 		if (tipo == TipoElemento.ACTIVITY){
 			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
@@ -335,6 +337,17 @@ public class ExportarModeloBean {
 					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
 					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
 		}
+		else if (tipo == TipoElemento.WORK_PRODUCT){
+			// <BreakdownElement xsi:type="uma:WorkProductDescriptor" name="wp1" briefDescription="" id="_GqqSIKKzEeWM_5DmWV3MyQ" 
+			// orderingGuide="" suppressed="false" presentationName="wp1" 
+			// hasMultipleOccurrences="false" isOptional="false" isPlanned="false"
+			// prefix="" isSynchronizedWithSource="true" activityEntryState="" activityExitState="">
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\" activityEntryState=\"" + activityEntryState + 
+					"\" activityExitState=\"" + activityExitState + "\">" + "\n";
+		}
 		
 		if (!texto.equals("")){
 			texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
@@ -354,16 +367,53 @@ public class ExportarModeloBean {
 				}
 			}
 			
+			// Si tiene workProduct asignados, los agrego
+			List<String> mandatoryInputs = s.getMandatoryInputs();
+			if ((mandatoryInputs != null) && (mandatoryInputs.size() > 0)){
+				Iterator<String> it = mandatoryInputs.iterator();
+				while (it.hasNext()){
+					texto += "\t\t\t\t\t<MandatoryInput>" + it.next() + "</MandatoryInput>" + "\n";
+				}
+			}
+			
+			List<String> optionalInputs = s.getOptionalInputs();
+			if ((optionalInputs != null) && (optionalInputs.size() > 0)){
+				Iterator<String> it = optionalInputs.iterator();
+				while (it.hasNext()){
+					texto += "\t\t\t\t\t<OptionalInput>" + it.next() + "</OptionalInput>" + "\n";
+				}
+			}
+			
+			List<String> externalInputs = s.getExternalInputs();
+			if ((externalInputs != null) && (externalInputs.size() > 0)){
+				Iterator<String> it = externalInputs.iterator();
+				while (it.hasNext()){
+					texto += "\t\t\t\t\t<ExternalInput>" + it.next() + "</ExternalInput>" + "\n";
+				}
+			}
+			
+			List<String> outputs = s.getOutputs();
+			if ((outputs != null) && (outputs.size() > 0)){
+				Iterator<String> it = outputs.iterator();
+				while (it.hasNext()){
+					texto += "\t\t\t\t\t<Output>" + it.next() + "</Output>" + "\n";
+				}
+			}
+			
 			// Agrego los hijos
 			List<Struct> roles = new ArrayList<Struct>();
+			List<Struct> workProduct = new ArrayList<Struct>();
 			Iterator<Struct> it = s.getHijos().iterator();
 			while (it.hasNext()){
 				Struct hijo = it.next();
-				if (hijo.getType() != TipoElemento.ROLE){
+				if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT)){
 					texto += agregarElementoAxml(hijo, id);
 				}
-				else{
+				else if (hijo.getType() == TipoElemento.ROLE){
 					roles.add(hijo);
+				}
+				else{
+					workProduct.add(hijo);
 				}
 			}
 			
@@ -372,6 +422,14 @@ public class ExportarModeloBean {
 			// Agrego los roles
 			if (roles.size() > 0){
 				it = roles.iterator();
+				while (it.hasNext()){
+					texto += agregarElementoAxml(it.next(), superactivity);
+				}
+			}
+			
+			// Agrego los workProduct
+			if (workProduct.size() > 0){
+				it = workProduct.iterator();
 				while (it.hasNext()){
 					texto += agregarElementoAxml(it.next(), superactivity);
 				}
