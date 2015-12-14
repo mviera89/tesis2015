@@ -1281,35 +1281,42 @@ public class AdaptarModeloBean {
     		DefaultDiagramModel modeloRolesWPS = null;
 			String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 			Iterator<TipoRolesWorkProducts> it = rolesWP.iterator();
-			while (it.hasNext()){
+			boolean estaVP = false;
+			while (it.hasNext() && !estaVP){
 				TipoRolesWorkProducts trt = it.next();
 				DefaultDiagramModel responsable = trt.getResponsableDe();
 				DefaultDiagramModel modifica = trt.getModifica();
 				//busco idPuntoVariacionAdaptado en los modelos
-				Iterator<Element> itResp = responsable.getElements().iterator();
 				boolean encontre = false;
-				while(itResp.hasNext() && !encontre){
-					Element e = itResp.next();
-					Struct s = (Struct) e.getData();
-					if (s.getElementID().equals(idPuntoVariacionAdaptado)){
-						encontre = true;
-						modeloRolesWPS = responsable;
-					}
-				}
-				if (!encontre){
-					Iterator<Element> itMod = modifica.getElements().iterator();
-					while(itMod.hasNext()){
-						Element e = itMod.next();
+				if (responsable != null){
+					Iterator<Element> itResp = responsable.getElements().iterator();
+					while(itResp.hasNext() && !encontre){
+						Element e = itResp.next();
 						Struct s = (Struct) e.getData();
 						if (s.getElementID().equals(idPuntoVariacionAdaptado)){
-							modeloRolesWPS = modifica;
+							encontre = true;
+							modeloRolesWPS = responsable;
+							estaVP = true;
+						}
+					}
+			}
+				if (!encontre){
+					if (modifica != null){
+						Iterator<Element> itMod = modifica.getElements().iterator();
+						while(itMod.hasNext()){
+							Element e = itMod.next();
+							Struct s = (Struct) e.getData();
+							if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+								modeloRolesWPS = modifica;
+								estaVP = true;
+							}
 						}
 					}
 					
 				}
 				
 			}
-    					
+			    					
 			if (modeloRolesWPS != null){
 		    	for (int i = 0; i < cantVariantes; i++){
 		    		// Creo la variante
@@ -1337,7 +1344,7 @@ public class AdaptarModeloBean {
 			        
 			        // Conecto el punto de variación con la variante
 			        modeloRolesWPS.connect(crearConexion(endPointPV_B, endPointH1));
-			        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
+			        //s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
 			        
 			        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 		    	}
@@ -1345,6 +1352,8 @@ public class AdaptarModeloBean {
 		    	/*if (cantVariantes > 0){
 		    		this.crearModeloFinal(this.modelo);
 		    	}*/
+		    	
+		    	
 			}
 		}
 		catch (Exception e) {
@@ -1789,6 +1798,37 @@ public class AdaptarModeloBean {
 			}
 		}
 		else if (idTab.equals("tab3")){
+			//busco work product
+			Iterator<TipoRolesWorkProducts> it = rolesWP.iterator();
+			while (it.hasNext()){
+				boolean encontre = false;
+				TipoRolesWorkProducts trt = it.next();
+				if (trt.getResponsableDe() != null){
+					Iterator<Element> iterResp = trt.getResponsableDe().getElements().iterator();
+					while (iterResp.hasNext() && !encontre){
+						Element e = iterResp.next();
+						String id = ((Struct) e.getData()).getElementID();
+						if (id.equals(idElemento)){
+							encontre = true;
+							return e;
+						}
+					}
+				}
+					
+				if (trt.getModifica() != null){	
+					if (!encontre){ //busco en el modelo modifica
+						Iterator<Element> iterMod = trt.getModifica().getElements().iterator();
+						while (iterMod.hasNext() && !encontre){
+							Element e = iterMod.next();
+							String id = ((Struct) e.getData()).getElementID();
+							if (id.equals(idElemento)){
+								return e;
+							}
+						}
+						
+					}
+				}
+			}
 		}
 		else if (idTab.equals("tab4")){
 		}
