@@ -102,9 +102,127 @@
 		    </p:tab>
 		    
 	   		<p:tab id="tab3" title="Roles-WorkProducts">
+	   				<p:accordionPanel value="#{adaptarModeloBean.rolesWP}" var="rolWP">
+			        <p:tab>
+			        	<!-- Muestro el nombre del rol en el encabezado -->
+			        	<f:facet name="title">
+						   <h:graphicImage value="/imagenes/#{rolWP.rol.imagen}" />
+			               <h:outputText value="#{rolWP.rol.nombre}"/>
+			            </f:facet>
+			            
+			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
+				            
+				            <h:panelGroup>
+			               			<!-- Muestro el rol -->
+						                <h:outputLabel value="#{rolWP.rol.nombre}" >
+											<p:graphicImage value="/imagenes/#{rolWP.rol.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+							</h:panelGroup>
+							
+							<h:panelGroup>
+								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.responsableDe.elements.size() > 0}">
+									<legend>Responsable de</legend>
+									<p:diagram value="#{rolWP.responsableDe}" var="elem" style="height: #{(rolWP.responsableDe.connections.size() + 1) * 110}px;">
+										<f:facet name="element">
+											<h:panelGroup>
+												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+												</h:commandLink>
+											</h:panelGroup>
+										</f:facet>
+									</p:diagram>
+								</p:fieldset>
+								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.modifica.elements.size() > 0}">
+									<legend>Modifica</legend>
+									<p:diagram value="#{rolWP.modifica}" var="elem" style="height: #{(rolWP.modifica.connections.size() + 1) * 110}px;">
+										<f:facet name="element">
+											<h:panelGroup>
+												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+												</h:commandLink>
+											</h:panelGroup>
+										</f:facet>
+									</p:diagram>
+								</p:fieldset>
+							</h:panelGroup>
+							
+			        	</h:panelGrid>
+			        	
+			        </p:tab>
+			    </p:accordionPanel>	   		
 	    	</p:tab>
 	    	
 		    <p:tab id="tab4" title="Tareas-WorkProducts">
+		    	<p:accordionPanel value="#{adaptarModeloBean.tareasWP}" var="tareaWP">
+			        <p:tab>
+			        	<!-- Muestro el nombre de la tarea en el encabezado -->
+			        	<f:facet name="title">
+						   <h:graphicImage value="/imagenes/#{tareaWP.tarea.imagen}" />
+			               <h:outputText value="#{tareaWP.tarea.nombre}"/>
+			            </f:facet>
+			            
+			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
+				            
+				            <h:panelGroup>
+			               			<!-- Muestro la tarea -->
+						                <h:outputLabel value="#{tareaWP.tarea.nombre}" >
+											<p:graphicImage value="/imagenes/#{tareaWP.tarea.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+							</h:panelGroup>
+							
+							<h:panelGroup>
+			               		
+			               		<p:fieldset style="margin-bottom:20px" rendered="#{tareaWP.mandatoryInputs.size() > 0}">
+			               			<legend>Entradas obligatorias</legend>
+			               			<!-- Muestro los wp mandatory inputs de la tarea -->
+			               			<p:dataGrid value="#{tareaWP.mandatoryInputs}" var="elem" columns="#{tareaWP.mandatoryInputs.size() > 4 ? 4 : tareaWP.mandatoryInputs.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
+								</p:fieldset>
+								
+			               		<p:fieldset style="margin-bottom:20px" rendered="#{tareaWP.optionalInputs.size() > 0}">
+			               			<legend>Entradas opcionales</legend>
+			               			<!-- Muestro los wp entradas opcionales de la tarea -->
+			               			<p:dataGrid value="#{tareaWP.optionalInputs}" var="elem" columns="#{tareaWP.optionalInputs.size() > 4 ? 4 : tareaWP.optionalInputs.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
+								</p:fieldset>
+								
+								<p:fieldset style="margin-bottom:20px" rendered="#{tareaWP.externalInputs.size() > 0}">
+			               			<legend>Entradas externas</legend>
+			               			<!-- Muestro los wp entradas externas de la tarea -->
+			               			<p:dataGrid value="#{tareaWP.externalInputs}" var="elem" columns="#{tareaWP.externalInputs.size() > 4 ? 4 : tareaWP.externalInputs.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
+								</p:fieldset>
+								
+								<p:fieldset style="margin-bottom:20px" rendered="#{tareaWP.outputs.size() > 0}">
+			               			<legend>Salidas</legend>
+			               			<!-- Muestro los wp salidas de la tarea -->
+			               			<p:dataGrid value="#{tareaWP.outputs}" var="elem" columns="#{tareaWP.outputs.size() > 4 ? 4 : tareaWP.outputs.size()}">
+						                <h:outputLabel value="#{elem.nombre}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+										</h:outputLabel>
+								    </p:dataGrid>
+								</p:fieldset>
+								
+							</h:panelGroup>
+								
+			        	</h:panelGrid>
+			        	
+			        </p:tab>
+			    </p:accordionPanel>
+		    	
 		    </p:tab>
 		    
 	  	</p:tabView>
