@@ -726,14 +726,16 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPMandatoryInputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPMandatoryInputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPMandatoryInputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPMandatoryInputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
 			        			else{
@@ -749,14 +751,16 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOptionalInputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPOptionalInputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPOptionalInputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPOptionalInputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
 			        			else{
@@ -771,14 +775,16 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPExternalInputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPExternalInputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPExternalInputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPExternalInputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
 			        			else{
@@ -794,16 +800,20 @@ public class AdaptarModeloBean {
 		        			while(it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOutputs.containsKey(s.getElementID())){
-			        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPOutputs.get(s.getElementID()).add(wp);
+			        				if (tareasWPOutputs.get(wp) != null){
+				        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
+				        				boolean fin = false;
+				        				while (itWP.hasNext() && !fin){
+				        					String st = itWP.next();
+				        					fin = (st.equals(s.getElementID()));
+				        				}
+				        				if (!fin){ // La tarea no está => La agrego
+				        					tareasWPOutputs.get(s.getElementID()).add(wp);
+				        				}
 			        				}
 			        			}
+			        				
+			        				
 			        			else{
 			        				List<String> list = new ArrayList<String>();
 			        				list.add(wp);
