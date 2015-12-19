@@ -1589,8 +1589,8 @@ public class AdaptarModeloBean {
 								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
 								newS.setHijos(v.getHijos());
-								newS.setDescription(s.getDescription());
-								newS.setPresentationName(s.getPresentationName());
+								newS.setDescription(v.getDescription());
+								newS.setPresentationName(v.getPresentationName());
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
 								newE.setDraggable(false);
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
@@ -1699,7 +1699,9 @@ public class AdaptarModeloBean {
 	}
 
 	public Variant crearCopiaVariante(Variant v){
-		Variant newV = new Variant(v.getID(), v.getName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType());
+		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType());
+		
+		newV.setDescription(v.getDescription());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();

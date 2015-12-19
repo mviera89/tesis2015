@@ -7,6 +7,8 @@ public class Variant {
 
 	private String ID;
 	private String name;
+    private String presentationName;
+	private String description;
 	private String IDVarPoint;
 	private boolean isInclusive;
 	private String varType;
@@ -15,9 +17,10 @@ public class Variant {
 	private List<Struct> hijos;
     private Boolean estaExpandido;
 	
-	public Variant(String ID, String name, String IDVarPoint, boolean isInclusive, String varType){
+	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType){
 		this.ID = ID;
 		this.name = name;
+		this.presentationName = presentationName;
 		this.IDVarPoint = IDVarPoint;
 		this.isInclusive = isInclusive;
 		this.varType = varType;
@@ -41,6 +44,22 @@ public class Variant {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getPresentationName() {
+		return presentationName;
+	}
+
+	public void setPresentationName(String presentationName) {
+		this.presentationName = presentationName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getIDVarPoint() {

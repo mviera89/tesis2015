@@ -45,8 +45,6 @@ public class XMIParser {
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
 	        getNodos(nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
 	        
-	
-	        
 	         Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 	         while (iter.hasNext()){
 	        	 Entry<String, List<Struct>> e = iter.next();
@@ -440,7 +438,7 @@ public class XMIParser {
           				type.equals(TipoElemento.VAR_MILESTONE.toString()) ||
           				type.equals(TipoElemento.VAR_WORK_PRODUCT.toString())){
       		    		
-	      		    	Variant var = new Variant(id,nameHijo,"",true,type);
+	      		    	Variant var = new Variant(id, nameHijo, presentationName, "", true, type);
 	      		    	var.getHijos().addAll(hijosS);
             			registroVar.add(var);
 	      		    	

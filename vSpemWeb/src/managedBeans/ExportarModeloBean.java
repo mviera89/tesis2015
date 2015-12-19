@@ -338,15 +338,17 @@ public class ExportarModeloBean {
 					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
 		}
 		else if (tipo == TipoElemento.WORK_PRODUCT){
-			// <BreakdownElement xsi:type="uma:WorkProductDescriptor" name="wp1" briefDescription="" id="_GqqSIKKzEeWM_5DmWV3MyQ" 
-			// orderingGuide="" suppressed="false" presentationName="wp1" 
-			// hasMultipleOccurrences="false" isOptional="false" isPlanned="false"
-			// prefix="" isSynchronizedWithSource="true" activityEntryState="" activityExitState="">
 			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
 					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
 					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
 					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\" activityEntryState=\"" + activityEntryState + 
 					"\" activityExitState=\"" + activityExitState + "\">" + "\n";
+		}
+		else if (tipo == TipoElemento.MILESTONE){
+			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Milestone\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + "\">\n";
 		}
 		
 		if (!texto.equals("")){
