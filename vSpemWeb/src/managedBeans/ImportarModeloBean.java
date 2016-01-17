@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -19,11 +20,15 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import logica.XMIParser;
+
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.UploadedFile;
 
 import config.Constantes;
+import dataTypes.TipoElemento;
+import dominio.Struct;
 
 @ManagedBean
 @ViewScoped
@@ -135,7 +140,7 @@ public class ImportarModeloBean {
 			}
 		}
 		catch (FileNotFoundException e){
-		    System.out.println("No se encontró la URL: " + e.getMessage() + ".");
+		    System.out.println("No se encontrÃ³ la URL: " + e.getMessage() + ".");
 		    FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", Constantes.MENSAJE_URL_NO_ACCESIBLE + "'" + Constantes.URL_GITHUB + repositorioIngresado + "'.");
 	        FacesContext.getCurrentInstance().addMessage(null, mensaje);
 		}
@@ -165,6 +170,15 @@ public class ImportarModeloBean {
 			}
 			
 			is.close();
+			
+			// Cargo los Capability Patterns
+			List<Struct> nodos = XMIParser.getElementXMI(Constantes.destinoDescargas + nombreArchivo);
+			Iterator<Struct> it = nodos.iterator();
+			while (it.hasNext()){
+				Struct nodo = it.next();
+				cargarCapabilityPatternsRepositorio(nodo);
+			}
+			
 			fos.close();
 			
 			FacesMessage mensaje = new FacesMessage("", "El archivo " + nombreArchivo + " ha sido cargado correctamente.");
@@ -174,6 +188,7 @@ public class ImportarModeloBean {
 			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 	        vb.setNombreArchivo(nombreArchivo);
+	        vb.setRepositorio(repositorio);
 	        
 	        AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
 	        if (ab != null){
@@ -187,10 +202,47 @@ public class ImportarModeloBean {
 		}
 	}
 
+	public void cargarCapabilityPatternsRepositorio(Struct nodo) throws Exception {
+		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
+			int index = repositorio.indexOf("deliveryprocesses/");
+			if (index != -1){
+				String fileCapabilityPattern = "model.xmi";
+				String nombreArchivoCapabilityPattern = "model_" + nodo.getNombre().replace(" ", "_") + ".xmi";
+				String nameCapabilityPatterns = nodo.getNombre().replace(" ", "%20");
+				String repoCapabilityPatterns = repositorio.substring(0, index) + "capabilitypatterns/" + nameCapabilityPatterns + "/";
+				
+				index = repoCapabilityPatterns.indexOf("blob/");
+				String urlDescargar = (index != -1) ? repoCapabilityPatterns.replace("blob/", "") : repoCapabilityPatterns.concat("master/");
+				System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
+				
+				URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
+				URLConnection urlCon = url.openConnection();
+				
+				InputStream is = urlCon.getInputStream();
+				FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivoCapabilityPattern);
+				
+				byte [] array = new byte[1000];
+				int leido = is.read(array);
+				while (leido > 0) {
+				   fos.write(array, 0, leido);
+				   leido = is.read(array);
+				}
+				
+				is.close();
+				fos.close();
+			}
+		}
+		Iterator<Struct> it = nodo.getHijos().iterator();
+		while (it.hasNext()){
+			cargarCapabilityPatternsRepositorio(it.next());
+		}
+	}
+
 	/*** CARGA LOCAL DE ARCHIVOS ***/
 
 	public void cargarArchivoLocal(FileUploadEvent event) {
 		UploadedFile archivo = event.getFile();
+		Object sour = event.getSource();
         if (archivo != null) {
     		nombreArchivo = archivo.getFileName();
             FacesMessage mensaje = new FacesMessage("", "El archivo " + archivo.getFileName() + " ha sido cargado correctamente.");
@@ -227,12 +279,32 @@ public class ImportarModeloBean {
 			
 			in.close();
 			out.flush();
+			
+			// Cargo los Capability Patterns
+			List<Struct> nodos = XMIParser.getElementXMI(Constantes.destinoDescargas + nombreArchivo);
+			Iterator<Struct> it = nodos.iterator();
+			while (it.hasNext()){
+				Struct nodo = it.next();
+				//cargarCapabilityPatternsLocal(nodo, in);
+			}
+			
 			out.close();
 		}
 		catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	/*public void cargarCapabilityPatternsLocal(Struct nodo, InputStream in) {
+		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
+			String nombreArchivoCapabilityPattern = "model_" + nodo.getNombre().replace(" ", "_") + ".xmi";
+			copiarArchivoLocal(nombreArchivoCapabilityPattern, in);
+		}
+		Iterator<Struct> it = nodo.getHijos().iterator();
+		while (it.hasNext()){
+			cargarCapabilityPatternsLocal(it.next(), in);
+		}
+	}*/
 
 	/*** EVENTOS ***/
 

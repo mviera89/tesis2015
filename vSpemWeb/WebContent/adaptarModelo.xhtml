@@ -24,7 +24,7 @@
 					<p:diagram value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
 						<f:facet name="element">
 							<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-										   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
+										   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
 								<div style="position: relative; display:block; margin:auto; width: 32px;">
 									<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 										<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
@@ -48,10 +48,10 @@
 		    <p:tab id="tab2" title="Roles-Tareas" rendered="#{adaptarModeloBean.rolesTareas.size() > 0}">
 		    	<p:accordionPanel value="#{adaptarModeloBean.rolesTareas}" var="rolTarea">
 			        <p:tab>
-			        	<!-- Muestro el nombre del rol en el encabezado -->
+			        	<!-- Muestro el presentationName del rol en el encabezado -->
 			        	<f:facet name="title">
 						   <h:graphicImage value="/imagenes/#{rolTarea.rol.elements[0].data.imagen}" />
-			               <h:outputText value="#{rolTarea.rol.elements[0].data.nombre}"/>
+			               <h:outputText value="#{rolTarea.rol.elements[0].data.presentationName}"/>
 			            </f:facet>
 			            
 			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
@@ -61,7 +61,7 @@
 									<f:facet name="element">
 										<h:panelGroup>
 											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-														   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+														   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
 												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 												<p:ajax update=":panel_principal"/>
 												<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
@@ -77,7 +77,7 @@
 			               			<legend>Realiza</legend>
 			               			<!-- Muestro las tareas principales del rol -->
 			               			<p:dataGrid value="#{rolTarea.primary}" var="elem" columns="#{rolTarea.primary.size() > 4 ? 4 : rolTarea.primary.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
@@ -87,7 +87,7 @@
 			               			<legend>Realiza además</legend>
 									<!-- Muestro las tareas adicionales del rol -->
 			               			<p:dataGrid value="#{rolTarea.additionally}" var="elem" columns="#{rolTarea.additionally.size() > 4 ? 4: rolTarea.additionally.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
@@ -104,17 +104,17 @@
 	   		<p:tab id="tab3" title="Roles-WorkProducts">
 	   				<p:accordionPanel value="#{adaptarModeloBean.rolesWP}" var="rolWP">
 			        <p:tab>
-			        	<!-- Muestro el nombre del rol en el encabezado -->
+			        	<!-- Muestro el presentationName del rol en el encabezado -->
 			        	<f:facet name="title">
 						   <h:graphicImage value="/imagenes/#{rolWP.rol.imagen}" />
-			               <h:outputText value="#{rolWP.rol.nombre}"/>
+			               <h:outputText value="#{rolWP.rol.presentationName}"/>
 			            </f:facet>
 			            
 			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
 				            
 				            <h:panelGroup>
 			               			<!-- Muestro el rol -->
-						                <h:outputLabel value="#{rolWP.rol.nombre}" >
+						                <h:outputLabel value="#{rolWP.rol.presentationName}" >
 											<p:graphicImage value="/imagenes/#{rolWP.rol.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 							</h:panelGroup>
@@ -126,7 +126,7 @@
 										<f:facet name="element">
 											<h:panelGroup>
 												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+															   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
 													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 												</h:commandLink>
@@ -140,7 +140,7 @@
 										<f:facet name="element">
 											<h:panelGroup>
 												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+															   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
 													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 												</h:commandLink>
@@ -153,23 +153,23 @@
 			        	</h:panelGrid>
 			        	
 			        </p:tab>
-			    </p:accordionPanel>	   		
+			    </p:accordionPanel>
 	    	</p:tab>
 	    	
 		    <p:tab id="tab4" title="Tareas-WorkProducts">
 		    	<p:accordionPanel value="#{adaptarModeloBean.tareasWP}" var="tareaWP">
 			        <p:tab>
-			        	<!-- Muestro el nombre de la tarea en el encabezado -->
+			        	<!-- Muestro el presentationName de la tarea en el encabezado -->
 			        	<f:facet name="title">
 						   <h:graphicImage value="/imagenes/#{tareaWP.tarea.imagen}" />
-			               <h:outputText value="#{tareaWP.tarea.nombre}"/>
+			               <h:outputText value="#{tareaWP.tarea.presentationName}"/>
 			            </f:facet>
 			            
 			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
 				            
 				            <h:panelGroup>
 			               			<!-- Muestro la tarea -->
-						                <h:outputLabel value="#{tareaWP.tarea.nombre}" >
+						                <h:outputLabel value="#{tareaWP.tarea.presentationName}" >
 											<p:graphicImage value="/imagenes/#{tareaWP.tarea.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 							</h:panelGroup>
@@ -180,7 +180,7 @@
 			               			<legend>Entradas obligatorias</legend>
 			               			<!-- Muestro los wp mandatory inputs de la tarea -->
 			               			<p:dataGrid value="#{tareaWP.mandatoryInputs}" var="elem" columns="#{tareaWP.mandatoryInputs.size() > 4 ? 4 : tareaWP.mandatoryInputs.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
@@ -190,7 +190,7 @@
 			               			<legend>Entradas opcionales</legend>
 			               			<!-- Muestro los wp entradas opcionales de la tarea -->
 			               			<p:dataGrid value="#{tareaWP.optionalInputs}" var="elem" columns="#{tareaWP.optionalInputs.size() > 4 ? 4 : tareaWP.optionalInputs.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
@@ -200,7 +200,7 @@
 			               			<legend>Entradas externas</legend>
 			               			<!-- Muestro los wp entradas externas de la tarea -->
 			               			<p:dataGrid value="#{tareaWP.externalInputs}" var="elem" columns="#{tareaWP.externalInputs.size() > 4 ? 4 : tareaWP.externalInputs.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
@@ -210,14 +210,14 @@
 			               			<legend>Salidas</legend>
 			               			<!-- Muestro los wp salidas de la tarea -->
 			               			<p:dataGrid value="#{tareaWP.outputs}" var="elem" columns="#{tareaWP.outputs.size() > 4 ? 4 : tareaWP.outputs.size()}">
-						                <h:outputLabel value="#{elem.nombre}" >
+						                <h:outputLabel value="#{elem.presentationName}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 										</h:outputLabel>
 								    </p:dataGrid>
 								</p:fieldset>
 								
 							</h:panelGroup>
-								
+							
 			        	</h:panelGrid>
 			        	
 			        </p:tab>
@@ -253,7 +253,7 @@
 				<f:facet name="element">
 					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
 					<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
-					<p:outputLabel value="#{elem.nombre}" />
+					<p:outputLabel value="#{elem.presentationName}" />
 				</f:facet>
 			</p:diagram>
 			<br/>
