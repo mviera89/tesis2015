@@ -17,7 +17,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import config.Constantes;
 import dataTypes.TipoElemento;
 import dataTypes.WorkProduct;
 import dominio.Struct;
@@ -30,143 +29,140 @@ public class XMIParser {
 		
 		try {
 			File inputFile = new File(nomFile);
-		//	if (inputFile.isFile()){
-		        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		        Document doc = dBuilder.parse(inputFile);
-		        
-		        List<Variant> registroVar = new ArrayList<Variant>();
-		        Map<String, List<Struct>> registroHijos = new HashMap<String,List<Struct>>();
-		        Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
-		        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
-		        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
-		        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
-		        
-		        doc.getDocumentElement().normalize();
-		        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
-		        getNodos(nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
-		        
-		        //seteo variantes en varPoints
-		        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
-		        while (iterH.hasNext()){
-		        	Entry<String, List<Struct>> e = iterH.next();
-		        	String padre = e.getKey();
-		        	List<Struct> l = e.getValue();
-		        	Iterator<Struct> it = l.iterator();
-		        	while (it.hasNext()){
-		        		Struct s = it.next();
-		        		seteoVariantes(s,registroVar,vpToVar);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        
+	        List<Variant> registroVar = new ArrayList<Variant>();
+	        Map<String, List<Struct>> registroHijos = new HashMap<String,List<Struct>>();
+	        Map<String,List<String>> vpToVar = new HashMap<String,List<String>>();
+	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
+	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
+	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
+	        
+	        doc.getDocumentElement().normalize();
+	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
+	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
+	        
+	        //seteo variantes en varPoints
+	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
+	        while (iterH.hasNext()){
+	        	Entry<String, List<Struct>> e = iterH.next();
+	        	String padre = e.getKey();
+	        	List<Struct> l = e.getValue();
+	        	Iterator<Struct> it = l.iterator();
+	        	while (it.hasNext()){
+	        		Struct s = it.next();
+	        		seteoVariantes(s,registroVar,vpToVar);
+	        	}
+	        	
+	        }
+	       
+	        
+	        Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
+	        while (iter.hasNext()){
+	        	Entry<String, List<Struct>> e = iter.next();
+	        	String padre = e.getKey();
+	        	List<Struct> l = e.getValue();
+	        	boolean esHijoDeVar = false;
+	        	Iterator<Variant> itV = registroVar.iterator();
+		    	while (itV.hasNext()){
+		    		Variant v = itV.next();
+    		    	if (v.getID().equals(padre)){
+    		    		v.getHijos().addAll(l);
+    		    		esHijoDeVar = true;
+    		    	}
+    		    }
+    		    if (!esHijoDeVar){
+    		    	result.addAll(l);
+    		    }
+	        }
+	        
+	      /*  // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
+	        Iterator<Struct> it = result.iterator();
+		    while (it.hasNext()){
+	    		Struct s = it.next();
+		        if (s.getType() == TipoElemento.VP_ACTIVITY ||
+	        		s.getType() == TipoElemento.VP_TASK		||
+		         	s.getType() == TipoElemento.VP_PHASE	||
+		         	s.getType() == TipoElemento.VP_ITERATION ||
+		         	s.getType() == TipoElemento.VP_MILESTONE ||
+		         	s.getType() == TipoElemento.VP_ROLE	||
+		         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
+	        		Iterator<Variant> itaux = registroVar.iterator();
+		         	while (itaux.hasNext()){
+		         		Variant v = itaux.next();
+	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
+	         				v.setIDVarPoint(s.getElementID());
+	     					s.getVariantes().add(v);
+	         			}
+		         	}
+	        	}
+		    }
+		    */
+		    // Recorro performedPrimaryBy
+		    Iterator<Entry<Struct,String>> iterator = performedPrimaryBy.entrySet().iterator();
+		    while (iterator.hasNext()){
+		    	Entry<Struct, String> e = iterator.next();
+		        Struct tarea = e.getKey();
+		        String role = e.getValue();
+		        Iterator<Struct> it1 = result.iterator();
+		        boolean encontre = false;
+		        while (it1.hasNext() && !encontre){
+		        	Struct s = it1.next();
+		        	if(s.getElementID().equals(role)){
+		        		tarea.getHijos().add(s);
+		        		result.remove(s);
+		        		encontre = true;
 		        	}
-		        	
 		        }
-		        
-		        Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
-		        while (iter.hasNext()){
-		        	Entry<String, List<Struct>> e = iter.next();
-		        	String padre = e.getKey();
-		        	List<Struct> l = e.getValue();
-		        	boolean esHijoDeVar = false;
-		        	Iterator<Variant> itV = registroVar.iterator();
-			    	while (itV.hasNext()){
-			    		Variant v = itV.next();
-	    		    	if (v.getID().equals(padre)){
-	    		    		v.getHijos().addAll(l);
-	    		    		esHijoDeVar = true;
-	    		    	}
-	    		    }
-	    		    if (!esHijoDeVar){
-	    		    	result.addAll(l);
-	    		    }
-		        }
-		        
-		      
-		        
-		        /*// Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
-		        Iterator<Struct> it = result.iterator();
-			    while (it.hasNext()){
-		    		Struct s = it.next();
-			        if (s.getType() == TipoElemento.VP_ACTIVITY ||
-		        		s.getType() == TipoElemento.VP_TASK		||
-			         	s.getType() == TipoElemento.VP_PHASE	||
-			         	s.getType() == TipoElemento.VP_ITERATION ||
-			         	s.getType() == TipoElemento.VP_MILESTONE ||
-			         	s.getType() == TipoElemento.VP_ROLE	||
-			         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
-		        		Iterator<Variant> itaux = registroVar.iterator();
-			         	while (itaux.hasNext()){
-			         		Variant v = itaux.next();
-		         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
-		         				v.setIDVarPoint(s.getElementID());
-		     					s.getVariantes().add(v);
-		         			}
-			         	}
-		        	}
-			    }*/
-			    
-			    // Recorro performedPrimaryBy
-			    Iterator<Entry<Struct,String>> iterator = performedPrimaryBy.entrySet().iterator();
-			    while (iterator.hasNext()){
-			    	Entry<Struct, String> e = iterator.next();
-			        Struct tarea = e.getKey();
-			        String role = e.getValue();
-			        Iterator<Struct> it1 = result.iterator();
-			        boolean encontre = false;
-			        while (it1.hasNext() && !encontre){
-			        	Struct s = it1.next();
-			        	if(s.getElementID().equals(role)){
-			        		tarea.getHijos().add(s);
-			        		result.remove(s);
-			        		encontre = true;
+		    }
+		    
+		    // Recorro performedAdditionallyBy
+			Iterator<Entry<Struct,List<String>>> itera = performedAdditionallyBy.entrySet().iterator();
+			while (itera.hasNext()){
+				Entry<Struct, List<String>> e = itera.next();
+				Struct tarea = e.getKey();
+				List<String> roles = e.getValue();
+				Iterator<String> itRoles = roles.iterator();
+				while (itRoles.hasNext()){
+					String rol  = itRoles.next();
+			    	Iterator<Struct> it2 = result.iterator();
+			    	boolean encontre = false;
+			    	while (it2.hasNext() && !encontre){
+			    		Struct s = it2.next();
+			    		if(s.getElementID().equals(rol)){
+			    			tarea.getHijos().add(s);
+			    			result.remove(s);
+			    			encontre = true;
+			    		}
+			    	}
+				}
+			}
+		    
+		    // Recorro workProducts
+		    Iterator<Entry<Struct,List<WorkProduct>>> iterat = workProducts.entrySet().iterator();
+			while (iterat.hasNext()){
+				Entry<Struct, List<WorkProduct>> e = iterat.next();
+				Struct tarea = e.getKey();
+				Iterator<WorkProduct> itwp = e.getValue().iterator();
+				while (itwp.hasNext()){
+					WorkProduct workProd = itwp.next();
+			    	Iterator<String> itWP = workProd.getWorkProducts().iterator();
+			    	while (itWP.hasNext()){
+			    		String wp  = itWP.next();
+			    		Iterator<Struct> it3 = result.iterator();
+			        	boolean encontre = false;
+			        	while (it3.hasNext() && !encontre){
+			        		Struct s = it3.next();
+			        		if(s.getElementID().equals(wp)){
+			        			tarea.getHijos().add(s);
+			        			encontre = true;
+			        		}
 			        	}
-			        }
-			    }
-			    
-			    // Recorro performedAdditionallyBy
-				Iterator<Entry<Struct,List<String>>> itera = performedAdditionallyBy.entrySet().iterator();
-				while (itera.hasNext()){
-					Entry<Struct, List<String>> e = itera.next();
-					Struct tarea = e.getKey();
-					List<String> roles = e.getValue();
-					Iterator<String> itRoles = roles.iterator();
-					while (itRoles.hasNext()){
-						String rol  = itRoles.next();
-				    	Iterator<Struct> it2 = result.iterator();
-				    	boolean encontre = false;
-				    	while (it2.hasNext() && !encontre){
-				    		Struct s = it2.next();
-				    		if(s.getElementID().equals(rol)){
-				    			tarea.getHijos().add(s);
-				    			result.remove(s);
-				    			encontre = true;
-				    		}
-				    	}
-					}
+			    	}
 				}
-			    
-			    // Recorro workProducts
-			    Iterator<Entry<Struct,List<WorkProduct>>> iterat = workProducts.entrySet().iterator();
-				while (iterat.hasNext()){
-					Entry<Struct, List<WorkProduct>> e = iterat.next();
-					Struct tarea = e.getKey();
-					Iterator<WorkProduct> itwp = e.getValue().iterator();
-					while (itwp.hasNext()){
-						WorkProduct workProd = itwp.next();
-				    	Iterator<String> itWP = workProd.getWorkProducts().iterator();
-				    	while (itWP.hasNext()){
-				    		String wp  = itWP.next();
-				    		Iterator<Struct> it3 = result.iterator();
-				        	boolean encontre = false;
-				        	while (it3.hasNext() && !encontre){
-				        		Struct s = it3.next();
-				        		if(s.getElementID().equals(wp)){
-				        			tarea.getHijos().add(s);
-				        			encontre = true;
-				        		}
-				        	}
-				    	}
-					}
-				}
-			//}
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -174,7 +170,7 @@ public class XMIParser {
         return result;
     }
 
-	public static void getNodos(NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts ){
+	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts ){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -263,7 +259,7 @@ public class XMIParser {
 	      		    TipoElemento tipo = obtenerTipoElemento(type);
 	      		    
 	      		    Struct h = null;
-      		    	String nombreArchivoCapabilityPattern = Constantes.destinoDescargas + "model_" + nameHijo.replace(" ", "_") + ".xmi";
+      		    	String nombreArchivoCapabilityPattern = nomFile.substring(0, nomFile.length() - 4) + "_" + nameHijo.replace(" ", "_") + ".xmi";
       		    	File inputFile = new File(nombreArchivoCapabilityPattern);
       		    	// Si es un capability pattern y está el archivo descargado => Lo parseo
 	      		    if ((tipo == TipoElemento.CAPABILITY_PATTERN) && (inputFile.isFile())){
@@ -488,10 +484,37 @@ public class XMIParser {
 	      		    }
 				}
 				NodeList hijos = nodo.getChildNodes();
-				getNodos(hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts);
+				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts);
 			}
 		}
 	}
+	
+	public static String getNombreProcesoXMI(String nomFile){
+		try {
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
+	        int i = 0;
+	        int n = nList.getLength();
+	        while (i < n){
+	        	Node nodo = nList.item(i);
+	        	if (nodo.getNodeType() == Node.ELEMENT_NODE){
+					Element elem = (Element) nodo;
+					if (elem.hasAttribute("name")){
+						return elem.getAttribute("name");
+					}
+	        	}
+	        	i++;
+	        }
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+    }
 
 	public static TipoElemento obtenerTipoElemento(String t){
 		TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString()))    ? TipoElemento.PROCESS_PACKAGE 	 :

@@ -1,7 +1,12 @@
 package managedBeans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 @ManagedBean(name="VistaBean")
 @SessionScoped
@@ -9,6 +14,7 @@ public class VistaBean {
 
 	private int indiceActivo = 0;
 	private String nombreArchivo = "";
+	private List<String> capabilityPatterns = null;
 	private boolean finModelado = false;
 	private String repositorio = "";
 
@@ -26,6 +32,14 @@ public class VistaBean {
 
 	public void setNombreArchivo(String nombreArchivo) {
 		this.nombreArchivo = nombreArchivo;
+	}
+
+	public List<String> getCapabilityPatterns() {
+		return capabilityPatterns;
+	}
+
+	public void setCapabilityPatterns(List<String> capabilityPatterns) {
+		this.capabilityPatterns = capabilityPatterns;
 	}
 
 	public boolean isFinModelado() {
@@ -46,6 +60,16 @@ public class VistaBean {
 
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
+		
+		if (indice == 1){
+			FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+    		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+			AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
+	        if (ab != null){
+	        	ab.init();
+	        }
+	        this.setFinModelado(false);
+		}
 	}
 	
 	public boolean deshabilitar(int indice){
@@ -66,4 +90,10 @@ public class VistaBean {
 		return res;
 	}
 
+	public void addCapabilityPattern(String nombreArchivoCP){
+		if (capabilityPatterns == null){
+			capabilityPatterns = new ArrayList<String>();
+		}
+		capabilityPatterns.add(nombreArchivoCP);
+	}
 }

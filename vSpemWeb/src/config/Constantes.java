@@ -5,6 +5,7 @@ public class Constantes {
 	// Constantes de archivos
 	public static final String destinoDescargas = "C:\\download\\";
 	public static final String destinoExport = "C:\\download\\";
+	public static final String nomArchivoDownload = "model.xmi";
 	public static final String nomArchivoExport = "export.xml";
 	
 	// Constantes de Github
