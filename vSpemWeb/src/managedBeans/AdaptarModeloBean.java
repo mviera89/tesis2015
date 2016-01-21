@@ -370,7 +370,8 @@ public class AdaptarModeloBean {
 		        				boolean fin = false;
 		        				while (itStruct.hasNext() && !fin){
 		        					Struct st = (Struct) itStruct.next();
-		        					fin = (st.getElementID().equals(s.getElementID()));
+		        					//fin = (st.getElementID().equals(s.getElementID()));
+		        					fin = st.getNombre().equals(s.getNombre());
 		        				}
 		        				if (!fin){ // La tarea no está => La agrego
 		        					rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
@@ -659,7 +660,8 @@ public class AdaptarModeloBean {
 		        				boolean fin = false;
 		        				while (itStruct.hasNext() && !fin){
 		        					Struct st = (Struct) itStruct.next();
-		        					fin = (st.getElementID().equals(s.getElementID()));
+		        					//fin = (st.getElementID().equals(s.getElementID()));
+		        					fin = st.getNombre().equals(s.getNombre());
 		        				}
 		        				if (!fin){ // La tarea no está => La agrego
 		        					rolesTareasPrimary.get(s.getPerformedPrimaryBy()).add(s);
@@ -1012,36 +1014,32 @@ public class AdaptarModeloBean {
 		rolesTareas = new ArrayList<TipoRolesTareas>();
 		List<String> rolesAgregados = new ArrayList<String>();
 		
+		System.out.println("################################");
 		// Agrego las tareas primarias
 		Iterator<Entry<String, List<Struct>>> it = rolesTareasPrimary.entrySet().iterator();
 		while (it.hasNext()){
 			Entry<String, List<Struct>> entry = it.next();
 			String idRol = entry.getKey();
 			List<Struct> tareas = entry.getValue();
+			
 			if ((idRol != null) && (!idRol.equals(""))){
 				Struct rol = buscarRol(idRol, nodos);
+				
+
+				
+				System.out.println("######## Id Rol: " + idRol + " - Nombre Rol: " + rol.getNombre() + "- Tareas: ");
+				Iterator<Struct> itT = tareas.iterator();
+				while (itT.hasNext()){
+					Struct s = itT.next();
+					System.out.println("######## Nombre: " + s.getNombre() + " - Id: " + s.getElementID());
+				}
+				System.out.println("######## idRol ########");
+				
+				
 		       	if (rol != null){
-		       		rolesAgregados.add(idRol);
-		    		TipoRolesTareas trt = new TipoRolesTareas();
-		    		DefaultDiagramModel rolModel = crearModeloParaRol(rol);
-		       		trt.setRol(rolModel);
-		       		trt.setPrimary(tareas);
-		       		rolesTareas.add(trt);
-		       	}
-			}
-		}
-		
-		// Agrego las tareas adicionales
-		it = rolesTareasAdditionally.entrySet().iterator();
-		while (it.hasNext()){
-			Entry<String, List<Struct>> entry = it.next();
-			String idRol = entry.getKey();
-			List<Struct> tareas = entry.getValue();
-			if ((idRol != null) && (!idRol.equals(""))){
-				Struct rol = buscarRol(idRol, nodos);
-		       	if (rol != null){
-		       		if (!rolesAgregados.contains(idRol)){
-			       		rolesAgregados.add(idRol);
+		       		//rolesAgregados.add(idRol);
+		       		if (!rolesAgregados.contains(rol.getNombre())){
+		       			rolesAgregados.add(rol.getNombre());
 			    		TipoRolesTareas trt = new TipoRolesTareas();
 			    		DefaultDiagramModel rolModel = crearModeloParaRol(rol);
 			       		trt.setRol(rolModel);
@@ -1053,8 +1051,84 @@ public class AdaptarModeloBean {
 		       			while (iter.hasNext()){
 		       				TipoRolesTareas trt = iter.next();
 		       				Struct s = (Struct) trt.getRol().getElements().get(0).getData();
-		       				if (s.getElementID().equals(idRol)){
-		       					trt.setAdditionally(tareas);
+		       				if (s.getNombre().equals(rol.getNombre())){
+		       					//trt.getPrimary().addAll(tareas);
+		       					List<Struct> prim = trt.getPrimary();
+		       					Iterator<Struct> itTareas = tareas.iterator();
+		       					// Agrego todas las tareas que no están
+		       					while (itTareas.hasNext()){
+		       						Struct tarea = itTareas.next();
+		       						boolean fin = false;
+		       						int i = 0;
+		       						int n = prim.size();
+			       					while ((i < n) && !fin){
+			       						if (prim.get(i).getNombre().equals(tarea.getNombre())){
+			       							fin = true;
+			       						}
+			       						i++;
+			       					}
+			       					if (!fin){
+			       						prim.add(tarea);
+			       					}
+		       					}
+		       				}
+		       			}
+		       		}
+		       	}
+			}
+		}
+		System.out.println("################################");
+		
+		// Agrego las tareas adicionales
+		it = rolesTareasAdditionally.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<String, List<Struct>> entry = it.next();
+			String idRol = entry.getKey();
+			List<Struct> tareas = entry.getValue();
+			if ((idRol != null) && (!idRol.equals(""))){
+				Struct rol = buscarRol(idRol, nodos);
+		       	if (rol != null){
+		       		/*if (!rolesAgregados.contains(idRol)){
+			       		rolesAgregados.add(idRol);*/
+		       		if (!rolesAgregados.contains(rol.getNombre())){
+			       		rolesAgregados.add(rol.getNombre());
+			    		TipoRolesTareas trt = new TipoRolesTareas();
+			    		DefaultDiagramModel rolModel = crearModeloParaRol(rol);
+			       		trt.setRol(rolModel);
+			       		trt.setPrimary(tareas);
+			       		rolesTareas.add(trt);
+		       		}
+		       		else{
+		       			Iterator<TipoRolesTareas> iter = rolesTareas.iterator();
+		       			while (iter.hasNext()){
+		       				TipoRolesTareas trt = iter.next();
+		       				Struct s = (Struct) trt.getRol().getElements().get(0).getData();
+		       				//if (s.getElementID().equals(idRol)){
+		       				if (s.getNombre().equals(rol.getNombre())){
+		       					List<Struct> add = trt.getAdditionally();
+		       					if (add == null){
+		       						trt.setAdditionally(tareas);
+		       					}
+		       					else{
+		       						//trt.getAdditionally().addAll(tareas);
+			       					Iterator<Struct> itTareas = tareas.iterator();
+			       					// Agrego todas las tareas que no están
+			       					while (itTareas.hasNext()){
+			       						Struct tarea = itTareas.next();
+			       						boolean fin = false;
+			       						int i = 0;
+			       						int n = add.size();
+				       					while ((i < n) && !fin){
+				       						if (add.get(i).getNombre().equals(tarea.getNombre())){
+				       							fin = true;
+				       						}
+				       						i++;
+				       					}
+				       					if (!fin){
+				       						add.add(tarea);
+				       					}
+			       					}
+		       					}
 		       				}
 		       			}
 		       		}
