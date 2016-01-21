@@ -1602,6 +1602,20 @@ public class AdaptarModeloBean {
 								newS.setHijos(v.getHijos());
 								newS.setDescription(v.getDescription());
 								newS.setPresentationName(v.getPresentationName());
+								///
+								// Seteo las variantes
+								List<Variant> lstVariantes = s.getVariantes();
+								if (lstVariantes.size() > 0){
+									ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
+									Iterator<Variant> itVariantes = lstVariantes.iterator();
+									while (itVariantes.hasNext()){
+										Variant vrt = itVariantes.next();
+										Variant newVariant = crearCopiaVariante(vrt);
+										variantesNewS.add(newVariant);
+									}
+									newS.setVariantes(variantesNewS);
+								}
+								//
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
 								newE.setDraggable(false);
 								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");

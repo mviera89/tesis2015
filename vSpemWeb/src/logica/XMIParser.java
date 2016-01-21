@@ -44,6 +44,21 @@ public class XMIParser {
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
 	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
 	        
+	        //seteo variantes en varPoints
+	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
+	        while (iterH.hasNext()){
+	        	Entry<String, List<Struct>> e = iterH.next();
+	        	String padre = e.getKey();
+	        	List<Struct> l = e.getValue();
+	        	Iterator<Struct> it = l.iterator();
+	        	while (it.hasNext()){
+	        		Struct s = it.next();
+	        		seteoVariantes(s,registroVar,vpToVar);
+	        	}
+	        	
+	        }
+	       
+	        
 	        Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 	        while (iter.hasNext()){
 	        	Entry<String, List<Struct>> e = iter.next();
@@ -63,7 +78,7 @@ public class XMIParser {
     		    }
 	        }
 	        
-	        // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
+	      /*  // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
 	        Iterator<Struct> it = result.iterator();
 		    while (it.hasNext()){
 	    		Struct s = it.next();
@@ -84,7 +99,7 @@ public class XMIParser {
 		         	}
 	        	}
 		    }
-		    
+		    */
 		    // Recorro performedPrimaryBy
 		    Iterator<Entry<Struct,String>> iterator = performedPrimaryBy.entrySet().iterator();
 		    while (iterator.hasNext()){
@@ -573,6 +588,35 @@ public class XMIParser {
     	}
     	
     	return padre;
+    }
+    
+    
+    static void seteoVariantes(Struct s,List<Variant> registroVar, Map<String,List<String>> vpToVar){
+    	 
+		        if (s.getType() == TipoElemento.VP_ACTIVITY ||
+	        		s.getType() == TipoElemento.VP_TASK		||
+		         	s.getType() == TipoElemento.VP_PHASE	||
+		         	s.getType() == TipoElemento.VP_ITERATION ||
+		         	s.getType() == TipoElemento.VP_MILESTONE ||
+		         	s.getType() == TipoElemento.VP_ROLE	||
+		         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
+	        		Iterator<Variant> itaux = registroVar.iterator();
+		         	while (itaux.hasNext()){
+		         		Variant v = itaux.next();
+	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
+	         				v.setIDVarPoint(s.getElementID());
+	     					s.getVariantes().add(v);
+	         			}
+		         	}
+	        	}
+		        if (s.getHijos() != null){
+		        	Iterator<Struct> it = s.getHijos().iterator();
+		        	while (it.hasNext()){
+		        		Struct hijo = it.next();
+		        		seteoVariantes(hijo,registroVar,vpToVar);
+		        	}
+		        	
+		        }
     }
     
 }
