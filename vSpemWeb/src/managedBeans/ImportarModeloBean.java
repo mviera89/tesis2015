@@ -176,7 +176,7 @@ public class ImportarModeloBean {
 			Iterator<Struct> it = nodos.iterator();
 			while (it.hasNext()){
 				Struct nodo = it.next();
-				cargarCapabilityPatternsRepositorio(nodo);
+				cargarCapabilityPatternsRepositorio(nombreArchivo, nodo);
 			}
 			
 			fos.close();
@@ -189,12 +189,6 @@ public class ImportarModeloBean {
 			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 	        vb.setNombreArchivo(nombreArchivo);
 	        vb.setRepositorio(repositorio);
-	        
-	        AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
-	        if (ab != null){
-	        	ab.init();
-	        }
-	        vb.setFinModelado(false);
 		}
 		else{
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
@@ -202,12 +196,12 @@ public class ImportarModeloBean {
 		}
 	}
 
-	public void cargarCapabilityPatternsRepositorio(Struct nodo) throws Exception {
+	public void cargarCapabilityPatternsRepositorio(String nombreArchivo, Struct nodo) throws Exception {
 		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
 			int index = repositorio.indexOf("deliveryprocesses/");
 			if (index != -1){
-				String fileCapabilityPattern = "model.xmi";
-				String nombreArchivoCapabilityPattern = "model_" + nodo.getNombre().replace(" ", "_") + ".xmi";
+				String fileCapabilityPattern = Constantes.nomArchivoDownload; // model.xmi
+				String nombreArchivoCapabilityPattern = nombreArchivo.substring(0, nombreArchivo.length() - 4) + "_" + nodo.getNombre().replace(" ", "_") + ".xmi";
 				String nameCapabilityPatterns = nodo.getNombre().replace(" ", "%20");
 				String repoCapabilityPatterns = repositorio.substring(0, index) + "capabilitypatterns/" + nameCapabilityPatterns + "/";
 				
@@ -234,7 +228,7 @@ public class ImportarModeloBean {
 		}
 		Iterator<Struct> it = nodo.getHijos().iterator();
 		while (it.hasNext()){
-			cargarCapabilityPatternsRepositorio(it.next());
+			cargarCapabilityPatternsRepositorio(nombreArchivo, it.next());
 		}
 	}
 
@@ -242,7 +236,6 @@ public class ImportarModeloBean {
 
 	public void cargarArchivoLocal(FileUploadEvent event) {
 		UploadedFile archivo = event.getFile();
-		Object sour = event.getSource();
         if (archivo != null) {
     		nombreArchivo = archivo.getFileName();
             FacesMessage mensaje = new FacesMessage("", "El archivo " + archivo.getFileName() + " ha sido cargado correctamente.");
@@ -254,12 +247,6 @@ public class ImportarModeloBean {
         		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
         		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
                 vb.setNombreArchivo(nombreArchivo);
-                
-                AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
-                if (ab != null){
-                	ab.init();
-                }
-                vb.setFinModelado(false);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -279,15 +266,6 @@ public class ImportarModeloBean {
 			
 			in.close();
 			out.flush();
-			
-			// Cargo los Capability Patterns
-			List<Struct> nodos = XMIParser.getElementXMI(Constantes.destinoDescargas + nombreArchivo);
-			Iterator<Struct> it = nodos.iterator();
-			while (it.hasNext()){
-				Struct nodo = it.next();
-				//cargarCapabilityPatternsLocal(nodo, in);
-			}
-			
 			out.close();
 		}
 		catch (IOException e) {
@@ -295,16 +273,42 @@ public class ImportarModeloBean {
 		}
 	}
 	
-	/*public void cargarCapabilityPatternsLocal(Struct nodo, InputStream in) {
-		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
-			String nombreArchivoCapabilityPattern = "model_" + nodo.getNombre().replace(" ", "_") + ".xmi";
-			copiarArchivoLocal(nombreArchivoCapabilityPattern, in);
-		}
-		Iterator<Struct> it = nodo.getHijos().iterator();
-		while (it.hasNext()){
-			cargarCapabilityPatternsLocal(it.next(), in);
-		}
-	}*/
+	public void cargarCapabilityPatternsLocal(FileUploadEvent event){
+		UploadedFile archivo = event.getFile();
+        if (archivo != null) {
+    		nombreArchivo = archivo.getFileName();
+            FacesMessage mensaje = new FacesMessage("", "El archivo " + archivo.getFileName() + " ha sido cargado correctamente.");
+            FacesContext.getCurrentInstance().addMessage(null, mensaje);
+            try {
+            	copiarArchivoLocal(archivo.getFileName(), archivo.getInputstream());
+                
+                FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+        		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+        		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+                
+                String nombreProceso = XMIParser.getNombreProcesoXMI(Constantes.destinoDescargas + nombreArchivo);
+                vb.addCapabilityPattern(nombreProceso);
+                
+                File fichero = new File(Constantes.destinoDescargas + nombreArchivo);
+                if (!fichero.exists()) {
+                    System.out.println("Error: El archivo \"" + Constantes.destinoDescargas + nombreArchivo + "\" no existe.");
+                    return;
+                }
+                
+                String nombreDP = vb.getNombreArchivo().substring(0, vb.getNombreArchivo().length() - 4);
+                String nombreCP = nombreProceso.replace(" ", "_");
+                File fichero2 = new File(Constantes.destinoDescargas + nombreDP + "_" + nombreCP + ".xmi");
+                
+                boolean success = fichero.renameTo(fichero2);
+                if (!success) {
+                    System.out.println("Error intentando cambiar el nombre del archivo.");
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+	}
 
 	/*** EVENTOS ***/
 

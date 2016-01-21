@@ -23,8 +23,21 @@
 				</h:panelGrid>
 			</p:tab>
 	        <p:tab title="Directorio local">
-				<p:fileUpload fileUploadListener="#{importarModeloBean.cargarArchivoLocal}" allowTypes="/(\.|\/)(xmi)$/"
-							  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar" update="importar_form:msg, importar_form:sig" invalidFileMessage="Formato de archivo incorrecto."/>
+				<p:outputLabel value="Delivery Process"/>
+				<p:fileUpload id="fileUploadDP"
+							  fileUploadListener="#{importarModeloBean.cargarArchivoLocal}" multiple="false"
+							  allowTypes="/(\.|\/)(xmi)$/" invalidFileMessage="Formato de archivo incorrecto."
+							  fileLimit="1" fileLimitMessage="Solo es posible cargar un archivo."
+							  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"
+							  update="importar_form:msg, importar_form:sig, fileUploadDP"/>
+				
+				<p:outputLabel value="Capability Patterns" style="margin-top: 10px;"/>
+				<p:fileUpload id="fileUploadCP"
+							  fileUploadListener="#{importarModeloBean.cargarCapabilityPatternsLocal}" multiple="true"
+							  allowTypes="/(\.|\/)(xmi)$/" invalidFileMessage="Formato de archivo incorrecto."
+							  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"
+							  update="importar_form:msg, importar_form:sig, fileUploadCP"/>
+				
 	        </p:tab>
 	        <p:ajax event="tabChange" listener="#{importarModeloBean.onTabChange}" update="importar_form"/>
 		</p:tabView>
