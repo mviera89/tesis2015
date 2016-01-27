@@ -44,21 +44,6 @@ public class XMIParser {
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
 	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
 	        
-	        //seteo variantes en varPoints
-	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
-	        while (iterH.hasNext()){
-	        	Entry<String, List<Struct>> e = iterH.next();
-	        	String padre = e.getKey();
-	        	List<Struct> l = e.getValue();
-	        	Iterator<Struct> it = l.iterator();
-	        	while (it.hasNext()){
-	        		Struct s = it.next();
-	        		seteoVariantes(s,registroVar,vpToVar);
-	        	}
-	        	
-	        }
-	       
-	        
 	        Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 	        while (iter.hasNext()){
 	        	Entry<String, List<Struct>> e = iter.next();
@@ -72,10 +57,61 @@ public class XMIParser {
     		    		v.getHijos().addAll(l);
     		    		esHijoDeVar = true;
     		    	}
+    		    	else{
+    		    		//busco tambien en hijos de var
+    		    		Iterator<Struct> itH = v.getHijos().iterator();
+    		    		while (itH.hasNext()){
+    		    			Struct s = itH.next();
+    		    			Struct nodo = buscoEnHijos(s, padre);
+    	    				if (nodo != null){
+    	    					nodo.getHijos().addAll(l);
+    	    					esHijoDeVar = true;
+    	    				}
+    		    			
+    		    		}
+    		    	}
     		    }
     		    if (!esHijoDeVar){
+    		    	//busco en result
     		    	result.addAll(l);
     		    }
+	        }
+	      /*  //para cada variante obtengo sus hijos y para cada uno de ellos me fijo si no es padre de alguien
+	        Iterator<Entry<String, List<Struct>>> ite = registroHijos.entrySet().iterator();
+	        while (ite.hasNext()){
+	        	Entry<String, List<Struct>> e = ite.next();
+	        	String padre = e.getKey();
+	        	List<Struct> l = e.getValue();
+	        	Iterator<Variant> itV = registroVar.iterator();
+	    		while (itV.hasNext()){
+	    			Variant v = itV.next();
+	    			List<Struct> hijos = v.getHijos();
+	    			Iterator<Struct> it = hijos.iterator();
+	    			while (it.hasNext()){
+	    				Struct s = it.next();
+	    				Struct nodo = buscoEnHijos(s, padre);
+	    				if (nodo != null){
+	    					nodo.getHijos().addAll(l);
+	    				}
+	    			}
+	    			
+	    		}
+	        }
+		    */
+	        
+	        
+	        //seteo variantes en varPoints
+	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
+	        while (iterH.hasNext()){
+	        	Entry<String, List<Struct>> e = iterH.next();
+	        	String padre = e.getKey();
+	        	List<Struct> l = e.getValue();
+	        	Iterator<Struct> it = l.iterator();
+	        	while (it.hasNext()){
+	        		Struct s = it.next();
+	        		seteoVariantes(s,registroVar,vpToVar);
+	        	}
+	        	
 	        }
 	        
 	      /*  // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
@@ -249,12 +285,7 @@ public class XMIParser {
 	      		    int min = -1;
 	      		    int max = -1;
 	      		    
-	      		    // Veo si es Padre de alguien
-	      		    List<Struct> hijosS = new ArrayList<Struct>();
-	      		    if (registroHijos.containsKey(id)){
-	      		    	hijosS = registroHijos.get(id);
-	      		    	registroHijos.remove(id);
-	      		    }
+	      		    
 	      		    
 	      		    TipoElemento tipo = obtenerTipoElemento(type);
 	      		    
@@ -359,17 +390,33 @@ public class XMIParser {
 							tienePadre = true;
 							String padre = eHijo.getAttribute("superActivities");
 							
-							if ((hijosS != null) && (h.getHijos() != null)){
-								h.getHijos().addAll(hijosS);
-							}
+							
 							boolean esHijoDeVar = false;
-							// busco en las variantes
+							// busco en las variantes y en sus hijos
 							Iterator<Variant> itV = registroVar.iterator();
 							while (itV.hasNext()){
 								Variant v = itV.next();
 								if (v.getID().equals(padre)){
 									v.getHijos().add(h);
 									esHijoDeVar = true;
+								}
+								else{
+									List<Struct> hijos = v.getHijos();
+					    			Iterator<Struct> it = hijos.iterator();
+					    			while (it.hasNext()){
+					    				Struct s = it.next();
+					    				if (s.getElementID().equals(padre)){
+					    					s.getHijos().add(h);
+					    					esHijoDeVar = true;
+					    				}
+					    				else{
+						    				Struct n = buscoEnHijos(s, padre);
+						    				if (n != null){
+						    					n.getHijos().add(h);
+						    					esHijoDeVar = true;
+						    				}
+					    				}
+					    			}
 								}
 							}
 							if (!esHijoDeVar){
@@ -382,7 +429,7 @@ public class XMIParser {
 								}
 								// veo si el padre ya no esta en registroHijos como hijo de alguien
 				  		    	else {
-				  		    		Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
+				  		    		/*Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 				  		    		while (iter.hasNext()){
 				  		    			Entry<String, List<Struct>> e = iter.next();
 					  		        	List<Struct> l = e.getValue();
@@ -393,7 +440,17 @@ public class XMIParser {
 					  		        			s.getHijos().add(h);
 					  		        			elPadreEsHijo = true;
 					  		        		}
+					  		        		else {
+					  		        			//busco en hijos de s
+					  		        			agregoHijo(s, padre,h,elPadreEsHijo);
+					  		        		}
 					  		        	}
+				  		    		}*/
+				  		    		
+				  		    		Struct s = buscoPadre (registroHijos, padre);
+				  		    		if (s != null){
+				  		    			s.getHijos().add(h);
+				  		    			elPadreEsHijo = true;
 				  		    		}
 				  		    	}
 								
@@ -408,7 +465,18 @@ public class XMIParser {
 				      		    	}
 				  		    	} 
 					    	}
+							
 					  	}
+						
+						// Veo si es Padre de alguien
+		      		    List<Struct> hijosS = new ArrayList<Struct>();
+		      		    if (registroHijos.containsKey(id)){
+		      		    	hijosS = registroHijos.get(id);
+		      		    	registroHijos.remove(id);
+		      		    }
+		      		    if ((hijosS != null)){
+							h.getHijos().addAll(hijosS);
+						}
 						
 		      		    if (type.equals(TipoElemento.VP_ACTIVITY.toString()) ||
 	          				type.equals(TipoElemento.VP_PHASE.toString()) ||
@@ -617,6 +685,46 @@ public class XMIParser {
 		        	}
 		        	
 		        }
+    }
+    
+    static Struct buscoEnHijos(Struct s, String padre){
+    		
+  			Iterator<Struct> it = s.getHijos().iterator();
+  			while (it.hasNext()){
+  				Struct hijo = it.next();
+  				if(hijo.getElementID().equals(padre)){
+  					return hijo;       			
+	        	}
+  				else {
+  					return buscoEnHijos(hijo,padre);
+  					
+  				}
+  			}
+  			return null;
+    }
+    
+    static Struct buscoPadre (Map<String,List<Struct>> registroHijos, String padre){
+    	Struct result = null;
+    	Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
+  		while (iter.hasNext()){
+  			Entry<String, List<Struct>> e = iter.next();
+	        	List<Struct> l = e.getValue();
+	        	Iterator<Struct> itList = l.iterator();
+	        	while (itList.hasNext()){
+	        		Struct s = itList.next();
+	        		if(s.getElementID().equals(padre)){
+	        			result = s;
+	        			return result;
+	        		}
+	        		else {
+	        			
+	          				result = buscoEnHijos(s,padre);
+	          			}
+	        		}
+	        
+	        	}
+  		
+  		return result;
     }
     
 }
