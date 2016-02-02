@@ -32,6 +32,7 @@ public class Struct {
     private List<String> outputs;
     private List<String> responsableDe;
     private List<String> modifica;
+    private List<String> linkToPredecessor;
    
     
 
@@ -64,6 +65,7 @@ public class Struct {
 		this.outputs = null;
 		this.responsableDe = null;
 		this.modifica = null;
+		this.linkToPredecessor = null;
 				
 	}
 
@@ -241,6 +243,14 @@ public class Struct {
 
 	public void setModifica(List<String> modifica) {
 		this.modifica = modifica;
+	}
+
+	public List<String> getLinkToPredecessor() {
+		return linkToPredecessor;
+	}
+
+	public void setLinkToPredecessor(List<String> linkToPredecessor) {
+		this.linkToPredecessor = linkToPredecessor;
 	}
 	
 	
