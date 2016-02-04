@@ -16,8 +16,12 @@ public class Variant {
 	private List<String> exclusivas;
 	private List<Struct> hijos;
     private Boolean estaExpandido;
+    private String processComponentId;
+	private String processComponentName;
+	private String presentationId;
+	private String elementIDExtends;
 	
-	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType){
+	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.ID = ID;
 		this.name = name;
 		this.presentationName = presentationName;
@@ -28,6 +32,10 @@ public class Variant {
 		this.exclusivas = new ArrayList<String>();
 		this.hijos = new ArrayList<Struct>();
 		this.estaExpandido = false;
+		this.processComponentId = processComponentId;
+		this.processComponentName = processComponentName;
+		this.presentationId = presentationId;
+		this.elementIDExtends = elementIDExtends;
 	}
 
 	public String getID() {
@@ -116,6 +124,38 @@ public class Variant {
 
 	public void setEstaExpandido(Boolean estaExpandido) {
 		this.estaExpandido = estaExpandido;
+	}
+
+	public String getProcessComponentId() {
+		return processComponentId;
+	}
+
+	public void setProcessComponentId(String processComponentId) {
+		this.processComponentId = processComponentId;
+	}
+
+	public String getProcessComponentName() {
+		return processComponentName;
+	}
+
+	public void setProcessComponentName(String processComponentName) {
+		this.processComponentName = processComponentName;
+	}
+
+	public String getPresentationId() {
+		return presentationId;
+	}
+
+	public void setPresentationId(String presentationId) {
+		this.presentationId = presentationId;
+	}
+
+	public String getElementIDExtends() {
+		return elementIDExtends;
+	}
+
+	public void setElementIDExtends(String elementIDExtends) {
+		this.elementIDExtends = elementIDExtends;
 	}
 
 }

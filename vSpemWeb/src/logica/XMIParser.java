@@ -39,10 +39,21 @@ public class XMIParser {
 	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
 	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
 	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
+	        Map<String, String> dataProcess = new HashMap<String, String>();
 	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
-	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts);
+	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts, dataProcess);
+	        
+	        // Seteo todos los elementos como hijos del elemento raiz (Delivery Process)
+	        Iterator<Struct> itResult = result.iterator();
+	        while (itResult.hasNext()){
+	        	Struct s = itResult.next();
+	        	if (s.getType() == TipoElemento.DELIVERY_PROCESS){
+	        		List<Struct> hijos = registroHijos.get(s.getElementID());
+	        		s.setHijos(hijos);
+	        	}
+	        }
 	        
 	        Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
 	        while (iter.hasNext()){
@@ -206,12 +217,17 @@ public class XMIParser {
         return result;
     }
 
-	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts ){
+	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result, List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct, List<WorkProduct>> workProducts, Map<String, String> dataProcess){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
 				Element eHijo = (Element) nodo;
-				if (nodo.getNodeName().equals("process")){
+				if (nodo.getNodeName().equals("org.eclipse.epf.uma:ProcessComponent")){
+					dataProcess.clear();
+					dataProcess.put("processComponentId", eHijo.getAttribute("xmi:id"));
+					dataProcess.put("processComponentName", eHijo.getAttribute("name"));
+				}
+				else if (nodo.getNodeName().equals("process")){
 					String nameHijo = "";
 					String type = "";
 					String id = "";
@@ -239,9 +255,22 @@ public class XMIParser {
 						presentationName = eHijo.getAttribute("presentationName");
 					}
 					
+					NodeList hijos = nodo.getChildNodes();
+					int i = 0;
+					while ((i < hijos.getLength()) && (!dataProcess.containsKey("presentationId"))){
+						Node n = hijos.item(i);
+						if ((n.getNodeType() == Node.ELEMENT_NODE) && (n.getNodeName().equals("presentation"))){
+							dataProcess.put("presentationId", ((Element) n).getAttribute("xmi:id"));
+						}
+						i++;
+					}
+					
 					TipoElemento tipo = obtenerTipoElemento(type);
 		     		
-					Struct h = new Struct(id, nameHijo, tipo,-1,-1, obtenerIconoPorTipo(tipo));
+					String processComponentId = (dataProcess != null) ? dataProcess.get("processComponentId") : null;
+					String processComponentName = (dataProcess != null) ? dataProcess.get("processComponentName") : null;
+					String presentationId = (dataProcess != null) ? dataProcess.get("presentationId") : null;
+					Struct h = new Struct(id, nameHijo, tipo,-1,-1, obtenerIconoPorTipo(tipo), processComponentId, processComponentName, presentationId, null);
 					h.setDescription(description);
 					h.setPresentationName(presentationName);
 					result.add(h);
@@ -303,10 +332,14 @@ public class XMIParser {
 	      		    			hijosH.add(nodosCP.get(i));
 	      		    		}
 	      		    		h.setHijos(hijosH);
+	      		    		h.setElementIDExtends(id);
 	      		    	}
 	      		    }
 	      		    else{
-		      		    h = new Struct(id, nameHijo, tipo,min,max, obtenerIconoPorTipo(tipo));
+	      		    	String processComponentId = (dataProcess != null) ? dataProcess.get("processComponentId") : null;
+						String processComponentName = (dataProcess != null) ? dataProcess.get("processComponentName") : null;
+						String presentationId = (dataProcess != null) ? dataProcess.get("presentationId") : null;
+		      		    h = new Struct(id, nameHijo, tipo,min,max, obtenerIconoPorTipo(tipo), processComponentId, processComponentName, presentationId, null);
 		      		    h.setDescription(description);
 		      		    h.setPresentationName(presentationName);
 		      		    
@@ -519,7 +552,11 @@ public class XMIParser {
 	          				type.equals(TipoElemento.VAR_MILESTONE.toString()) ||
 	          				type.equals(TipoElemento.VAR_WORK_PRODUCT.toString())){
 	      		    		
-		      		    	Variant var = new Variant(id, nameHijo, presentationName, "", true, type);
+
+		      		    	String processComponentId = (dataProcess != null) ? dataProcess.get("processComponentId") : null;
+							String processComponentName = (dataProcess != null) ? dataProcess.get("processComponentName") : null;
+							String presentationId = (dataProcess != null) ? dataProcess.get("presentationId") : null;
+		      		    	Variant var = new Variant(id, nameHijo, presentationName, "", true, type, processComponentId, processComponentName, presentationId, null);
 		      		    	var.getHijos().addAll(hijosS);
 	            			registroVar.add(var);
 		      		    	
@@ -552,7 +589,7 @@ public class XMIParser {
 	      		    }
 				}
 				NodeList hijos = nodo.getChildNodes();
-				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts);
+				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts, dataProcess);
 			}
 		}
 	}

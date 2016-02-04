@@ -32,10 +32,12 @@ public class Struct {
     private List<String> outputs;
     private List<String> responsableDe;
     private List<String> modifica;
-   
-    
+    private String processComponentId;
+	private String processComponentName;
+	private String presentationId;
+	private String elementIDExtends;
 
-	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen){
+	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
 		this.nombre = nombre;
 		this.type = type;
@@ -64,7 +66,10 @@ public class Struct {
 		this.outputs = null;
 		this.responsableDe = null;
 		this.modifica = null;
-				
+		this.processComponentId = processComponentId;
+		this.processComponentName = processComponentName;
+		this.presentationId = presentationId;
+		this.elementIDExtends = elementIDExtends;
 	}
 
 	public String getElementID() {
@@ -243,7 +248,36 @@ public class Struct {
 		this.modifica = modifica;
 	}
 	
-	
-	
+    public String getProcessComponentId() {
+		return processComponentId;
+	}
+
+	public void setProcessComponentId(String processComponentId) {
+		this.processComponentId = processComponentId;
+	}
+
+	public String getProcessComponentName() {
+		return processComponentName;
+	}
+
+	public void setProcessComponentName(String processComponentName) {
+		this.processComponentName = processComponentName;
+	}
+
+	public String getPresentationId() {
+		return presentationId;
+	}
+
+	public void setPresentationId(String presentationId) {
+		this.presentationId = presentationId;
+	}
+
+	public String getElementIDExtends() {
+		return elementIDExtends;
+	}
+
+	public void setElementIDExtends(String elementIDExtends) {
+		this.elementIDExtends = elementIDExtends;
+	}
 
 }
