@@ -32,6 +32,7 @@ public class Struct {
     private List<String> outputs;
     private List<String> responsableDe;
     private List<String> modifica;
+    private List<String> linkToPredecessor;
     private String processComponentId;
 	private String processComponentName;
 	private String presentationId;
@@ -66,6 +67,7 @@ public class Struct {
 		this.outputs = null;
 		this.responsableDe = null;
 		this.modifica = null;
+		this.linkToPredecessor = null;
 		this.processComponentId = processComponentId;
 		this.processComponentName = processComponentName;
 		this.presentationId = presentationId;
@@ -246,6 +248,14 @@ public class Struct {
 
 	public void setModifica(List<String> modifica) {
 		this.modifica = modifica;
+	}
+
+	public List<String> getLinkToPredecessor() {
+		return linkToPredecessor;
+	}
+
+	public void setLinkToPredecessor(List<String> linkToPredecessor) {
+		this.linkToPredecessor = linkToPredecessor;
 	}
 	
     public String getProcessComponentId() {

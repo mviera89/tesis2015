@@ -25,7 +25,7 @@ import dominio.Variant;
 public class XMIParser {
 	
 	public static List<Struct> getElementXMI(String nomFile){
-		List<Struct> result = new ArrayList<Struct>();
+		List<Struct> result = new ArrayList<Struct>(); 
 		
 		try {
 			File inputFile = new File(nomFile);
@@ -39,11 +39,12 @@ public class XMIParser {
 	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
 	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
 	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
-	        Map<String, String> dataProcess = new HashMap<String, String>();
+	        Map<String, String> predecesores = new HashMap<String,String>();
+			Map<String, String> dataProcess = new HashMap<String, String>();
 	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
-	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts, dataProcess);
+	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts, predecesores, dataProcess);
 	        
 	        // Seteo todos los elementos como hijos del elemento raiz (Delivery Process)
 	        Iterator<Struct> itResult = result.iterator();
@@ -115,7 +116,7 @@ public class XMIParser {
 	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
 	        while (iterH.hasNext()){
 	        	Entry<String, List<Struct>> e = iterH.next();
-	        	String padre = e.getKey();
+	        	//String padre = e.getKey();
 	        	List<Struct> l = e.getValue();
 	        	Iterator<Struct> it = l.iterator();
 	        	while (it.hasNext()){
@@ -210,14 +211,18 @@ public class XMIParser {
 			    	}
 				}
 			}
+			
+			//ordeno result segun predecesores
+			
+			result = ordenoNodos(result,predecesores);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-        return result;
+		return result;
     }
 
-	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result, List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct, List<WorkProduct>> workProducts, Map<String, String> dataProcess){
+	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts, Map<String,String> predecesores, Map<String, String> dataProcess){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -289,7 +294,9 @@ public class XMIParser {
 					String outputs = "";
 					String responsableDe = "";
 					String modifica = "";
+					String predecesoresList = "";
 					List<WorkProduct> lwp = new ArrayList<WorkProduct>();
+					String pred = "";
 					
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
@@ -310,6 +317,7 @@ public class XMIParser {
 					if (eHijo.hasAttribute("presentationName")){
 						presentationName = eHijo.getAttribute("presentationName");
 					}
+				
 					
 	      		    int min = -1;
 	      		    int max = -1;
@@ -342,6 +350,15 @@ public class XMIParser {
 		      		    h = new Struct(id, nameHijo, tipo,min,max, obtenerIconoPorTipo(tipo), processComponentId, processComponentName, presentationId, null);
 		      		    h.setDescription(description);
 		      		    h.setPresentationName(presentationName);
+		      		   
+						if (eHijo.hasAttribute("linkToPredecessor")){
+							List<String> list = new ArrayList<String>();
+							pred = eHijo.getAttribute("linkToPredecessor");
+							list = Arrays.asList(pred.split("\\s"));
+							h.setLinkToPredecessor(list);
+						}
+		      		    
+						
 		      		    
 						if (tipo == TipoElemento.TASK || tipo == TipoElemento.VP_TASK){
 							if (eHijo.hasAttribute("performedPrimarilyBy")){
@@ -579,8 +596,17 @@ public class XMIParser {
 	                    		}
 	                    	}
 		      		    }
+		      		    else if(type.equals("WorkOrder")){
+		      		    	if (eHijo.hasAttribute("pred")){
+								predecesoresList = eHijo.getAttribute("pred");
+								if (!predecesores.containsKey(id)){
+									predecesores.put(id, predecesoresList);
+			      		    	}
+							}
+		      		    	
+		      		    }
 		      		    
-		      		    else if(id != null && nameHijo != null && type != null && !tienePadre && !(type.equals("WorkOrder"))){
+		      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
 		      		    	if (hijosS != null ){
 		      		    		h.getHijos().addAll(hijosS);
 		      		    	}
@@ -589,7 +615,7 @@ public class XMIParser {
 	      		    }
 				}
 				NodeList hijos = nodo.getChildNodes();
-				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts, dataProcess);
+				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts, predecesores, dataProcess);
 			}
 		}
 	}
@@ -695,6 +721,22 @@ public class XMIParser {
     	return padre;
     }
     
+    static List<Struct> buscoHermanos(String id, List<Struct> lista){
+    	List<Struct> hermanos = null;
+    	Iterator<Struct> it = lista.iterator();
+    	while (it.hasNext() && hermanos == null){
+    		Struct s = it.next();
+    		if( s.getElementID().equals(id)){
+    			hermanos = lista;
+    		}
+    		else {
+    			hermanos = buscoHermanos(id, s.getHijos());
+    		}
+    	}
+    	
+    	return hermanos;
+    }
+    
     
     static void seteoVariantes(Struct s,List<Variant> registroVar, Map<String,List<String>> vpToVar){
     	 
@@ -763,5 +805,51 @@ public class XMIParser {
   		
   		return result;
     }
+    
+    public static List<Struct> ordenoNodos(List<Struct> list, Map<String,String> predecesores){
+    	List<Struct> result = new ArrayList<Struct>();
+    	Iterator<Struct> it = list.iterator();
+    	//if (it.hasNext()){
+    	//result.add(it.next());
+    	while (it.hasNext()){
+    		Struct s = it.next();
+    		
+    		if (s.getLinkToPredecessor() != null){
+    			Iterator<String> itLinks = s.getLinkToPredecessor().iterator();
+    			while (itLinks.hasNext()){
+    				String idLink = itLinks.next();
+    				if(predecesores.containsKey(idLink)){
+    					String pred = predecesores.get(idLink);
+    					//busco pred
+    					Struct predS = buscoPadre(pred,list);
+    					if(predS != null){
+    						if (!result.contains(predS)){
+    							if (!result.contains(s)){
+    								result.add(predS);
+    							}
+    							else{
+    								result.add(result.indexOf(s),predS);
+    							}
+    								
+    							}
+    						}
+    					}
+    					
+    				}
+    			if(!result.contains(s)){
+    				result.add(s);
+    			}
+    			}
+    		else if (!result.contains(s)){
+    			result.add(s);
+    		}
+    		List<Struct> resHijos = ordenoNodos(s.getHijos(), predecesores);
+    		s.setHijos(resHijos);
+    		
+    	}
+  //  }
+    	return result;
+    }
+    
     
 }
