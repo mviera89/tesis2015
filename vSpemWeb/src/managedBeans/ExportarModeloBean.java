@@ -23,9 +23,10 @@ import dominio.Struct;
 @ManagedBean
 public class ExportarModeloBean {
 
-	List<String> idCapabilityPatterns = new ArrayList<String>();
-	List<String> processIds = new ArrayList<String>();
-	String textoCapabilityPattern = "";
+	private List<String> idCapabilityPatterns = new ArrayList<String>();
+	private List<String> idsAgregados = new ArrayList<String>();
+	private List<String> processIds = new ArrayList<String>();
+	private String textoCapabilityPattern = "";
 	
 	public void exportarModelo(DefaultDiagramModel modeloAdaptado){
 		try{
@@ -209,11 +210,7 @@ public class ExportarModeloBean {
 				texto += textoCustomCategory;
 			
 				if (textoCapabilityPattern != ""){
-					texto += textoCapabilityPattern; /*+
-									"\t\t\t\t<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
-			        				"\t\t\t\t<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n" +
-		        				"\t\t\t</Process>" + "\n" +
-		    				"\t\t</MethodPackage>" + "\n";*/
+					texto += textoCapabilityPattern;
 				}
 				
 				if (textoDeliveryProcess != ""){
@@ -224,11 +221,10 @@ public class ExportarModeloBean {
 									"\t\t\t\t<IncludesPattern>" + id + "</IncludesPattern>" + "\n";
 						}
 					}
-					//else{
-						texto +=
-									"\t\t\t\t<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
-									"\t\t\t\t<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n";
-					//}
+					texto +=
+								"\t\t\t\t<DefaultContext>" + methodConfigurationId + "</DefaultContext>" + "\n" +
+								"\t\t\t\t<ValidContext>" + methodConfigurationId + "</ValidContext>" + "\n";
+					
 					texto += 
 								"\t\t\t</Process>" + "\n" +
 							"\t\t</MethodPackage>" + "\n";
@@ -272,177 +268,179 @@ public class ExportarModeloBean {
 	
 	public String agregarElementoAxml(Struct s, String superactivity){
 		String texto = "";
-		String nombre = s.getNombre();
-		String nombrePresentacion = s.getPresentationName();
 		String id = s.getElementID();
-		TipoElemento tipo = s.getType();
-		
-		String briefDescription = "";
-		String orderingGuide = "";
-		String suppressed = "false";
-		String hasMultipleOccurrences = "false";
-		String isOptional = "false";
-		String isPlanned = "true";
-		String prefix = "";
-		String isEventDriven = "false";
-		String isOngoing = "false";
-		String isRepeatable = "false";
-		String isEnactable = "false";
-		String variabilityType = "na";
-		String isSynchronizedWithSource = "true";
-		String activityEntryState = "";
-		String activityExitState = "";
-		
-		if (tipo == TipoElemento.ACTIVITY){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
-					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.ITERATION){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
-					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.PHASE){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
-					"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.TASK){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-					"\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.ROLE){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:RoleDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.WORK_PRODUCT){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\" activityEntryState=\"" + activityEntryState + 
-					"\" activityExitState=\"" + activityExitState + "\">" + "\n";
-		}
-		else if (tipo == TipoElemento.MILESTONE){
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Milestone\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + "\">\n";
-		}
-		else if (tipo == TipoElemento.CAPABILITY_PATTERN){
-			String processId = s.getProcessComponentId();
-			processIds.add(processId);
-			String categorizedElement = s.getElementID();
-			String idExtends = s.getElementIDExtends();
-			variabilityType = "extends";
+		if (!idsAgregados.contains(id)){
+			idsAgregados.add(id);
+			String nombre = s.getNombre();
+			String nombrePresentacion = s.getPresentationName();
+			TipoElemento tipo = s.getType();
 			
-			texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:CapabilityPattern\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + idExtends + 
-					"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
-					"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
-					"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-					"\" IsEnactable=\"" + isEnactable + "\" variabilityBasedOnElement=\"" + categorizedElement + "\" variabilityType=\"" + variabilityType + "\">" + "\n" +
-						"\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
-					"\t\t\t\t</BreakdownElement>" + "\n";
-		}
-		
-		if ((!texto.equals("")) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
-			texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+			String briefDescription = "";
+			String orderingGuide = "";
+			String suppressed = "false";
+			String hasMultipleOccurrences = "false";
+			String isOptional = "false";
+			String isPlanned = "true";
+			String prefix = "";
+			String isEventDriven = "false";
+			String isOngoing = "false";
+			String isRepeatable = "false";
+			String isEnactable = "false";
+			String variabilityType = "na";
+			String isSynchronizedWithSource = "true";
+			String activityEntryState = "";
+			String activityExitState = "";
 			
-			// Si tiene asignado un rol principal, se lo agrego
-			String performedPrimaryBy = s.getPerformedPrimaryBy();
-			if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
-				texto += "\t\t\t\t\t<PerformedPrimarilyBy>" + performedPrimaryBy + "</PerformedPrimarilyBy>" + "\n";
+			if (tipo == TipoElemento.ACTIVITY){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.ITERATION){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.PHASE){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + 
+						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.TASK){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
+						"\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.ROLE){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:RoleDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.WORK_PRODUCT){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\" activityEntryState=\"" + activityEntryState + 
+						"\" activityExitState=\"" + activityExitState + "\">" + "\n";
+			}
+			else if (tipo == TipoElemento.MILESTONE){
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Milestone\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + "\">\n";
+			}
+			else if (tipo == TipoElemento.CAPABILITY_PATTERN){
+				String processId = s.getProcessComponentId();
+				processIds.add(processId);
+				String categorizedElement = s.getElementID();
+				String idExtends = s.getElementIDExtends();
+				variabilityType = "extends";
+				
+				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:CapabilityPattern\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + idExtends + 
+						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion + 
+						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned + 
+						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
+						"\" IsEnactable=\"" + isEnactable + "\" variabilityBasedOnElement=\"" + categorizedElement + "\" variabilityType=\"" + variabilityType + "\">" + "\n" +
+							"\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
+						"\t\t\t\t</BreakdownElement>" + "\n";
 			}
 			
-			// Si tiene asignado un rol adicional, se lo agrego
-			List<String> performedAditionallyBy = s.getPerformedAditionallyBy();
-			if ((performedAditionallyBy != null) && (performedAditionallyBy.size() > 0)){
-				Iterator<String> it = performedAditionallyBy.iterator();
+			if ((!texto.equals("")) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
+				texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
+				
+				// Si tiene asignado un rol principal, se lo agrego
+				String performedPrimaryBy = s.getPerformedPrimaryBy();
+				if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
+					texto += "\t\t\t\t\t<PerformedPrimarilyBy>" + performedPrimaryBy + "</PerformedPrimarilyBy>" + "\n";
+				}
+				
+				// Si tiene asignado un rol adicional, se lo agrego
+				List<String> performedAditionallyBy = s.getPerformedAditionallyBy();
+				if ((performedAditionallyBy != null) && (performedAditionallyBy.size() > 0)){
+					Iterator<String> it = performedAditionallyBy.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<AdditionallyPerformedBy>" + it.next() + "</AdditionallyPerformedBy>" + "\n";
+					}
+				}
+				
+				// Si tiene workProduct asignados, los agrego
+				List<String> mandatoryInputs = s.getMandatoryInputs();
+				if ((mandatoryInputs != null) && (mandatoryInputs.size() > 0)){
+					Iterator<String> it = mandatoryInputs.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<MandatoryInput>" + it.next() + "</MandatoryInput>" + "\n";
+					}
+				}
+				
+				List<String> optionalInputs = s.getOptionalInputs();
+				if ((optionalInputs != null) && (optionalInputs.size() > 0)){
+					Iterator<String> it = optionalInputs.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<OptionalInput>" + it.next() + "</OptionalInput>" + "\n";
+					}
+				}
+				
+				List<String> externalInputs = s.getExternalInputs();
+				if ((externalInputs != null) && (externalInputs.size() > 0)){
+					Iterator<String> it = externalInputs.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<ExternalInput>" + it.next() + "</ExternalInput>" + "\n";
+					}
+				}
+				
+				List<String> outputs = s.getOutputs();
+				if ((outputs != null) && (outputs.size() > 0)){
+					Iterator<String> it = outputs.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<Output>" + it.next() + "</Output>" + "\n";
+					}
+				}
+				
+				// Agrego los hijos
+				List<Struct> roles = new ArrayList<Struct>();
+				List<Struct> workProduct = new ArrayList<Struct>();
+				Iterator<Struct> it = s.getHijos().iterator();
 				while (it.hasNext()){
-					texto += "\t\t\t\t\t<AdditionallyPerformedBy>" + it.next() + "</AdditionallyPerformedBy>" + "\n";
+					Struct hijo = it.next();
+					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT)){
+						texto += agregarElementoAxml(hijo, id);
+					}
+					else if (hijo.getType() == TipoElemento.ROLE){
+						roles.add(hijo);
+					}
+					else{
+						workProduct.add(hijo);
+					}
 				}
-			}
-			
-			// Si tiene workProduct asignados, los agrego
-			List<String> mandatoryInputs = s.getMandatoryInputs();
-			if ((mandatoryInputs != null) && (mandatoryInputs.size() > 0)){
-				Iterator<String> it = mandatoryInputs.iterator();
-				while (it.hasNext()){
-					texto += "\t\t\t\t\t<MandatoryInput>" + it.next() + "</MandatoryInput>" + "\n";
+				
+				texto += "\t\t\t\t</BreakdownElement>" + "\n";
+				
+				// Agrego los roles
+				if (roles.size() > 0){
+					it = roles.iterator();
+					while (it.hasNext()){
+						texto += agregarElementoAxml(it.next(), superactivity);
+					}
 				}
-			}
-			
-			List<String> optionalInputs = s.getOptionalInputs();
-			if ((optionalInputs != null) && (optionalInputs.size() > 0)){
-				Iterator<String> it = optionalInputs.iterator();
-				while (it.hasNext()){
-					texto += "\t\t\t\t\t<OptionalInput>" + it.next() + "</OptionalInput>" + "\n";
-				}
-			}
-			
-			List<String> externalInputs = s.getExternalInputs();
-			if ((externalInputs != null) && (externalInputs.size() > 0)){
-				Iterator<String> it = externalInputs.iterator();
-				while (it.hasNext()){
-					texto += "\t\t\t\t\t<ExternalInput>" + it.next() + "</ExternalInput>" + "\n";
-				}
-			}
-			
-			List<String> outputs = s.getOutputs();
-			if ((outputs != null) && (outputs.size() > 0)){
-				Iterator<String> it = outputs.iterator();
-				while (it.hasNext()){
-					texto += "\t\t\t\t\t<Output>" + it.next() + "</Output>" + "\n";
-				}
-			}
-			
-			// Agrego los hijos
-			List<Struct> roles = new ArrayList<Struct>();
-			List<Struct> workProduct = new ArrayList<Struct>();
-			Iterator<Struct> it = s.getHijos().iterator();
-			while (it.hasNext()){
-				Struct hijo = it.next();
-				if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT)){
-					texto += agregarElementoAxml(hijo, id);
-				}
-				else if (hijo.getType() == TipoElemento.ROLE){
-					roles.add(hijo);
-				}
-				else{
-					workProduct.add(hijo);
-				}
-			}
-			
-			texto += "\t\t\t\t</BreakdownElement>" + "\n";
-			
-			// Agrego los roles
-			if (roles.size() > 0){
-				it = roles.iterator();
-				while (it.hasNext()){
-					texto += agregarElementoAxml(it.next(), superactivity);
-				}
-			}
-			
-			// Agrego los workProduct
-			if (workProduct.size() > 0){
-				it = workProduct.iterator();
-				while (it.hasNext()){
-					texto += agregarElementoAxml(it.next(), superactivity);
+				
+				// Agrego los workProduct
+				if (workProduct.size() > 0){
+					it = workProduct.iterator();
+					while (it.hasNext()){
+						texto += agregarElementoAxml(it.next(), superactivity);
+					}
 				}
 			}
 		}
-		
 		return texto;
 	}
 	
