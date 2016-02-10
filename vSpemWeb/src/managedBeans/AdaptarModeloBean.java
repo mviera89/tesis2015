@@ -298,9 +298,10 @@ public class AdaptarModeloBean {
 	        	return;
 	        }
 	        
-	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t));
+	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t), raiz.getProcessComponentId(), raiz.getProcessComponentName(), raiz.getPresentationId(), raiz.getElementIDExtends());
 	        r.setDescription(raiz.getDescription());
 	        r.setPresentationName(raiz.getPresentationName());
+	        r.setHijos(raiz.getHijos());
 	        Element root = new Element(r);
 	        
 	        root.setY(this.y + "em");
@@ -596,10 +597,14 @@ public class AdaptarModeloBean {
 				String tipoVariante = v.getVarType();
 	    		String idVariante = this.variantesSeleccionadas[i];
 	    		List<Struct> hijos = v.getHijos();
+	    		String processComponentId = v.getProcessComponentId();
+	    		String processComponentName = v.getProcessComponentName();
+	    		String presentationId = v.getPresentationId();
+	    		String idExtends = v.getElementIDExtends();
 	    		
 	    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
 	    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
 				Struct s = (Struct) hijo.getData();
 				s.setHijos(hijos);
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
@@ -881,7 +886,7 @@ public class AdaptarModeloBean {
 		        			if (var != null){
 		        				TipoElemento tipoVar = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(var.getVarType()));
 			    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
-			        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar);
+			        			Struct st = new Struct(var.getID(), var.getName(), tipoVar, Constantes.min_default, Constantes.max_default, iconoVar, var.getProcessComponentId(), var.getProcessComponentName(), var.getPresentationId(), var.getElementIDExtends());
 			        			Element e = new Element(st, x + "em", y + "em");
 			        			
 			        			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
@@ -1201,10 +1206,14 @@ public class AdaptarModeloBean {
 						String tipoVariante = v.getVarType();
 			    		String idVariante = this.variantesSeleccionadas[i];
 			    		List<Struct> hijos = v.getHijos();
+			    		String processComponentId = v.getProcessComponentId();
+			    		String processComponentName = v.getProcessComponentName();
+			    		String presentationId = v.getPresentationId();
+			    		String idExtends = v.getElementIDExtends();
 			    		
 			    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
 			    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-						Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+						Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
 						Struct s = (Struct) hijo.getData();
 						s.setHijos(hijos);
 			    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
@@ -1448,10 +1457,14 @@ public class AdaptarModeloBean {
 					String tipoVariante = v.getVarType();
 		    		String idVariante = this.variantesSeleccionadas[i];
 		    		List<Struct> hijos = v.getHijos();
+		    		String processComponentId = v.getProcessComponentId();
+		    		String processComponentName = v.getProcessComponentName();
+		    		String presentationId = v.getPresentationId();
+		    		String idExtends = v.getElementIDExtends();
 		    		
 		    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
 		    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante), x + "em", y + "em");
+					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
 					Struct s = (Struct) hijo.getData();
 					s.setHijos(hijos);
 		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
@@ -1682,9 +1695,10 @@ public class AdaptarModeloBean {
 			if (type != null){
 				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
 				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
-					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
 					newS.setDescription(s.getDescription());
 					newS.setPresentationName(s.getPresentationName());
+					newS.setHijos(s.getHijos());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					
@@ -1705,7 +1719,7 @@ public class AdaptarModeloBean {
 							Variant v = itVar.next();
 							if (elementoPerteneceAModelo(v.getID(), modelo)){
 								TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
-								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType));
+								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
 								newS.setHijos(v.getHijos());
 								newS.setDescription(v.getDescription());
 								newS.setPresentationName(v.getPresentationName());
@@ -1784,7 +1798,7 @@ public class AdaptarModeloBean {
 	/*** Copiar elementos ***/
 
 	public Struct crearCopiaStruct(Struct s){
-		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen());
+		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
 		
 		newS.setDescription(s.getDescription());
 		newS.setPresentationName(s.getPresentationName());
@@ -1829,7 +1843,7 @@ public class AdaptarModeloBean {
 	}
 
 	public Variant crearCopiaVariante(Variant v){
-		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType());
+		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
 		
 		newV.setDescription(v.getDescription());
 		
