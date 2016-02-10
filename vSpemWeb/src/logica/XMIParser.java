@@ -77,28 +77,6 @@ public class XMIParser {
     		    	result.addAll(l);
     		    }
 	        }
-	      /*  //para cada variante obtengo sus hijos y para cada uno de ellos me fijo si no es padre de alguien
-	        Iterator<Entry<String, List<Struct>>> ite = registroHijos.entrySet().iterator();
-	        while (ite.hasNext()){
-	        	Entry<String, List<Struct>> e = ite.next();
-	        	String padre = e.getKey();
-	        	List<Struct> l = e.getValue();
-	        	Iterator<Variant> itV = registroVar.iterator();
-	    		while (itV.hasNext()){
-	    			Variant v = itV.next();
-	    			List<Struct> hijos = v.getHijos();
-	    			Iterator<Struct> it = hijos.iterator();
-	    			while (it.hasNext()){
-	    				Struct s = it.next();
-	    				Struct nodo = buscoEnHijos(s, padre);
-	    				if (nodo != null){
-	    					nodo.getHijos().addAll(l);
-	    				}
-	    			}
-	    			
-	    		}
-	        }
-		    */
 	        
 	        
 	        //seteo variantes en varPoints
@@ -115,28 +93,6 @@ public class XMIParser {
 	        	
 	        }
 	        
-	      /*  // Recorro result, para cada var point busco las variantes y se ponen en la lista de hijos
-	        Iterator<Struct> it = result.iterator();
-		    while (it.hasNext()){
-	    		Struct s = it.next();
-		        if (s.getType() == TipoElemento.VP_ACTIVITY ||
-	        		s.getType() == TipoElemento.VP_TASK		||
-		         	s.getType() == TipoElemento.VP_PHASE	||
-		         	s.getType() == TipoElemento.VP_ITERATION ||
-		         	s.getType() == TipoElemento.VP_MILESTONE ||
-		         	s.getType() == TipoElemento.VP_ROLE	||
-		         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
-	        		Iterator<Variant> itaux = registroVar.iterator();
-		         	while (itaux.hasNext()){
-		         		Variant v = itaux.next();
-	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
-	         				v.setIDVarPoint(s.getElementID());
-	     					s.getVariantes().add(v);
-	         			}
-		         	}
-	        	}
-		    }
-		    */
 		    // Recorro performedPrimaryBy
 		    Iterator<Entry<Struct,String>> iterator = performedPrimaryBy.entrySet().iterator();
 		    while (iterator.hasNext()){
@@ -446,24 +402,6 @@ public class XMIParser {
 								}
 								// veo si el padre ya no esta en registroHijos como hijo de alguien
 				  		    	else {
-				  		    		/*Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
-				  		    		while (iter.hasNext()){
-				  		    			Entry<String, List<Struct>> e = iter.next();
-					  		        	List<Struct> l = e.getValue();
-					  		        	Iterator<Struct> itList = l.iterator();
-					  		        	while (itList.hasNext()){
-					  		        		Struct s = itList.next();
-					  		        		if(s.getElementID().equals(padre)){
-					  		        			s.getHijos().add(h);
-					  		        			elPadreEsHijo = true;
-					  		        		}
-					  		        		else {
-					  		        			//busco en hijos de s
-					  		        			agregoHijo(s, padre,h,elPadreEsHijo);
-					  		        		}
-					  		        	}
-				  		    		}*/
-				  		    		
 				  		    		Struct s = buscoPadre (registroHijos, padre);
 				  		    		if (s != null){
 				  		    			s.getHijos().add(h);
@@ -772,8 +710,6 @@ public class XMIParser {
     public static List<Struct> ordenoNodos(List<Struct> list, Map<String,String> predecesores){
     	List<Struct> result = new ArrayList<Struct>();
     	Iterator<Struct> it = list.iterator();
-    	//if (it.hasNext()){
-    	//result.add(it.next());
     	while (it.hasNext()){
     		Struct s = it.next();
     		
@@ -810,7 +746,6 @@ public class XMIParser {
     		s.setHijos(resHijos);
     		
     	}
-  //  }
     	return result;
     }
     
