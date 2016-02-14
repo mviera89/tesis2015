@@ -10,6 +10,8 @@ import javax.servlet.http.HttpSession;
 
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
+import dataTypes.TipoLibrary;
+import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoPlugin;
 
 @ManagedBean(name="VistaBean")
@@ -21,9 +23,11 @@ public class VistaBean {
 	private List<String> capabilityPatterns = null;
 	private boolean finModelado = false;
 	private String repositorio = "";
+	private TipoLibrary library = null;
 	private TipoPlugin plugin = null;
 	private TipoContentDescription contentDescription = null;
 	private TipoContentCategory contentCategory = null;
+	private TipoMethodConfiguration methodConfiguration = null;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -65,6 +69,14 @@ public class VistaBean {
 		this.repositorio = repositorio;
 	}
 
+	public TipoLibrary getLibrary() {
+		return library;
+	}
+
+	public void setLibrary(TipoLibrary library) {
+		this.library = library;
+	}
+
 	public TipoPlugin getPlugin() {
 		return plugin;
 	}
@@ -87,6 +99,14 @@ public class VistaBean {
 
 	public void setContentCategory(TipoContentCategory contentCategory) {
 		this.contentCategory = contentCategory;
+	}
+
+	public TipoMethodConfiguration getMethodConfiguration() {
+		return methodConfiguration;
+	}
+
+	public void setMethodConfiguration(TipoMethodConfiguration methodConfiguration) {
+		this.methodConfiguration = methodConfiguration;
 	}
 
 	public void actualizarIndiceActivo(int indice){

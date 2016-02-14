@@ -31,6 +31,8 @@ import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
+import dataTypes.TipoLibrary;
+import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoPlugin;
 import dominio.Struct;
 
@@ -196,8 +198,13 @@ public class ImportarModeloBean {
 	public void cargarArchivoRepositorio(){
 		try{
 			if (!nombreArchivo.equals("")){
-				String urlPlugin = cargarArchivoExportRepositorio();
+				Object[] res = cargarArchivoExportRepositorio(); // [String, TipoLibrary]
+				String urlPlugin = (String) res[0];
+				TipoLibrary library = (TipoLibrary) res[1];
 				if (urlPlugin != null){
+					// Cargo la configuración
+					TipoMethodConfiguration methodConfiguration = cargarArchivoConfigurationRepositorio();
+					
 					String archivoPlugin = urlPlugin;
 					// archivoPlugin puede ser de la forma: dir1/dir2/.../nombre
 					int indexDiv = archivoPlugin.indexOf("/");
@@ -240,8 +247,10 @@ public class ImportarModeloBean {
 								FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 								HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 								VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+								vb.setLibrary(library);
 						        vb.setPlugin(plugin);
 						        vb.setContentCategory(contentCategory);
+						        vb.setMethodConfiguration(methodConfiguration);
 							}
 							else{
 								/*****************/
@@ -264,7 +273,6 @@ public class ImportarModeloBean {
 						/*****************/
 					}
 				}
-	
 			}
 			else{
 				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
@@ -276,7 +284,7 @@ public class ImportarModeloBean {
 		}
 	}
 
-	public String cargarArchivoExportRepositorio() {
+	public Object[] cargarArchivoExportRepositorio() {
 		String archivoExport = nombreArchivo;
 		
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
@@ -290,16 +298,15 @@ public class ImportarModeloBean {
 			
 			InputStream is = urlCon.getInputStream();
 			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoExport);
-			
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
 			   fos.write(array, 0, leido);
 			   leido = is.read(array);
 			}
-			
 			is.close();
-			return XMIParser.getElementsXMIResource(Constantes.destinoDescargas + archivoExport);
+			
+			return XMIParser.getElementsXMIResource(Constantes.destinoDescargas + archivoExport); // [String, TipoLibrary]
 		}
 		catch (FileNotFoundException e){
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoExport + "'.");
@@ -308,6 +315,87 @@ public class ImportarModeloBean {
 		catch (IOException e){
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
         	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public TipoMethodConfiguration cargarArchivoConfigurationRepositorio(){
+		List<String> archivosXML = new ArrayList<String>(); 
+		try{
+			// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+			int index = repositorio.indexOf("blob/");
+			URL url = new URL(Constantes.URL_GITHUB + repositorio + "configurations/");
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+			String linea;
+			while ((linea = in.readLine()) != null){
+				// <a href="/repositorio/.../nomArchivo"
+				String strBuscado = "<a href=\"/" + repositorio + "configurations/";
+				int indexIni = linea.indexOf(strBuscado);
+				if (indexIni != -1){
+					String archivo = linea.substring(indexIni + strBuscado.length());
+					archivo = archivo.substring(0, archivo.indexOf("\""));
+					int indexExtension = archivo.indexOf(".");
+					if (indexExtension != -1){
+						String nomArchivo = archivo.substring(0, indexExtension);
+						String extArchivo = archivo.substring(indexExtension + 1, archivo.length());
+						// Solo cargo archivos xmi
+						if (extArchivo.equals("xmi")){
+							// nomArchivo puede ser de la forma: dir1/dir2/.../nombre
+							int indexDiv = nomArchivo.indexOf("/");
+							while (indexDiv != -1){
+								nomArchivo = nomArchivo.substring(indexDiv + 1, nomArchivo.length());
+								indexDiv = nomArchivo.indexOf("/");
+							}
+							archivosXML.add(nomArchivo + "." + extArchivo);
+						}
+					}
+				}
+			}
+			
+			in.close();
+			
+			if (archivosXML.size() == 0){
+				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No se encontró el archivo de configuración.");
+	        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			}
+			else{
+				// Si lo encontré, lo parseo. Asumo que hay un único achivo dentro de la carpeta 'configurations'.
+				String archivoConfig = archivosXML.get(0);
+				String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+				System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
+				
+				try{
+					url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
+					URLConnection urlCon = url.openConnection();
+					
+					InputStream is = urlCon.getInputStream();
+					FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoConfig);
+					byte [] array = new byte[1000];
+					int leido = is.read(array);
+					while (leido > 0) {
+					   fos.write(array, 0, leido);
+					   leido = is.read(array);
+					}
+					is.close();
+					
+					return XMIParser.getElementsXMIConfigurations(Constantes.destinoDescargas + archivoConfig); // [String, TipoLibrary]
+				}
+				catch (FileNotFoundException e){
+					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoConfig + "'.");
+		        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				}
+				catch (IOException e){
+					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
+		        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -327,15 +415,14 @@ public class ImportarModeloBean {
 			
 			InputStream is = urlCon.getInputStream();
 			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoPlugin);
-			
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
 			   fos.write(array, 0, leido);
 			   leido = is.read(array);
 			}
-			
 			is.close();
+			
 			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin);
 		}
 		catch (FileNotFoundException e){
@@ -364,7 +451,6 @@ public class ImportarModeloBean {
 		
 		InputStream is = urlCon.getInputStream();
 		FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoDP);
-		
 		byte [] array = new byte[1000];
 		int leido = is.read(array);
 		while (leido > 0) {
@@ -406,15 +492,14 @@ public class ImportarModeloBean {
 			
 			InputStream is = urlCon.getInputStream();
 			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoCC);
-			
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
 			   fos.write(array, 0, leido);
 			   leido = is.read(array);
 			}
-			
 			is.close();
+			
 			TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(Constantes.destinoDescargas + archivoCC);
 			TipoContentCategory contentCategory = XMIParser.getElementsXMIContentCategory(Constantes.destinoDescargas + archivoPlugin, contentDescription.getId());
 			contentCategory.setContentDescription(contentDescription);
@@ -442,14 +527,12 @@ public class ImportarModeloBean {
 			
 			InputStream is = urlCon.getInputStream();
 			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivoCapabilityPattern);
-			
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
 			   fos.write(array, 0, leido);
 			   leido = is.read(array);
 			}
-			
 			is.close();
 			fos.close();
 		}
@@ -486,11 +569,9 @@ public class ImportarModeloBean {
 			OutputStream out = new FileOutputStream(new File(Constantes.destinoDescargas + nombreArchivo));
 			int leer = 0;
 			byte[] bytes = new byte[1024];
-			
 			while ((leer = in.read(bytes)) != -1) {
 				out.write(bytes, 0, leer);
 			}
-			
 			in.close();
 			out.flush();
 			out.close();
