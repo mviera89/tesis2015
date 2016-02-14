@@ -50,7 +50,7 @@
     <resourceDescriptors xmi:id="_Wq13kKK7EeWNV94iQIBaNg" id="_PT6tUaK7EeWNV94iQIBaNg"
         uri="content.xmi"/>
   </org.eclipse.epf.uma.resourcemanager:ResourceManager>
-  <org.eclipse.epf.uma:ProcessComponent xmi:id="_DftxYKK5EeWNV94iQIBaNg" name="Construction Iteration"
+  <org.eclipse.epf.uma:ProcessComponent xmi:id="_DftxYKK5EeWNV94iQIBaNg" name="Pepe"
       guid="_DftxYKK5EeWNV94iQIBaNg">
     <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_SSd0AKK5EeWNV94iQIBaNg"
         name="Phase 1" guid="_SSd0AKK5EeWNV94iQIBaNg">
@@ -322,8 +322,8 @@
           isInclusive="true" client="_KzcLwKK7EeWNV94iQIBaNg" supplier="_PT6tUKK7EeWNV94iQIBaNg"/>
     </processElements>
     <process xsi:type="org.eclipse.epf.uma:CapabilityPattern" xmi:id="_DftxYaK5EeWNV94iQIBaNg"
-        name="Construction Iteration" guid="_DftxYaK5EeWNV94iQIBaNg" presentationName="Construction Iteration"
-        processLineName="process" breakdownElements="_SSd0AaK5EeWNV94iQIBaNg _VU1Y0aK5EeWNV94iQIBaNg _kZylwaK5EeWNV94iQIBaNg _mBx3QaK5EeWNV94iQIBaNg _L0HbEaK6EeWNV94iQIBaNg _OQwcoaK6EeWNV94iQIBaNg _TmJM8aK6EeWNV94iQIBaNg _Yotu8aK6EeWNV94iQIBaNg _akNLQaK6EeWNV94iQIBaNg _cSstYaK6EeWNV94iQIBaNg _iMUzMKK6EeWNV94iQIBaNg _lCiLUKK6EeWNV94iQIBaNg _m4OhoKK6EeWNV94iQIBaNg _rjWM8KK6EeWNV94iQIBaNg _toTHQKK6EeWNV94iQIBaNg _vmLwQKK6EeWNV94iQIBaNg _1PMnMKK6EeWNV94iQIBaNg _3XCdcKK6EeWNV94iQIBaNg _5E1cAKK6EeWNV94iQIBaNg _8mlEcKK6EeWNV94iQIBaNg __lMKoKK6EeWNV94iQIBaNg _EwWn8KK7EeWNV94iQIBaNg _GXioMKK7EeWNV94iQIBaNg _H506UKK7EeWNV94iQIBaNg _KzcLwKK7EeWNV94iQIBaNg _NZeZ4KK7EeWNV94iQIBaNg _PT6tUKK7EeWNV94iQIBaNg">
+        name="Pepe" guid="_DftxYaK5EeWNV94iQIBaNg" presentationName="Pepe" processLineName="process"
+        breakdownElements="_SSd0AaK5EeWNV94iQIBaNg _VU1Y0aK5EeWNV94iQIBaNg _kZylwaK5EeWNV94iQIBaNg _mBx3QaK5EeWNV94iQIBaNg _L0HbEaK6EeWNV94iQIBaNg _OQwcoaK6EeWNV94iQIBaNg _TmJM8aK6EeWNV94iQIBaNg _Yotu8aK6EeWNV94iQIBaNg _akNLQaK6EeWNV94iQIBaNg _cSstYaK6EeWNV94iQIBaNg _iMUzMKK6EeWNV94iQIBaNg _lCiLUKK6EeWNV94iQIBaNg _m4OhoKK6EeWNV94iQIBaNg _rjWM8KK6EeWNV94iQIBaNg _toTHQKK6EeWNV94iQIBaNg _vmLwQKK6EeWNV94iQIBaNg _1PMnMKK6EeWNV94iQIBaNg _3XCdcKK6EeWNV94iQIBaNg _5E1cAKK6EeWNV94iQIBaNg _8mlEcKK6EeWNV94iQIBaNg __lMKoKK6EeWNV94iQIBaNg _EwWn8KK7EeWNV94iQIBaNg _GXioMKK7EeWNV94iQIBaNg _H506UKK7EeWNV94iQIBaNg _KzcLwKK7EeWNV94iQIBaNg _NZeZ4KK7EeWNV94iQIBaNg _PT6tUKK7EeWNV94iQIBaNg">
       <presentation xmi:id="-O0h6f2pdMlN85csFiYs5qA" href="uma://-O0h6f2pdMlN85csFiYs5qA#-O0h6f2pdMlN85csFiYs5qA"/>
       <defaultContext href="uma://_ulQwsKK4EeWNV94iQIBaNg#_wCF7EKK4EeWNV94iQIBaNg"/>
       <validContext href="uma://_ulQwsKK4EeWNV94iQIBaNg#_wCF7EKK4EeWNV94iQIBaNg"/>

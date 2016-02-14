@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -27,7 +28,10 @@ import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.UploadedFile;
 
 import config.Constantes;
+import dataTypes.TipoContentCategory;
+import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
+import dataTypes.TipoPlugin;
 import dominio.Struct;
 
 @ManagedBean
@@ -39,7 +43,17 @@ public class ImportarModeloBean {
 	private String repositorio = "";
 	private String nombreArchivo = "";
 	private List<String> archivosDisponibles = new ArrayList<String>();
+	private String dirPlugin;
+	private String dirDeliveryProcess;
+	private String dirCustomCategories;
 
+	@PostConstruct
+	public void init(){
+		dirPlugin = "";
+		dirDeliveryProcess = "";
+		dirCustomCategories = "";
+	}
+	
 	public String getMensajeAyudaRepositorio() {
 		return mensajeAyudaRepositorio;
 	}
@@ -80,13 +94,43 @@ public class ImportarModeloBean {
 		this.archivosDisponibles = archivosDisponibles;
 	}
 
+	public String getDirPlugin() {
+		return dirPlugin;
+	}
+
+	public void setDirPlugin(String dirPlugin) {
+		this.dirPlugin = dirPlugin;
+	}
+
+	public String getDirDeliveryProcess() {
+		return dirDeliveryProcess;
+	}
+
+	public void setDirDeliveryProcess(String dirDeliveryProcess) {
+		this.dirDeliveryProcess = dirDeliveryProcess;
+	}
+
+	public String getDirCustomCategories() {
+		return dirCustomCategories;
+	}
+
+	public void setDirCustomCategories(String dirCustomCategories) {
+		this.dirCustomCategories = dirCustomCategories;
+	}
+
 	/*** CARGA REMOTA DE ARCHIVOS ***/
 
 	public void leerArchivosRepositorio() throws Exception {
 		try{
-			nombreArchivo = "";
+			init();
 			if (!repositorioIngresado.equals("")){
 				repositorio = repositorioIngresado;
+				// Si no termina con '/' se la agrego
+				int n = repositorio.length();
+				String s = repositorio.substring(n - 1, n);
+				if (!s.equals("/")){
+					repositorio = repositorio + "/";
+				}
 				archivosDisponibles.clear();
 				
 				// Si en la url del repositorio existe el string "tree" => Lo sustituyo por "blob".
@@ -149,18 +193,103 @@ public class ImportarModeloBean {
 		}
 	}
 
-	public void cargarArchivoRepositorio() throws Exception {
-		if (!nombreArchivo.equals("")){
-			// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
-			int index = repositorio.indexOf("blob/");
-			String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-			System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + nombreArchivo);
-			
-			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + nombreArchivo);
+	public void cargarArchivoRepositorio(){
+		try{
+			if (!nombreArchivo.equals("")){
+				String urlPlugin = cargarArchivoExportRepositorio();
+				if (urlPlugin != null){
+					String archivoPlugin = urlPlugin;
+					// archivoPlugin puede ser de la forma: dir1/dir2/.../nombre
+					int indexDiv = archivoPlugin.indexOf("/");
+					while (indexDiv != -1){
+						String dir = archivoPlugin.substring(0, indexDiv);
+						archivoPlugin = archivoPlugin.substring(indexDiv + 1, archivoPlugin.length());
+						indexDiv = archivoPlugin.indexOf("/");
+						dirPlugin += dir + "/";
+					}
+					TipoPlugin plugin = cargarArchivoPluginRepositorio(archivoPlugin);
+					
+					if (plugin != null){
+						String deliveryProcessDir = plugin.getDeliveryProcessDir();
+						if (deliveryProcessDir != null){
+							String archivoDP = deliveryProcessDir;
+							// deliveryProcessDir puede ser de la forma: dir1/dir2/.../nombre
+							indexDiv = archivoDP.indexOf("/");
+							while (indexDiv != -1){
+								String dir = archivoDP.substring(0, indexDiv);
+								archivoDP = archivoDP.substring(indexDiv + 1, archivoDP.length());
+								indexDiv = archivoDP.indexOf("/");
+								dirDeliveryProcess += dir + "/";
+							}
+							cargarDeliveryProcessRepositorio(archivoDP);
+							
+							String customCategoriesDir = plugin.getCustomCategoriesDir();
+							if (customCategoriesDir != null){
+								String archivoCC = customCategoriesDir;
+								// customCategoriesDir puede ser de la forma: dir1/dir2/.../nombre
+								indexDiv = archivoCC.indexOf("/");
+								while (indexDiv != -1){
+									String dir = archivoCC.substring(0, indexDiv);
+									archivoCC = archivoCC.substring(indexDiv + 1, archivoCC.length());
+									indexDiv = archivoCC.indexOf("/");
+									dirCustomCategories += dir + "/";
+								}
+								TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(archivoCC, archivoPlugin);
+								
+								// Cargo los datos del method plugin en vistaBean 
+								FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+								HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+								VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+						        vb.setPlugin(plugin);
+						        vb.setContentCategory(contentCategory);
+							}
+							else{
+								/*****************/
+								/*FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", Constantes.MENSAJE_URL_NO_ACCESIBLE + "'" + Constantes.URL_GITHUB + repositorioIngresado + "'.");
+						        FacesContext.getCurrentInstance().addMessage(null, mensaje);*/
+								/*****************/
+							}
+						}
+						else{
+							/*****************/
+							/*FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", Constantes.MENSAJE_URL_NO_ACCESIBLE + "'" + Constantes.URL_GITHUB + repositorioIngresado + "'.");
+					        FacesContext.getCurrentInstance().addMessage(null, mensaje);*/
+							/*****************/
+						}
+					}
+					else{
+						/*****************/
+						/*FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", Constantes.MENSAJE_URL_NO_ACCESIBLE + "'" + Constantes.URL_GITHUB + repositorioIngresado + "'.");
+				        FacesContext.getCurrentInstance().addMessage(null, mensaje);*/
+						/*****************/
+					}
+				}
+	
+			}
+			else{
+				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
+		        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public String cargarArchivoExportRepositorio() {
+		String archivoExport = nombreArchivo;
+		
+		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+		int index = repositorio.indexOf("blob/");
+		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
+		
+		try{
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
-			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivo);
+			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoExport);
 			
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
@@ -170,61 +299,159 @@ public class ImportarModeloBean {
 			}
 			
 			is.close();
+			return XMIParser.getElementsXMIResource(Constantes.destinoDescargas + archivoExport);
+		}
+		catch (FileNotFoundException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoExport + "'.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (IOException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public TipoPlugin cargarArchivoPluginRepositorio(String archivoPlugin){
+		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+		int index = repositorio.indexOf("blob/");
+		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + archivoPlugin);
+		
+		try{
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + archivoPlugin);
+			URLConnection urlCon = url.openConnection();
 			
-			// Cargo los Capability Patterns
-			List<Struct> nodos = XMIParser.getElementXMI(Constantes.destinoDescargas + nombreArchivo);
-			Iterator<Struct> it = nodos.iterator();
-			while (it.hasNext()){
-				Struct nodo = it.next();
-				cargarCapabilityPatternsRepositorio(nombreArchivo, nodo);
+			InputStream is = urlCon.getInputStream();
+			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoPlugin);
+			
+			byte [] array = new byte[1000];
+			int leido = is.read(array);
+			while (leido > 0) {
+			   fos.write(array, 0, leido);
+			   leido = is.read(array);
 			}
 			
-			fos.close();
+			is.close();
+			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin);
+		}
+		catch (FileNotFoundException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoPlugin + "'.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (IOException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void cargarDeliveryProcessRepositorio(String archivoDP) throws Exception {
+		nombreArchivo = archivoDP;
+		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+		int index = repositorio.indexOf("blob/");
+		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirDeliveryProcess + archivoDP);
+		
+		URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirDeliveryProcess + archivoDP);
+		URLConnection urlCon = url.openConnection();
+		
+		InputStream is = urlCon.getInputStream();
+		FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoDP);
+		
+		byte [] array = new byte[1000];
+		int leido = is.read(array);
+		while (leido > 0) {
+		   fos.write(array, 0, leido);
+		   leido = is.read(array);
+		}
+		
+		is.close();
+		
+		// Cargo los Capability Patterns
+		List<Struct> nodos = XMIParser.getElementXMI(Constantes.destinoDescargas + archivoDP);
+		Iterator<Struct> it = nodos.iterator();
+		while (it.hasNext()){
+			Struct nodo = it.next();
+			cargarCapabilityPatternsRepositorio(archivoDP, nodo);
+		}
+		
+		fos.close();
+		
+		FacesMessage mensaje = new FacesMessage("", "El archivo " + archivoDP + " ha sido cargado correctamente.");
+        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+        
+		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+        vb.setNombreArchivo(archivoDP);
+        vb.setRepositorio(repositorio);
+	}
+	
+	public TipoContentCategory cargarCustomCategoriesRepositorio(String archivoCC, String archivoPlugin){
+		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+		int index = repositorio.indexOf("blob/");
+		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCustomCategories + archivoCC);
+		
+		try{
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCustomCategories + archivoCC);
+			URLConnection urlCon = url.openConnection();
 			
-			FacesMessage mensaje = new FacesMessage("", "El archivo " + nombreArchivo + " ha sido cargado correctamente.");
-	        FacesContext.getCurrentInstance().addMessage(null, mensaje);
-	        
-			FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
-	        vb.setNombreArchivo(nombreArchivo);
-	        vb.setRepositorio(repositorio);
+			InputStream is = urlCon.getInputStream();
+			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoCC);
+			
+			byte [] array = new byte[1000];
+			int leido = is.read(array);
+			while (leido > 0) {
+			   fos.write(array, 0, leido);
+			   leido = is.read(array);
+			}
+			
+			is.close();
+			TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(Constantes.destinoDescargas + archivoCC);
+			TipoContentCategory contentCategory = XMIParser.getElementsXMIContentCategory(Constantes.destinoDescargas + archivoPlugin, contentDescription.getId());
+			contentCategory.setContentDescription(contentDescription);
+			return contentCategory;
 		}
-		else{
-			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
-	        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		catch (Exception e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public void cargarCapabilityPatternsRepositorio(String nombreArchivo, Struct nodo) throws Exception {
 		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
-			int index = repositorio.indexOf("deliveryprocesses/");
-			if (index != -1){
-				String fileCapabilityPattern = Constantes.nomArchivoDownload; // model.xmi
-				String nombreArchivoCapabilityPattern = nombreArchivo.substring(0, nombreArchivo.length() - 4) + "_" + nodo.getNombre().replace(" ", "_") + ".xmi";
-				String nameCapabilityPatterns = nodo.getNombre().replace(" ", "%20");
-				String repoCapabilityPatterns = repositorio.substring(0, index) + "capabilitypatterns/" + nameCapabilityPatterns + "/";
-				
-				index = repoCapabilityPatterns.indexOf("blob/");
-				String urlDescargar = (index != -1) ? repoCapabilityPatterns.replace("blob/", "") : repoCapabilityPatterns.concat("master/");
-				System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
-				
-				URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
-				URLConnection urlCon = url.openConnection();
-				
-				InputStream is = urlCon.getInputStream();
-				FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivoCapabilityPattern);
-				
-				byte [] array = new byte[1000];
-				int leido = is.read(array);
-				while (leido > 0) {
-				   fos.write(array, 0, leido);
-				   leido = is.read(array);
-				}
-				
-				is.close();
-				fos.close();
+			String fileCapabilityPattern = Constantes.nomArchivoDownload; // model.xmi
+			String nombreArchivoCapabilityPattern = nombreArchivo.substring(0, nombreArchivo.length() - 4) + "_" + nodo.getNombre().replace(" ", "_") + ".xmi";
+			String nameCapabilityPatterns = nodo.getNombre().replace(" ", "%20");
+			String repoCapabilityPatterns = repositorio + dirPlugin + "capabilitypatterns/" + nameCapabilityPatterns + "/";
+			
+			int index = repoCapabilityPatterns.indexOf("blob/");
+			String urlDescargar = (index != -1) ? repoCapabilityPatterns.replace("blob/", "") : repoCapabilityPatterns.concat("master/");
+			System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
+			
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + fileCapabilityPattern);
+			URLConnection urlCon = url.openConnection();
+			
+			InputStream is = urlCon.getInputStream();
+			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivoCapabilityPattern);
+			
+			byte [] array = new byte[1000];
+			int leido = is.read(array);
+			while (leido > 0) {
+			   fos.write(array, 0, leido);
+			   leido = is.read(array);
 			}
+			
+			is.close();
+			fos.close();
 		}
 		Iterator<Struct> it = nodo.getHijos().iterator();
 		while (it.hasNext()){
@@ -313,10 +540,8 @@ public class ImportarModeloBean {
 	/*** EVENTOS ***/
 
 	public void onTabChange(TabChangeEvent event) {
-		repositorioIngresado = Constantes.URL_GITHUB_DEFAULT;
-		repositorio = "";
 		nombreArchivo = "";
-		archivosDisponibles.clear();
+		init();
     }
 
 }

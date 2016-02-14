@@ -17,7 +17,10 @@ import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
 import config.Constantes;
+import dataTypes.TipoContentCategory;
+import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
+import dataTypes.TipoPlugin;
 import dominio.Struct;
  
 @ManagedBean
@@ -40,6 +43,10 @@ public class ExportarModeloBean {
 				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 
+				TipoPlugin plugin = vb.getPlugin();
+				TipoContentCategory contentCategory = vb.getContentCategory();
+				TipoContentDescription contentDescription = contentCategory.getContentDescription();
+				
 				// <?xml... ?>
 				String versionXML = "1.0";
 				String encodingXML = "UTF-8";
@@ -47,9 +54,9 @@ public class ExportarModeloBean {
 				// <uma:MethodLibrary... />
 				String xmlns_xsi = "http://www.w3.org/2001/XMLSchema-instance";
 				String xmlns_uma = "http://www.eclipse.org/epf/uma/1.0.3";
-				String methodLibraryName = "LibraryPublish";
+				String methodLibraryName = "Library1";
 				String methodLibraryBriefDescription = "";
-				String methodLibraryId = "_ot_IIFyXEeWvU7GfTaR-Wg";
+				String methodLibraryId = "_fWc4gdKtEeWyCYG0_iINEw";
 				String methodLibraryOrderingGuide = "";
 				String methodLibrarySuppressed = "false";
 				String methodLibraryAuthors = "";
@@ -58,27 +65,42 @@ public class ExportarModeloBean {
 				String methodLibraryTool = "epf=1.2.0";
 				
 				// <MethodElementProperty... />
-				String methodPluginSelectionId = "_rZz1MFyXEeWvU7GfTaR-Wg";
-				String methodPluginSelectionName = "EjemploPublish1";
+				String methodElementPropertyId = "_rZz1MFyXEeWvU7GfTaR-Wg";
+				String methodElementPropertyName = "EjemploPublish1";
 				
 				// <MethodPlugin... />
-				String methodPluginSelectionBriefDescription = "";
+				String methodPluginSelectionId = plugin.getId();
+				String methodPluginSelectionName = plugin.getName();
+				String methodPluginSelectionAuthors = plugin.getAuthors();
+				String methodPluginSelectionBriefDescription = plugin.getBriefDescription();
+				String methodPluginSelectionVersion = plugin.getVersion();
+				String methodPluginSelectionChangeDate = plugin.getChangeDate();
+				String methodPluginSelectionChangeDescription = plugin.getChangeDescription();
 				String methodPluginSelectionOrderingGuide = "";
 				String methodPluginSelectionSuppressed = "false";
-				String methodPluginSelectionAuthors = "";
-				String methodPluginSelectionChangeDescription = "";
-				String methodPluginSelectionVersion = "";
 				String methodPluginSelectionUserChangeable = "true";
 				
 				// <MethodPackage... />
-				String customCategoryId = "_m9EDcFyfEeWvU7GfTaR-Wg";
-				String customCategoryName = "EjemploPublish1CC";
-				String customCategoryBriefDescription = "";
-				String idProcessView = "_BoAG8FyeEeWvU7GfTaR-Wg";
-				String customCategoryOrderingGuide = "";
-				String customCategorySuppressed = "false";
-				String customCategoryPresentationName = "EjemploPublish1CC";
-				String customCategoryVariabilityType = "na";
+				String contentCategoryId = "_J3AlUNK2EeWyCYG0_iINEw";
+				String contentCategoryName =  contentCategory.getName(); //"EjemploPublish1CC";
+				String contentCategoryBriefDescription = contentCategory.getBriefDescription(); //"";
+				String idProcessView = contentCategory.getId(); //contentDescription.getId(); //"_BoAG8FyeEeWvU7GfTaR-Wg";
+				String contentCategoryPresentationName = contentCategory.getPresentationName(); //"EjemploPublish1CC";
+				String contentDescriptionName = contentDescription.getName();
+				String contentDescriptionId = contentDescription.getId();
+				String contentDescriptionAutors = contentDescription.getAuthors();
+				String contentDescriptionChangeDate = contentDescription.getChangeDate();
+				String contentDescriptionChangeDescription = contentDescription.getChangeDescription();
+				String contentDescriptionVersion = contentDescription.getVersion();
+				String contentDescriptionMainDescription = contentDescription.getMainDescription();
+				String contentDescriptionKeyConsiderations = contentDescription.getKeyConsiderations();
+				String contentDescriptionOrderingGuide = "";
+				String contentDescriptionBriefDescription = "";
+				String contentDescriptionSuppressed = "false";
+				String contentDescriptionExternalId = "";
+				String contentCategoryOrderingGuide = "";
+				String contentCategorySuppressed = "false";
+				String contentCategoryVariabilityType = "na";
 				String categorizedElement = "";
 				
 				// <Process... />
@@ -102,9 +124,9 @@ public class ExportarModeloBean {
 				String processUsageGuidance = "";
 				
 				// <MethodConfiguration... />
-				String methodConfigurationName = "ConfiguracionPublish";
-				String methodConfigurationId = "_wN52UFyXEeWvU7GfTaR-Wg";
-				String methodConfigurationBriefDescription = "";
+				String methodConfigurationName = "ModeloDPConfig";
+				String methodConfigurationId = "_sdoKINKtEeWyCYG0_iINEw";
+				String methodConfigurationBriefDescription = "Descripción de ModeloDPConfig.";
 				String methodConfigurationOrderingGuide = "";
 				String methodConfigurationSuppressed = "false";
 				String methodConfigurationAuthors = "";
@@ -113,16 +135,16 @@ public class ExportarModeloBean {
 				
 				
 				/*** Para vEPF ***/
-				String textoCustomCategory = "";
+				String textoContentCategory = "";
 				String textoDeliveryProcess = "";
 				// /****String textoCapabilityPattern = "";
 				String texto =
 					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
 					"<uma:MethodLibrary xmlns:xsi=\"" + xmlns_xsi + "\" xmlns:uma=\"" + xmlns_uma + "\" name=\"" + methodLibraryName + "\" briefDescription=\"" + methodLibraryBriefDescription + "\" id=\"" + methodLibraryId + "\" orderingGuide=\"" + methodLibraryOrderingGuide + "\" suppressed=\"" + methodLibrarySuppressed + "\" authors=\"" + methodLibraryAuthors + "\" changeDescription=\"" + methodLibraryChangeDescription + "\" version=\"" + methodLibraryVersion + "\" tool=\"" + methodLibraryTool + "\">" + "\n" +
-						"\t<MethodElementProperty value=\"0\"/>" + "\n" +
-						"\t<MethodElementProperty value=\"" + methodPluginSelectionId + "\"/>" + "\n" +
-						"\t<MethodElementProperty value=\"" + methodPluginSelectionName + "\"/>" + "\n" +
-						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
+						//"\t<MethodElementProperty value=\"0\"/>" + "\n" +
+						//"\t<MethodElementProperty value=\"" + methodElementPropertyId + "\"/>" + "\n" +
+						//"\t<MethodElementProperty value=\"" + methodElementPropertyName + "\"/>" + "\n" +
+						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + "\" changeDate=\"" + methodPluginSelectionChangeDate + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
 				
 				// /****List<String> idCapabilityPatterns = new ArrayList<String>();
 				List<Element> elementos = modeloAdaptado.getElements();
@@ -136,17 +158,21 @@ public class ExportarModeloBean {
 						String processId = s.getProcessComponentId();
 						String processDescriptionId = s.getPresentationId();
 						categorizedElement = s.getElementID();
-						methodConfigurationName = s.getNombre();
-						methodConfigurationBriefDescription = s.getDescription();
 						
 						if (tipo == TipoElemento.DELIVERY_PROCESS){
-					  		// CustomCategory
-							textoCustomCategory +=
-				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"" + customCategoryId + "\">" + "\n" +
-					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + customCategoryName + "\" briefDescription=\"" + customCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + customCategoryOrderingGuide + "\" suppressed=\"" + customCategorySuppressed + "\" presentationName=\"" + customCategoryPresentationName + "\" variabilityType=\"" + customCategoryVariabilityType + "\">" + "\n" +
+					  		// ContentCategory
+							textoContentCategory +=
+				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"ContentCategories\" id=\"" + contentCategoryId + "\">" + "\n" +
+					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n" +
+					  				// "\t\t\t\t<MethodElementProperty name=\"PUBLISH_CATEGORY\" value=\"true\"/>" + "\n" +
+					  				"\t\t\t\t<Presentation name=\"" + contentDescriptionName + "\" briefDescription=\"" + contentDescriptionBriefDescription + "\" id=\"" + contentDescriptionId + "\" orderingGuide=\"" + contentDescriptionOrderingGuide + "\" suppressed=\"" + contentDescriptionSuppressed + "\" authors=\"" + contentDescriptionAutors + "\" changeDate=\"" + contentDescriptionChangeDate + "\" changeDescription=\"" + contentDescriptionChangeDescription + "\" version=\"" + contentDescriptionVersion + "\" externalId=\"" + contentDescriptionExternalId + "\">" + "\n" +
+					  					"\t\t\t\t\t<MainDescription><![CDATA[" + contentDescriptionMainDescription + "]]></MainDescription>" + "\n" +
+					  					"\t\t\t\t\t<KeyConsiderations><![CDATA[" + contentDescriptionKeyConsiderations + "]]></KeyConsiderations>" + "\n" +
+					  				"\t\t\t\t</Presentation>" + "\n" /*+
 					  				"\t\t\t\t<CategorizedElement>" + categorizedElement + "</CategorizedElement>" + "\n" +
 				  				"\t\t\t</ContentCategory>" + "\n" +
-			  				"\t\t</MethodPackage>" + "\n";
+					  			//\t\t\t<ContentCategory ...
+			  				"\t\t</MethodPackage>" + "\n"*/;
 							
 							textoDeliveryProcess +=
 		    				"\t\t<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
@@ -207,7 +233,14 @@ public class ExportarModeloBean {
 					}
 				}
 				
-				texto += textoCustomCategory;
+				texto += textoContentCategory +
+									"\t\t\t\t<CategorizedElement>" + categorizedElement + "</CategorizedElement>" + "\n";
+				for (String id: idCapabilityPatterns){
+					texto += 		"\t\t\t\t<CategorizedElement>" + id + "</CategorizedElement>" + "\n";
+				}
+				texto +=		"\t\t\t</ContentCategory>" + "\n" +
+			  			//\t\t\t<ContentCategory ...
+	  				"\t\t</MethodPackage>" + "\n";
 			
 				if (textoCapabilityPattern != ""){
 					texto += textoCapabilityPattern;
@@ -232,9 +265,9 @@ public class ExportarModeloBean {
 				
 				texto +=
 						"\t</MethodPlugin>" + "\n" +
-						"\t<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "Holaaaaaa" /*+"\" presentationName=\"" + processPresentationName*/ + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
+						"\t<MethodConfiguration name=\"" + methodConfigurationName + "\" briefDescription=\"" + methodConfigurationBriefDescription + "\" id=\"" + methodConfigurationId + "\" orderingGuide=\"" + methodConfigurationOrderingGuide + "\" suppressed=\"" + methodConfigurationSuppressed + "\" authors=\"" + methodConfigurationAuthors + "\" changeDescription=\"" + methodConfigurationChangeDescription + "\" version=\"" + methodConfigurationVersion + "\">" + "\n" +
 							"\t\t<MethodPluginSelection>" + methodPluginSelectionId + "</MethodPluginSelection>" + "\n" +
-							"\t\t<MethodPackageSelection>" + customCategoryId + "</MethodPackageSelection>" + "\n";
+							"\t\t<MethodPackageSelection>" + contentCategoryId + "</MethodPackageSelection>" + "\n";
 				
 				for (String pId: processIds){
 					texto +=
