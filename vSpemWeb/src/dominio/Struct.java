@@ -33,6 +33,7 @@ public class Struct {
     private List<String> responsableDe;
     private List<String> modifica;
     private List<String> linkToPredecessor;
+    private List<String> sucesores;
     private String processComponentId;
 	private String processComponentName;
 	private String presentationId;
@@ -68,6 +69,7 @@ public class Struct {
 		this.responsableDe = null;
 		this.modifica = null;
 		this.linkToPredecessor = null;
+		this.sucesores = null;
 		this.processComponentId = processComponentId;
 		this.processComponentName = processComponentName;
 		this.presentationId = presentationId;
@@ -289,5 +291,14 @@ public class Struct {
 	public void setElementIDExtends(String elementIDExtends) {
 		this.elementIDExtends = elementIDExtends;
 	}
+
+	public List<String> getSucesores() {
+		return sucesores;
+	}
+
+	public void setSucesores(List<String> sucesores) {
+		this.sucesores = sucesores;
+	}
+	
 
 }

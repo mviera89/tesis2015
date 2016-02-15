@@ -357,6 +357,17 @@ public class ExportarModeloBean {
 			if ((!texto.equals("")) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
 				texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
 				
+				//Agrego sucesores
+				List<String> sucesores = s.getSucesores();
+				if ((sucesores != null) && (sucesores.size() > 0)){
+					Iterator<String> it = sucesores.iterator();
+					while (it.hasNext()){
+						texto += "\t\t\t\t\t<Predecessor id=\"_xaj2g0u2Ed-vjd_3xeIJwQ\" linkType=\"finishToStart\" properties=\"name=successor&#xA;value=" + it.next() + "#xA;scope=_ab5yQUesEd-iTvGQFwAspw>" + id + "</Predecessor>" + "\n";
+						//<Predecessor id="_xaj2g0u2Ed-vjd_3xeIJwQ" linkType="finishToStart" properties="name=successor&#xA;value=_oMNV4EerEd-iTvGQFwAspw&#xA;scope=_ab5yQUesEd-iTvGQFwAspw">_3iR0EEfDEd-iNY7TQq4TSw</Predecessor>
+						
+					}
+				}
+				
 				// Si tiene asignado un rol principal, se lo agrego
 				String performedPrimaryBy = s.getPerformedPrimaryBy();
 				if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){

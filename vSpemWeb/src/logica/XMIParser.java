@@ -759,6 +759,8 @@ public class XMIParser {
     					//busco pred
     					Struct predS = buscoPadre(pred,list);
     					if(predS != null){
+    						if (predS.getSucesores() != null){
+    						predS.getSucesores().add(s.getElementID());
     						if (!result.contains(predS)){
     							if (!result.contains(s)){
     								result.add(predS);
@@ -769,6 +771,12 @@ public class XMIParser {
     								
     							}
     						}
+    						else {
+    							List<String> lista = new ArrayList<String>();
+    							lista.add(s.getElementID());
+    							predS.setSucesores(lista);    							
+    						}
+    					}
     					}
     					
     				}
