@@ -13,6 +13,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -33,6 +34,7 @@ import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dominio.Struct;
 
@@ -215,6 +217,7 @@ public class ImportarModeloBean {
 						dirPlugin += dir + "/";
 					}
 					TipoPlugin plugin = cargarArchivoPluginRepositorio(archivoPlugin);
+					List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(archivoPlugin);
 					
 					if (plugin != null){
 						String deliveryProcessDir = plugin.getDeliveryProcessDir();
@@ -243,6 +246,11 @@ public class ImportarModeloBean {
 								}
 								TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(archivoCC, archivoPlugin);
 								
+								Map<String, TipoContentCategory> categorizedElements = null;
+								if (contentCategory != null){
+									categorizedElements = cargarCategorizedElementsRepositorio(archivoPlugin, contentCategory.getCategorizedElements());
+								}
+								
 								// Cargo los datos del method plugin en vistaBean 
 								FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 								HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
@@ -251,6 +259,8 @@ public class ImportarModeloBean {
 						        vb.setPlugin(plugin);
 						        vb.setContentCategory(contentCategory);
 						        vb.setMethodConfiguration(methodConfiguration);
+						        vb.setCategorizedElements(categorizedElements);
+						        vb.setProcessPackages(processPackages);
 							}
 							else{
 								/*****************/
@@ -439,6 +449,14 @@ public class ImportarModeloBean {
 		return null;
 	}
 	
+	public List<TipoMethodPackage> cargarProcessPackageRepositorio(String archivoPlugin){
+		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		if (f.isFile()){
+			return XMIParser.getElementsXMIProcessPackage(Constantes.destinoDescargas + archivoPlugin);	
+		}
+		return null;		
+	}
+	
 	public void cargarDeliveryProcessRepositorio(String archivoDP) throws Exception {
 		nombreArchivo = archivoDP;
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
@@ -507,6 +525,15 @@ public class ImportarModeloBean {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Map<String, TipoContentCategory> cargarCategorizedElementsRepositorio(String archivoPlugin, String categorizedElements){
+		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		if (f.isFile()){
+			String[] categorizedElementsArray = categorizedElements.split(" ");
+			return XMIParser.getElementsXMICategorizedElements(Constantes.destinoDescargas + archivoPlugin, categorizedElementsArray);	
 		}
 		return null;
 	}

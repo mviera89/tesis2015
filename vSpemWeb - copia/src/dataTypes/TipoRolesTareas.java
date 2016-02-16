@@ -1,36 +1,38 @@
 package dataTypes;
 
+import java.util.List;
+
 import org.primefaces.model.diagram.DefaultDiagramModel;
 
 import dominio.Struct;
 
 public class TipoRolesTareas {
 
-	private Struct rol;
-	private DefaultDiagramModel primary;
-	private DefaultDiagramModel additionally;
+	private DefaultDiagramModel rol;
+	private List<Struct> primary;
+	private List<Struct> additionally;
 
-	public Struct getRol() {
+	public DefaultDiagramModel getRol() {
 		return rol;
 	}
 
-	public void setRol(Struct rol) {
+	public void setRol(DefaultDiagramModel rol) {
 		this.rol = rol;
 	}
 
-	public DefaultDiagramModel getPrimary() {
+	public List<Struct> getPrimary() {
 		return primary;
 	}
 
-	public void setPrimary(DefaultDiagramModel primary) {
+	public void setPrimary(List<Struct> primary) {
 		this.primary = primary;
 	}
 
-	public DefaultDiagramModel getAdditionally() {
+	public List<Struct> getAdditionally() {
 		return additionally;
 	}
 
-	public void setAdditionally(DefaultDiagramModel additionally) {
+	public void setAdditionally(List<Struct> additionally) {
 		this.additionally = additionally;
 	}
 
