@@ -389,10 +389,10 @@ public class XMIParser {
 					while ((i < childNodes.getLength()) && (mainDescription.equals("") || (keyConsiderations.equals("")))){
 						Node child = childNodes.item(i);
 						if (child.getNodeName().equals("mainDescription")){
-							mainDescription = child.getFirstChild().getNodeValue();
+							mainDescription = child.getFirstChild().getTextContent();
 						}
 						else if (child.getNodeName().equals("keyConsiderations")){
-							keyConsiderations = child.getFirstChild().getNodeValue();
+							keyConsiderations = child.getFirstChild().getTextContent();
 						}
 						i++;
 					}
