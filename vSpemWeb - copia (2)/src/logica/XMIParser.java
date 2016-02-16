@@ -1314,28 +1314,17 @@ public class XMIParser {
     					// Busco pred
     					Struct predS = buscoPadre(pred,list);
     					if(predS != null){
-    						if (predS.getSucesores() != null){
-    						predS.getSucesores().add(s.getElementID());
-    						}
-    						else {
-    							List<String> lista = new ArrayList<String>();
-    							lista.add(s.getElementID());
-    							predS.setSucesores(lista);    							
-    						}
     						if (!result.contains(predS)){
     							if (!result.contains(s)){
     								result.add(predS);
     							}
     							else{
     								result.add(result.indexOf(s),predS);
-    								}
     							}
-    						
-    						}
-    					}
-    					
-    				}
-
+							}
+						}
+					}	
+    			}
     			if(!result.contains(s)){
     				result.add(s);
     			}

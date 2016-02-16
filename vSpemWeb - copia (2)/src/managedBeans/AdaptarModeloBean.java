@@ -597,7 +597,6 @@ public class AdaptarModeloBean {
 				String tipoVariante = v.getVarType();
 	    		String idVariante = this.variantesSeleccionadas[i];
 	    		List<Struct> hijos = v.getHijos();
-	    		String presentationName = v.getPresentationName();
 	    		String processComponentId = v.getProcessComponentId();
 	    		String processComponentName = v.getProcessComponentName();
 	    		String presentationId = v.getPresentationId();
@@ -608,7 +607,6 @@ public class AdaptarModeloBean {
 				Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
 				Struct s = (Struct) hijo.getData();
 				s.setHijos(hijos);
-				s.setPresentationName(presentationName);
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
 	    		hijo.setDraggable(false);
