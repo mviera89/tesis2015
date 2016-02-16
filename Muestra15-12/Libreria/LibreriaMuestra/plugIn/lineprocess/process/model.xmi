@@ -10,7 +10,7 @@
     <resourceDescriptors xmi:id="_BW98MaK5EeWNV94iQIBaNg" id="-ymqOHrnEWyiqfgGWcPUAVQ"
         uri="activities/process.xmi"/>
     <resourceDescriptors xmi:id="_Df3iYKK5EeWNV94iQIBaNg" id="_DftxYKK5EeWNV94iQIBaNg"
-        uri="capabilitypatterns/Construction%20Iteration/model.xmi"/>
+        uri="capabilitypatterns/Pepe/model.xmi"/>
     <resourceDescriptors xmi:id="_LgmXQKK8EeWNV94iQIBaNg" id="_LgcmQKK8EeWNV94iQIBaNg"
         uri="deliveryprocesses/delivery%20process/model.xmi"/>
   </org.eclipse.epf.uma.resourcemanager:ResourceManager>

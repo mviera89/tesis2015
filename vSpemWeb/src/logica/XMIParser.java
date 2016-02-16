@@ -17,12 +17,395 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import dataTypes.TipoContentCategory;
+import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
+import dataTypes.TipoLibrary;
+import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoPlugin;
 import dataTypes.WorkProduct;
 import dominio.Struct;
 import dominio.Variant;
 
 public class XMIParser {
+	
+	public static Object[] getElementsXMIResource(String nomFile){
+		String uriPlugin = null;
+		TipoLibrary library = null;
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        
+	        // Obtengo la ruta donde se encuentra plugin.xmi
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma.resourcemanager:ResourceManager");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+					NodeList childNodes = nodo.getChildNodes();
+					for (int i = 0; i < childNodes.getLength(); i++){
+						Node child = childNodes.item(i);
+						if (child.getNodeType() == Node.ELEMENT_NODE) {
+							Element eChild = (Element) child;
+							if (eChild.hasAttribute("uri")){
+								String uri = eChild.getAttribute("uri");
+								if (uri != null){
+									// uri puede ser de la forma: dir1/dir2/.../nombre
+									String nombre = uri;
+									int indexDiv = nombre.indexOf("/");
+									while (indexDiv != -1){
+										nombre = nombre.substring(indexDiv + 1, nombre.length());
+										indexDiv = nombre.indexOf("/");
+									}
+									if (nombre.equals("plugin.xmi")){
+										uriPlugin = uri;
+									}
+								}
+							}
+						}
+					}
+				}
+        	}
+        	
+        	// Obtengo los datos de la librería
+        	nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodLibrary");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				Element eNodo = (Element) nodo;
+				String guid = "";
+				String name = "";
+				String id = "";
+				if (eNodo.hasAttribute("guid")){
+					guid = eNodo.getAttribute("guid");
+				}
+				if (eNodo.hasAttribute("name")){
+					name = eNodo.getAttribute("name");
+				}
+				if (eNodo.hasAttribute("xmi:id")){
+					id = eNodo.getAttribute("xmi:id");
+				}
+				library = new TipoLibrary(guid, name, id);
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		Object[] res = {uriPlugin, library};
+		return res;
+		 
+	}
+	
+	public static TipoMethodConfiguration getElementsXMIConfigurations(String nomFile){
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        
+	        // Obtengo la ruta donde se encuentra plugin.xmi
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodConfiguration");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+					Element eNodo = (Element) nodo;
+					String id = "";
+					String name = "";
+					String briefDescription = "";
+					if (eNodo.hasAttribute("xmi:id")){
+						id = eNodo.getAttribute("xmi:id");
+					}
+					if (eNodo.hasAttribute("name")){
+						name = eNodo.getAttribute("name");
+					}
+					if (eNodo.hasAttribute("briefDescription")){
+						briefDescription = eNodo.getAttribute("briefDescription");
+					}
+					return new TipoMethodConfiguration(id, name, briefDescription);
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static TipoPlugin getElementsXMIPlugin(String nomFile){
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+
+	        String deliveryProcessDir = null;
+	        String customCategoriesDir = null;
+	        NodeList nodosResource = doc.getElementsByTagName("org.eclipse.epf.uma.resourcemanager:ResourceManager");
+	        if (nodosResource.getLength() > 0){
+				Node nodo = nodosResource.item(0);
+				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+					NodeList childNodes = nodo.getChildNodes();
+					int i = 0;
+					while ((i < childNodes.getLength()) && ((deliveryProcessDir == null) || (customCategoriesDir == null))){
+						Node child = childNodes.item(i);
+						if (child.getNodeType() == Node.ELEMENT_NODE) {
+							if (child.getNodeName().equals("resourceDescriptors")){
+								Element eChild = (Element) child;
+								if (eChild.hasAttribute("uri")){
+									String uri = eChild.getAttribute("uri");
+									if (uri != null){
+										int indexDiv = uri.indexOf("/");
+										if (indexDiv != -1){
+											String dir = uri.substring(0, indexDiv);
+											if (dir.equals("deliveryprocesses")){
+												deliveryProcessDir = uri;
+											}
+											else if (dir.equals("customcategories")){
+												customCategoriesDir = uri;
+											}
+										}
+									}
+								}
+							}
+						}
+						i++;
+					}
+				}
+	        }
+	        
+	        
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				Element eHijo = (Element) nodo;
+				String id = "";
+				String name = "";
+				String guid = "";
+				String briefDescription = "";
+				String authors = ""; 
+				String changeDate = "";
+				String changeDescription = "";
+				String version = "";
+				if (eHijo.hasAttribute("xmi:id")){
+					id = eHijo.getAttribute("xmi:id");
+				}
+				if (eHijo.hasAttribute("name")){
+					name = eHijo.getAttribute("name");
+				}
+				if (eHijo.hasAttribute("guid")){
+					guid = eHijo.getAttribute("guid");
+				}
+				if (eHijo.hasAttribute("briefDescription")){
+					briefDescription = eHijo.getAttribute("briefDescription");
+				}
+				if (eHijo.hasAttribute("authors")){
+					authors = eHijo.getAttribute("authors");
+				}
+				if (eHijo.hasAttribute("changeDate")){
+					changeDate = eHijo.getAttribute("changeDate"); // Es de la forma 2016-02-13T20:59:36.516-0300
+					int index = changeDate.indexOf(".");
+					changeDate = changeDate.substring(0, index);
+				}
+				if (eHijo.hasAttribute("changeDescription")){
+					changeDescription = eHijo.getAttribute("changeDescription");
+				}
+				if (eHijo.hasAttribute("version")){
+					version = eHijo.getAttribute("version");
+				}
+				
+				return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, deliveryProcessDir, customCategoriesDir);
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static TipoContentCategory getElementsXMIContentCategory(String nomFile, String id){
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				Node resNode = obtenerContentCategoryId(nodo, id);
+				
+				// Si encontré el id que buscaba
+				if (resNode != null){
+					Element e = (Element) resNode;
+					String typeCC = "";
+					String idCC = "";
+					String nameCC = "";
+					String guidCC = "";
+					String presentationNameCC = "";
+					String briefDescriptionCC = "";
+					String categorizedElementsCC = "";
+					if (e.hasAttribute("xsi:type")){
+						typeCC = e.getAttribute("xsi:type");
+					}
+					if (e.hasAttribute("xmi:id")){
+						idCC = e.getAttribute("xmi:id");
+					}
+					if (e.hasAttribute("name")){
+						nameCC = e.getAttribute("name");
+					}
+					if (e.hasAttribute("guid")){
+						guidCC = e.getAttribute("guid");
+					}
+					if (e.hasAttribute("presentationName")){
+						presentationNameCC = e.getAttribute("presentationName");
+					}
+					if (e.hasAttribute("briefDescription")){
+						briefDescriptionCC = e.getAttribute("briefDescription");
+					}
+					if (e.hasAttribute("categorizedElements")){
+						categorizedElementsCC = e.getAttribute("categorizedElements");
+					}
+					
+					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC);
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Node obtenerContentCategoryId(Node nodo, String xmiId){
+		if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+			if (nodo.getNodeName().equals("contentElements")){
+				NodeList nodes = nodo.getChildNodes();
+				int j = 0;
+				while (j < nodes.getLength()){
+					Node n = nodes.item(j);
+					if (n.getNodeType() == Node.ELEMENT_NODE){
+						Element eNode = (Element) n;
+						if ((eNode.hasAttribute("xmi:id")) && (eNode.getAttribute("xmi:id").equals(xmiId))){
+							return nodo;
+						}
+					}
+					j++;
+				}
+			}
+		}
+		NodeList childNodes = nodo.getChildNodes();
+		int i = 0;
+		Node resNode = null;
+		while ((i < childNodes.getLength()) && (resNode == null)){
+			Node child = childNodes.item(i);
+			Node res = obtenerContentCategoryId(child, xmiId);
+			if (res != null){
+				return res;
+			}
+			i++;
+		}
+		return null;
+	}
+	
+	public static TipoContentDescription getElementsXMICustomCategories(String nomFile){
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:ContentDescription");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+					Element eHijo = (Element) nodo;
+					String xmiVersion = "";
+					String xmi = "";
+					String uma = "";
+					String epf = "";
+					String epfVersion = "";
+					String id = "";
+					String name = "";
+					String guid = "";
+					String authors = "";
+					String changeDate = "";
+					String changeDescription = "";
+					String version = "";
+					String mainDescription = "";
+					String keyConsiderations = "";
+					
+					if (eHijo.hasAttribute("xmi:version")){
+						xmiVersion = eHijo.getAttribute("xmi:version");
+					}
+					if (eHijo.hasAttribute("xmlns:xmi")){
+						xmi = eHijo.getAttribute("xmlns:xmi");
+					}
+					if (eHijo.hasAttribute("xmlns:org.eclipse.epf.uma")){
+						uma = eHijo.getAttribute("xmlns:org.eclipse.epf.uma");
+					}
+					if (eHijo.hasAttribute("xmlns:epf")){
+						epf = eHijo.getAttribute("xmlns:epf");
+					}
+					if (eHijo.hasAttribute("epf:version")){
+						epfVersion = eHijo.getAttribute("epf:version");
+					}
+					if (eHijo.hasAttribute("xmi:id")){
+						id = eHijo.getAttribute("xmi:id");
+					}
+					if (eHijo.hasAttribute("name")){
+						name = eHijo.getAttribute("name");
+					}
+					if (eHijo.hasAttribute("guid")){
+						guid = eHijo.getAttribute("guid");
+					}
+					if (eHijo.hasAttribute("authors")){
+						authors = eHijo.getAttribute("authors");
+					}
+					if (eHijo.hasAttribute("changeDate")){
+						changeDate = eHijo.getAttribute("changeDate"); // Es de la forma 2016-02-13T20:59:36.516-0300
+						int index = changeDate.indexOf(".");
+						changeDate = changeDate.substring(0, index);
+					}
+					if (eHijo.hasAttribute("changeDescription")){
+						changeDescription = eHijo.getAttribute("changeDescription");
+					}
+					if (eHijo.hasAttribute("version")){
+						version = eHijo.getAttribute("version");
+					}
+					
+					NodeList childNodes = nodo.getChildNodes();
+					int i = 0;
+					while ((i < childNodes.getLength()) && (mainDescription.equals("") || (keyConsiderations.equals("")))){
+						Node child = childNodes.item(i);
+						if (child.getNodeName().equals("mainDescription")){
+							mainDescription = child.getFirstChild().getNodeValue();
+						}
+						else if (child.getNodeName().equals("keyConsiderations")){
+							keyConsiderations = child.getFirstChild().getNodeValue();
+						}
+						i++;
+					}
+					
+					return new TipoContentDescription(xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, authors, changeDate, changeDescription, version, mainDescription, keyConsiderations);
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static List<Struct> getElementXMI(String nomFile){
 		List<Struct> result = new ArrayList<Struct>(); 
@@ -41,7 +424,6 @@ public class XMIParser {
 	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
 	        Map<String, String> predecesores = new HashMap<String,String>();
 			Map<String, String> dataProcess = new HashMap<String, String>();
-	        
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
 	        getNodos(nomFile, nList, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAdditionallyBy,workProducts, predecesores, dataProcess);
@@ -70,7 +452,7 @@ public class XMIParser {
     		    		esHijoDeVar = true;
     		    	}
     		    	else{
-    		    		//busco tambien en hijos de var
+    		    		// Busco también en hijos de var
     		    		Iterator<Struct> itH = v.getHijos().iterator();
     		    		while (itH.hasNext()){
     		    			Struct s = itH.next();
@@ -84,17 +466,15 @@ public class XMIParser {
     		    	}
     		    }
     		    if (!esHijoDeVar){
-    		    	//busco en result
+    		    	// Busco en result
     		    	result.addAll(l);
     		    }
 	        }
 	        
-	        
-	        //seteo variantes en varPoints
+	        // Seteo variantes en varPoints
 	        Iterator<Entry<String, List<Struct>>> iterH = registroHijos.entrySet().iterator();
 	        while (iterH.hasNext()){
 	        	Entry<String, List<Struct>> e = iterH.next();
-	        	//String padre = e.getKey();
 	        	List<Struct> l = e.getValue();
 	        	Iterator<Struct> it = l.iterator();
 	        	while (it.hasNext()){
@@ -168,8 +548,7 @@ public class XMIParser {
 				}
 			}
 			
-			//ordeno result segun predecesores
-			
+			// Ordeno result segun predecesores
 			result = ordenoNodos(result,predecesores);
 		}
 		catch (Exception e) {
@@ -273,15 +652,11 @@ public class XMIParser {
 					if (eHijo.hasAttribute("presentationName")){
 						presentationName = eHijo.getAttribute("presentationName");
 					}
-				
 					
 	      		    int min = -1;
 	      		    int max = -1;
 	      		    
-	      		    
-	      		    
 	      		    TipoElemento tipo = obtenerTipoElemento(type);
-	      		    
 	      		    Struct h = null;
       		    	String nombreArchivoCapabilityPattern = nomFile.substring(0, nomFile.length() - 4) + "_" + nameHijo.replace(" ", "_") + ".xmi";
       		    	File inputFile = new File(nombreArchivoCapabilityPattern);
@@ -313,8 +688,6 @@ public class XMIParser {
 							list = Arrays.asList(pred.split("\\s"));
 							h.setLinkToPredecessor(list);
 						}
-		      		    
-						
 		      		    
 						if (tipo == TipoElemento.TASK || tipo == TipoElemento.VP_TASK){
 							if (eHijo.hasAttribute("performedPrimarilyBy")){
@@ -396,7 +769,6 @@ public class XMIParser {
 							tienePadre = true;
 							String padre = eHijo.getAttribute("superActivities");
 							
-							
 							boolean esHijoDeVar = false;
 							// busco en las variantes y en sus hijos
 							Iterator<Variant> itV = registroVar.iterator();
@@ -427,13 +799,13 @@ public class XMIParser {
 							}
 							if (!esHijoDeVar){
 								boolean elPadreEsHijo = false;
-								// busco el padre en result
+								// Busco el padre en result
 								Struct padreS = buscoPadre(padre,result);
 								if (padreS != null){
 									padreS.getHijos().add(h);
 									tienePadre = true;
 								}
-								// veo si el padre ya no esta en registroHijos como hijo de alguien
+								// Veo si el padre ya no esta en registroHijos como hijo de alguien
 				  		    	else {
 				  		    		Struct s = buscoPadre (registroHijos, padre);
 				  		    		if (s != null){
@@ -507,7 +879,6 @@ public class XMIParser {
 	          				type.equals(TipoElemento.VAR_MILESTONE.toString()) ||
 	          				type.equals(TipoElemento.VAR_WORK_PRODUCT.toString())){
 	      		    		
-
 		      		    	String processComponentId = (dataProcess != null) ? dataProcess.get("processComponentId") : null;
 							String processComponentName = (dataProcess != null) ? dataProcess.get("processComponentName") : null;
 							String presentationId = (dataProcess != null) ? dataProcess.get("presentationId") : null;
@@ -643,7 +1014,7 @@ public class XMIParser {
     	return icono;
     }
     
-    static Struct buscoPadre(String id, List<Struct> lista){
+    public static Struct buscoPadre(String id, List<Struct> lista){
     	Struct padre = null;
     	Iterator<Struct> it = lista.iterator();
     	while (it.hasNext() && padre == null){
@@ -659,7 +1030,7 @@ public class XMIParser {
     	return padre;
     }
     
-    static List<Struct> buscoHermanos(String id, List<Struct> lista){
+    public static List<Struct> buscoHermanos(String id, List<Struct> lista){
     	List<Struct> hermanos = null;
     	Iterator<Struct> it = lista.iterator();
     	while (it.hasNext() && hermanos == null){
@@ -675,72 +1046,66 @@ public class XMIParser {
     	return hermanos;
     }
     
-    
-    static void seteoVariantes(Struct s,List<Variant> registroVar, Map<String,List<String>> vpToVar){
-    	 
-		        if (s.getType() == TipoElemento.VP_ACTIVITY ||
-	        		s.getType() == TipoElemento.VP_TASK		||
-		         	s.getType() == TipoElemento.VP_PHASE	||
-		         	s.getType() == TipoElemento.VP_ITERATION ||
-		         	s.getType() == TipoElemento.VP_MILESTONE ||
-		         	s.getType() == TipoElemento.VP_ROLE	||
-		         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
-	        		Iterator<Variant> itaux = registroVar.iterator();
-		         	while (itaux.hasNext()){
-		         		Variant v = itaux.next();
-	         			if (vpToVar.get(s.getElementID()).contains(v.getID())){
-	         				v.setIDVarPoint(s.getElementID());
-	     					s.getVariantes().add(v);
-	         			}
-		         	}
-	        	}
-		        if (s.getHijos() != null){
-		        	Iterator<Struct> it = s.getHijos().iterator();
-		        	while (it.hasNext()){
-		        		Struct hijo = it.next();
-		        		seteoVariantes(hijo,registroVar,vpToVar);
-		        	}
-		        	
-		        }
+    public static void seteoVariantes(Struct s,List<Variant> registroVar, Map<String,List<String>> vpToVar){
+        if (s.getType() == TipoElemento.VP_ACTIVITY ||
+    		s.getType() == TipoElemento.VP_TASK		||
+         	s.getType() == TipoElemento.VP_PHASE	||
+         	s.getType() == TipoElemento.VP_ITERATION ||
+         	s.getType() == TipoElemento.VP_MILESTONE ||
+         	s.getType() == TipoElemento.VP_ROLE	||
+         	s.getType() == TipoElemento.VP_WORK_PRODUCT){
+    		Iterator<Variant> itaux = registroVar.iterator();
+         	while (itaux.hasNext()){
+         		Variant v = itaux.next();
+     			if (vpToVar.get(s.getElementID()).contains(v.getID())){
+     				v.setIDVarPoint(s.getElementID());
+ 					s.getVariantes().add(v);
+     			}
+         	}
+    	}
+        if (s.getHijos() != null){
+        	Iterator<Struct> it = s.getHijos().iterator();
+        	while (it.hasNext()){
+        		Struct hijo = it.next();
+        		seteoVariantes(hijo,registroVar,vpToVar);
+        	}
+        	
+        }
     }
     
-    static Struct buscoEnHijos(Struct s, String padre){
-    		
-  			Iterator<Struct> it = s.getHijos().iterator();
-  			while (it.hasNext()){
-  				Struct hijo = it.next();
-  				if(hijo.getElementID().equals(padre)){
-  					return hijo;       			
-	        	}
-  				else {
-  					return buscoEnHijos(hijo,padre);
-  					
-  				}
-  			}
-  			return null;
+    public static Struct buscoEnHijos(Struct s, String padre){
+		Iterator<Struct> it = s.getHijos().iterator();
+		while (it.hasNext()){
+			Struct hijo = it.next();
+			if(hijo.getElementID().equals(padre)){
+				return hijo;       			
+        	}
+			else {
+				return buscoEnHijos(hijo,padre);
+				
+			}
+		}
+		return null;
     }
     
-    static Struct buscoPadre (Map<String,List<Struct>> registroHijos, String padre){
+    public static Struct buscoPadre (Map<String,List<Struct>> registroHijos, String padre){
     	Struct result = null;
     	Iterator<Entry<String, List<Struct>>> iter = registroHijos.entrySet().iterator();
   		while (iter.hasNext()){
   			Entry<String, List<Struct>> e = iter.next();
-	        	List<Struct> l = e.getValue();
-	        	Iterator<Struct> itList = l.iterator();
-	        	while (itList.hasNext()){
-	        		Struct s = itList.next();
-	        		if(s.getElementID().equals(padre)){
-	        			result = s;
-	        			return result;
-	        		}
-	        		else {
-	        			
-	          				result = buscoEnHijos(s,padre);
-	          			}
-	        		}
-	        
-	        	}
-  		
+        	List<Struct> l = e.getValue();
+        	Iterator<Struct> itList = l.iterator();
+        	while (itList.hasNext()){
+        		Struct s = itList.next();
+        		if(s.getElementID().equals(padre)){
+        			result = s;
+        			return result;
+        		}
+        		else {
+          			result = buscoEnHijos(s,padre);
+          		}
+        	}
+        }
   		return result;
     }
     
@@ -756,43 +1121,42 @@ public class XMIParser {
     				String idLink = itLinks.next();
     				if(predecesores.containsKey(idLink)){
     					String pred = predecesores.get(idLink);
-    					//busco pred
+    					// Busco pred
     					Struct predS = buscoPadre(pred,list);
     					if(predS != null){
     						if (predS.getSucesores() != null){
     						predS.getSucesores().add(s.getElementID());
-    						if (!result.contains(predS)){
-    							if (!result.contains(s)){
-    								result.add(predS);
-    							}
-    							else{
-    								result.add(result.indexOf(s),predS);
-    							}
-    								
-    							}
     						}
     						else {
     							List<String> lista = new ArrayList<String>();
     							lista.add(s.getElementID());
     							predS.setSucesores(lista);    							
     						}
-    					}
+    						if (!result.contains(predS)){
+    							if (!result.contains(s)){
+    								result.add(predS);
+    							}
+    							else{
+    								result.add(result.indexOf(s),predS);
+    								}
+    							}
+    						
+    						}
     					}
     					
     				}
+
     			if(!result.contains(s)){
     				result.add(s);
     			}
-    			}
+			}
     		else if (!result.contains(s)){
     			result.add(s);
     		}
     		List<Struct> resHijos = ordenoNodos(s.getHijos(), predecesores);
     		s.setHijos(resHijos);
-    		
     	}
     	return result;
     }
-    
-    
+
 }

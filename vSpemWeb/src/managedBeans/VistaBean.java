@@ -8,6 +8,12 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import dataTypes.TipoContentCategory;
+import dataTypes.TipoContentDescription;
+import dataTypes.TipoLibrary;
+import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoPlugin;
+
 @ManagedBean(name="VistaBean")
 @SessionScoped
 public class VistaBean {
@@ -17,7 +23,12 @@ public class VistaBean {
 	private List<String> capabilityPatterns = null;
 	private boolean finModelado = false;
 	private String repositorio = "";
-
+	private TipoLibrary library = null;
+	private TipoPlugin plugin = null;
+	private TipoContentDescription contentDescription = null;
+	private TipoContentCategory contentCategory = null;
+	private TipoMethodConfiguration methodConfiguration = null;
+	
 	public int getIndiceActivo() {
 		return indiceActivo;
 	}
@@ -56,6 +67,46 @@ public class VistaBean {
 
 	public void setRepositorio(String repositorio) {
 		this.repositorio = repositorio;
+	}
+
+	public TipoLibrary getLibrary() {
+		return library;
+	}
+
+	public void setLibrary(TipoLibrary library) {
+		this.library = library;
+	}
+
+	public TipoPlugin getPlugin() {
+		return plugin;
+	}
+
+	public void setPlugin(TipoPlugin plugin) {
+		this.plugin = plugin;
+	}
+
+	public TipoContentDescription getContentDescription() {
+		return contentDescription;
+	}
+
+	public void setContentDescription(TipoContentDescription contentDescription) {
+		this.contentDescription = contentDescription;
+	}
+
+	public TipoContentCategory getContentCategory() {
+		return contentCategory;
+	}
+
+	public void setContentCategory(TipoContentCategory contentCategory) {
+		this.contentCategory = contentCategory;
+	}
+
+	public TipoMethodConfiguration getMethodConfiguration() {
+		return methodConfiguration;
+	}
+
+	public void setMethodConfiguration(TipoMethodConfiguration methodConfiguration) {
+		this.methodConfiguration = methodConfiguration;
 	}
 
 	public void actualizarIndiceActivo(int indice){

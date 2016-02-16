@@ -10,10 +10,10 @@
 		<included-projects>jboss-javaee6-webapp</included-projects>
 		<shortDescription>Java EE Web Project</shortDescription>
         <priority>1</priority>
-        <headLine>Create a Maven-based Java EE 6 web application project</headLine>
+        <headLine>Create a Maven-based Java EE web application project</headLine>
 		<description>
-This is your project! It's a sample, deployable Maven 3 project to help you get your foot in the door developing with Java EE 6 on JBoss Enterprise Application Platform 6 or JBoss Application Server 7.1.
-This project is setup to allow you to create a compliant Java EE 6 application using JSF 2.0, CDI 1.0, EJB 3.1, JPA 2.0 and Bean Validation 1.0.
+This is your project! It's a sample, deployable Maven 3 project to help you get your foot in the door developing with Java EE on JBoss Enterprise Application Platform 6 or JBoss Application Server 7.1.
+This project is setup to allow you to create a compliant Java EE application using JSF, CDI, EJB, JPA and Bean Validation.
 		</description>
 		<size>8192</size>
 		<url/>
@@ -54,11 +54,11 @@ This project is setup to allow you to create a compliant Java EE 6 application u
 			<archetypeVersion>7.1.1.CR1</archetypeVersion>
 	    -->
             <groupId>org.jboss.tools.examples</groupId>
-			<artifactId>jboss-javaee6-webapp</artifactId>
+			<artifactId>jboss-javaee-webapp</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<javaPackage>org.jboss.tools.examples</javaPackage>
 			<properties>
-				<property name="name" value="Java EE 6 webapp project"/>
+				<property name="name" value="Java EE webapp project"/>
 			</properties>
 		</mavenArchetype>
         <tags>wizard</tags>
@@ -71,8 +71,8 @@ This project is setup to allow you to create a compliant Java EE 6 application u
 		<included-projects>multi-javaee6-archetype</included-projects>
 		<shortDescription>Java EE EAR Project</shortDescription>
         <priority>2</priority>
-        <headLine>Create a multi-module, Maven-based Java EE 6 EAR application</headLine>
-		<description>An archetype that generates a starter Java EE 6 webapp project for JBoss Enterprise Application Platform 6 or JBoss Application Server. The project is an EAR, with an EJB-JAR and WAR.</description>
+        <headLine>Create a multi-module, Maven-based Java EE EAR application</headLine>
+		<description>An archetype that generates a starter Java EE webapp project for JBoss Enterprise Application Platform 6 or JBoss Application Server. The project is an EAR, with an EJB-JAR and WAR.</description>
 		<size>13806</size>
 		<url/>
 		<stacksId>jboss-javaee6-webapp-ear-archetype</stacksId>
@@ -112,7 +112,7 @@ This project is setup to allow you to create a compliant Java EE 6 application u
 			<archetypeVersion>7.1.1.CR1</archetypeVersion>
 		-->
             <groupId>org.jboss.tools.example</groupId>
-			<artifactId>jboss-javaee6-multi</artifactId>
+			<artifactId>jboss-javaee-multi</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<javaPackage>org.jboss.tools.example</javaPackage>
 		</mavenArchetype>
