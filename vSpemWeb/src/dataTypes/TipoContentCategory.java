@@ -10,8 +10,11 @@ public class TipoContentCategory {
 	private String briefDescription;
 	private String categorizedElements;
 	private TipoContentDescription contentDescription;
+	private String shapeicon;
+	private String nodeicon;
 
-	public TipoContentCategory(String type, String id, String name,	String guid, String presentationName, String briefDescription, String categorizedElements) {
+	public TipoContentCategory(String type, String id, String name,	String guid, String presentationName, String briefDescription, String categorizedElements,
+							   String shapeicon, String nodeicon) {
 		this.type = type;
 		this.id = id;
 		this.name = name;
@@ -19,6 +22,8 @@ public class TipoContentCategory {
 		this.presentationName = presentationName;
 		this.briefDescription = briefDescription;
 		this.categorizedElements = categorizedElements;
+		this.shapeicon = shapeicon;
+		this.nodeicon = nodeicon;
 	}
 
 	public String getType() {
@@ -83,6 +88,22 @@ public class TipoContentCategory {
 
 	public void setContentDescription(TipoContentDescription contentDescription) {
 		this.contentDescription = contentDescription;
+	}
+
+	public String getShapeicon() {
+		return shapeicon;
+	}
+
+	public void setShapeicon(String shapeicon) {
+		this.shapeicon = shapeicon;
+	}
+
+	public String getNodeicon() {
+		return nodeicon;
+	}
+
+	public void setNodeicon(String nodeicon) {
+		this.nodeicon = nodeicon;
 	}
 
 }

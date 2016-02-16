@@ -95,6 +95,8 @@ public class ExportarModeloBean {
 				String idProcessView = contentCategory.getId();
 				String contentCategoryPresentationName = contentCategory.getPresentationName();
 				String categorizedElements = contentCategory.getCategorizedElements();
+				String contentCategoryNodeicon = contentCategory.getNodeicon();
+				String contentCategoryShapeicon = contentCategory.getShapeicon();
 				String contentDescriptionName = contentDescription.getName();
 				String contentDescriptionId = contentDescription.getId();
 				String contentDescriptionAutors = contentDescription.getAuthors();
@@ -177,7 +179,7 @@ public class ExportarModeloBean {
 							
 							textoContentCategory +=
 				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"" + contentCategoryPackageName + "\" id=\"" + contentCategoryId + "\">" + "\n" +
-					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n" +
+					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" nodeicon=\"" + contentCategoryNodeicon + "\" shapeicon=\"" + contentCategoryShapeicon + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n" +
 					  				// "\t\t\t\t<MethodElementProperty name=\"PUBLISH_CATEGORY\" value=\"true\"/>" + "\n" +
 					  				"\t\t\t\t<Presentation name=\"" + contentDescriptionName + "\" briefDescription=\"" + contentDescriptionBriefDescription + "\" id=\"" + contentDescriptionId + "\" orderingGuide=\"" + contentDescriptionOrderingGuide + "\" suppressed=\"" + contentDescriptionSuppressed + "\" authors=\"" + contentDescriptionAutors + "\" changeDate=\"" + contentDescriptionChangeDate + "\" changeDescription=\"" + contentDescriptionChangeDescription + "\" version=\"" + contentDescriptionVersion + "\" externalId=\"" + contentDescriptionExternalId + "\">" + "\n" +
 					  					"\t\t\t\t\t<MainDescription><![CDATA[" + contentDescriptionMainDescription + "]]></MainDescription>" + "\n" +
@@ -263,7 +265,7 @@ public class ExportarModeloBean {
 					String key = categorizedElementsArray[i];
 					TipoContentCategory element = categorizedElementsContent.get(key);
 					if (element != null){
-						texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + element.getPresentationName() + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+						texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + element.getPresentationName() + "\" nodeicon=\"" + element.getNodeicon() + "\" shapeicon=\"" + element.getShapeicon() + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
 						String categorizedElementsE = element.getCategorizedElements();
 						if (categorizedElementsE.equals("")){
 							texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";

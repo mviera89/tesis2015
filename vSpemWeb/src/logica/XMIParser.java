@@ -17,7 +17,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
@@ -255,6 +254,9 @@ public class XMIParser {
 					String presentationNameCC = "";
 					String briefDescriptionCC = "";
 					String categorizedElementsCC = "";
+					String shapeiconCC = "";
+					String nodeiconCC = "";
+					
 					if (e.hasAttribute("xsi:type")){
 						typeCC = e.getAttribute("xsi:type");
 					}
@@ -276,8 +278,14 @@ public class XMIParser {
 					if (e.hasAttribute("categorizedElements")){
 						categorizedElementsCC = e.getAttribute("categorizedElements");
 					}
+					if (e.hasAttribute("shapeicon")){
+						shapeiconCC = e.getAttribute("shapeicon");
+					}
+					if (e.hasAttribute("nodeicon")){
+						nodeiconCC = e.getAttribute("nodeicon");
+					}
 					
-					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC);
+					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC);
 				}
         	}
 		}
@@ -446,10 +454,10 @@ public class XMIParser {
 					while ((i < childNodes.getLength()) && (mainDescription.equals("") || (keyConsiderations.equals("")))){
 						Node child = childNodes.item(i);
 						if (child.getNodeName().equals("mainDescription")){
-							mainDescription = child.getFirstChild().getTextContent();
+							mainDescription = child.getFirstChild().getNodeValue();//.getTextContent();
 						}
 						else if (child.getNodeName().equals("keyConsiderations")){
-							keyConsiderations = child.getFirstChild().getTextContent();
+							keyConsiderations = child.getFirstChild().getNodeValue();//.getTextContent();
 						}
 						i++;
 					}
@@ -496,6 +504,9 @@ public class XMIParser {
 							String presentationNameCC = "";
 							String briefDescriptionCC = "";
 							String categorizedElementsCC = "";
+							String shapeiconCC = "";
+							String nodeiconCC = "";
+							
 							if (e.hasAttribute("xmi:id")){
 								idCC = e.getAttribute("xmi:id");
 							}
@@ -514,7 +525,13 @@ public class XMIParser {
 							if (e.hasAttribute("categorizedElements")){
 								categorizedElementsCC = e.getAttribute("categorizedElements");
 							}
-							res.put(id, new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC));
+							if (e.hasAttribute("shapeicon")){
+								shapeiconCC = e.getAttribute("shapeicon");
+							}
+							if (e.hasAttribute("nodeicon")){
+								nodeiconCC = e.getAttribute("nodeicon");
+							}
+							res.put(id, new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC));
 						}
 					}
 				}
