@@ -22,6 +22,7 @@ import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dataTypes.WorkProduct;
 import dominio.Struct;
@@ -253,6 +254,9 @@ public class XMIParser {
 					String presentationNameCC = "";
 					String briefDescriptionCC = "";
 					String categorizedElementsCC = "";
+					String shapeiconCC = "";
+					String nodeiconCC = "";
+					
 					if (e.hasAttribute("xsi:type")){
 						typeCC = e.getAttribute("xsi:type");
 					}
@@ -274,8 +278,14 @@ public class XMIParser {
 					if (e.hasAttribute("categorizedElements")){
 						categorizedElementsCC = e.getAttribute("categorizedElements");
 					}
+					if (e.hasAttribute("shapeicon")){
+						shapeiconCC = e.getAttribute("shapeicon");
+					}
+					if (e.hasAttribute("nodeicon")){
+						nodeiconCC = e.getAttribute("nodeicon");
+					}
 					
-					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC);
+					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC);
 				}
         	}
 		}
@@ -304,8 +314,7 @@ public class XMIParser {
 		}
 		NodeList childNodes = nodo.getChildNodes();
 		int i = 0;
-		Node resNode = null;
-		while ((i < childNodes.getLength()) && (resNode == null)){
+		while (i < childNodes.getLength()){
 			Node child = childNodes.item(i);
 			Node res = obtenerContentCategoryId(child, xmiId);
 			if (res != null){
@@ -314,6 +323,62 @@ public class XMIParser {
 			i++;
 		}
 		return null;
+	}
+	
+	public static Node obtenerNodoId(Node nodo, String xmiId){
+		if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+			Element eNodo = (Element) nodo;
+			if ((eNodo.hasAttribute("xmi:id")) && (eNodo.getAttribute("xmi:id").equals(xmiId))){
+				return nodo;
+			}
+		}
+		NodeList childNodes = nodo.getChildNodes();
+		int i = 0;
+		while (i < childNodes.getLength()){
+			Node child = childNodes.item(i);
+			Node res = obtenerNodoId(child, xmiId);
+			if (res != null){
+				return res;
+			}
+			i++;
+		}
+		return null;
+	}
+	
+	public static List<Node> obtenerNodosType(Node nodo, String xsiType){
+		List<Node> res = new ArrayList<Node>();
+		if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+			Element eNodo = (Element) nodo;
+			if ((eNodo.hasAttribute("xsi:type")) && (eNodo.getAttribute("xsi:type").equals(xsiType))){
+				res.add(nodo);
+			}
+		}
+		NodeList childNodes = nodo.getChildNodes();
+		int i = 0;
+		while (i < childNodes.getLength()){
+			Node child = childNodes.item(i);
+			List<Node> resNode = obtenerNodosType(child, xsiType);
+			res.addAll(resNode);
+			i++;
+		}
+		return res;
+	}
+	
+	public static List<Node> obtenerHijosNodoType(Node nodo, String xsiType){
+		List<Node> res = new ArrayList<Node>();
+		NodeList childNodes = nodo.getChildNodes();
+		int i = 0;
+		while (i < childNodes.getLength()){
+			Node child = childNodes.item(i);
+			if (child.getNodeType() == Node.ELEMENT_NODE){
+				Element eChild = (Element) child;
+				if ((eChild.hasAttribute("xsi:type")) && (eChild.getAttribute("xsi:type").equals(xsiType))){
+					res.add(child);
+				}
+			}
+			i++;
+		}
+		return res;
 	}
 	
 	public static TipoContentDescription getElementsXMICustomCategories(String nomFile){
@@ -389,10 +454,10 @@ public class XMIParser {
 					while ((i < childNodes.getLength()) && (mainDescription.equals("") || (keyConsiderations.equals("")))){
 						Node child = childNodes.item(i);
 						if (child.getNodeName().equals("mainDescription")){
-							mainDescription = child.getFirstChild().getTextContent();
+							mainDescription = child.getFirstChild().getNodeValue();//.getTextContent();
 						}
 						else if (child.getNodeName().equals("keyConsiderations")){
-							keyConsiderations = child.getFirstChild().getTextContent();
+							keyConsiderations = child.getFirstChild().getNodeValue();//.getTextContent();
 						}
 						i++;
 					}
@@ -405,6 +470,131 @@ public class XMIParser {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static Map<String, TipoContentCategory> getElementsXMICategorizedElements(String nomFile, String[] categorizedElementsArray){
+		Map<String, TipoContentCategory> res = new HashMap<String, TipoContentCategory>();
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				int n = categorizedElementsArray.length;
+				for (int i = 0; i < n; i++){
+					String id = categorizedElementsArray[i];
+					Node resNode = obtenerNodoId(nodo, id);
+					
+					// Si encontré el id que buscaba
+					if (resNode != null){
+						Element e = (Element) resNode;
+						String typeCC = "";
+						if (e.hasAttribute("xsi:type")){
+							typeCC = e.getAttribute("xsi:type");
+						}
+						if (typeCC.equals("org.eclipse.epf.uma:CustomCategory")){
+							String idCC = "";
+							String nameCC = "";
+							String guidCC = "";
+							String presentationNameCC = "";
+							String briefDescriptionCC = "";
+							String categorizedElementsCC = "";
+							String shapeiconCC = "";
+							String nodeiconCC = "";
+							
+							if (e.hasAttribute("xmi:id")){
+								idCC = e.getAttribute("xmi:id");
+							}
+							if (e.hasAttribute("name")){
+								nameCC = e.getAttribute("name");
+							}
+							if (e.hasAttribute("guid")){
+								guidCC = e.getAttribute("guid");
+							}
+							if (e.hasAttribute("presentationName")){
+								presentationNameCC = e.getAttribute("presentationName");
+							}
+							if (e.hasAttribute("briefDescription")){
+								briefDescriptionCC = e.getAttribute("briefDescription");
+							}
+							if (e.hasAttribute("categorizedElements")){
+								categorizedElementsCC = e.getAttribute("categorizedElements");
+							}
+							if (e.hasAttribute("shapeicon")){
+								shapeiconCC = e.getAttribute("shapeicon");
+							}
+							if (e.hasAttribute("nodeicon")){
+								nodeiconCC = e.getAttribute("nodeicon");
+							}
+							res.put(id, new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC));
+						}
+					}
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	public static List<TipoMethodPackage> getElementsXMIProcessPackage(String nomFile){
+		List<TipoMethodPackage> res = new ArrayList<TipoMethodPackage>();
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				List<Node> resNode = obtenerNodosType(nodo, "org.eclipse.epf.uma:ProcessPackage");
+				Iterator<Node> it = resNode.iterator();
+				while (it.hasNext()){
+					Node n = it.next();
+					Element e = (Element) n;
+					String type = "";
+					String id = "";
+					String name = "";
+					String guid = "";
+					List<String> processComponentChild = new ArrayList<String>();
+					if (e.hasAttribute("xsi:type")){
+						type = e.getAttribute("xsi:type");
+					}
+					if (e.hasAttribute("xmi:id")){
+						id = e.getAttribute("xmi:id");
+					}
+					if (e.hasAttribute("name")){
+						name = e.getAttribute("name");
+					}
+					if (e.hasAttribute("guid")){
+						guid = e.getAttribute("guid");
+					}
+					List<Node> child = obtenerHijosNodoType(n, "org.eclipse.epf.uma:ProcessComponent");
+					Iterator<Node> itChild = child.iterator();
+					while (itChild.hasNext()){
+						Element eChild = (Element) itChild.next();
+						if (eChild.hasAttribute("xmi:id")){
+							processComponentChild.add(eChild.getAttribute("xmi:id"));
+						}
+					}
+					
+					res.add(new TipoMethodPackage(type, id, name, guid, processComponentChild));
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 	
 	public static List<Struct> getElementXMI(String nomFile){

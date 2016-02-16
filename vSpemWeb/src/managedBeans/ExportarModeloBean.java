@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -22,6 +23,7 @@ import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dominio.Struct;
  
@@ -50,6 +52,7 @@ public class ExportarModeloBean {
 				TipoContentCategory contentCategory = vb.getContentCategory();
 				TipoContentDescription contentDescription = contentCategory.getContentDescription();
 				TipoMethodConfiguration methodConfiguration = vb.getMethodConfiguration();
+				Map<String, TipoContentCategory> categorizedElementsContent = vb.getCategorizedElements();
 				
 				// <?xml... ?>
 				String versionXML = "1.0";
@@ -91,6 +94,9 @@ public class ExportarModeloBean {
 				String contentCategoryBriefDescription = contentCategory.getBriefDescription();
 				String idProcessView = contentCategory.getId();
 				String contentCategoryPresentationName = contentCategory.getPresentationName();
+				String categorizedElements = contentCategory.getCategorizedElements();
+				String contentCategoryNodeicon = contentCategory.getNodeicon();
+				String contentCategoryShapeicon = contentCategory.getShapeicon();
 				String contentDescriptionName = contentDescription.getName();
 				String contentDescriptionId = contentDescription.getId();
 				String contentDescriptionAutors = contentDescription.getAuthors();
@@ -142,6 +148,7 @@ public class ExportarModeloBean {
 				String textoContentCategory = "";
 				String textoDeliveryProcess = "";
 				String idDeliveryProcess = "";
+				String idCapPattern = "";
 				String texto =
 					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
 					"<uma:MethodLibrary xmlns:xsi=\"" + xmlns_xsi + "\" xmlns:uma=\"" + xmlns_uma + "\" name=\"" + methodLibraryName + "\" briefDescription=\"" + methodLibraryBriefDescription + "\" id=\"" + methodLibraryId + "\" orderingGuide=\"" + methodLibraryOrderingGuide + "\" suppressed=\"" + methodLibrarySuppressed + "\" authors=\"" + methodLibraryAuthors + "\" changeDescription=\"" + methodLibraryChangeDescription + "\" version=\"" + methodLibraryVersion + "\" tool=\"" + methodLibraryTool + "\">" + "\n" +
@@ -166,13 +173,17 @@ public class ExportarModeloBean {
 					  		// ContentCategory
 							idDeliveryProcess = processId;
 							processIds.add(processComponentId);
+							if ((contentDescriptionKeyConsiderations != null) && (!contentDescriptionKeyConsiderations.equals(""))) {
+								contentDescriptionKeyConsiderations = "<![CDATA[" + contentDescriptionKeyConsiderations + "]]>";
+							}
+							
 							textoContentCategory +=
 				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"" + contentCategoryPackageName + "\" id=\"" + contentCategoryId + "\">" + "\n" +
-					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n" +
+					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" nodeicon=\"" + contentCategoryNodeicon + "\" shapeicon=\"" + contentCategoryShapeicon + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n" +
 					  				// "\t\t\t\t<MethodElementProperty name=\"PUBLISH_CATEGORY\" value=\"true\"/>" + "\n" +
 					  				"\t\t\t\t<Presentation name=\"" + contentDescriptionName + "\" briefDescription=\"" + contentDescriptionBriefDescription + "\" id=\"" + contentDescriptionId + "\" orderingGuide=\"" + contentDescriptionOrderingGuide + "\" suppressed=\"" + contentDescriptionSuppressed + "\" authors=\"" + contentDescriptionAutors + "\" changeDate=\"" + contentDescriptionChangeDate + "\" changeDescription=\"" + contentDescriptionChangeDescription + "\" version=\"" + contentDescriptionVersion + "\" externalId=\"" + contentDescriptionExternalId + "\">" + "\n" +
 					  					"\t\t\t\t\t<MainDescription><![CDATA[" + contentDescriptionMainDescription + "]]></MainDescription>" + "\n" +
-					  					"\t\t\t\t\t<KeyConsiderations><![CDATA[" + contentDescriptionKeyConsiderations + "]]></KeyConsiderations>" + "\n" +
+					  					"\t\t\t\t\t<KeyConsiderations>" + contentDescriptionKeyConsiderations + "</KeyConsiderations>" + "\n" +
 					  				"\t\t\t\t</Presentation>" + "\n";
 							
 							textoDeliveryProcess +=
@@ -203,6 +214,7 @@ public class ExportarModeloBean {
 							}
 						}
 						else if (tipo == TipoElemento.CAPABILITY_PATTERN){
+							idCapPattern = (idCapPattern.equals("")) ? processComponentId : idCapPattern;
 							idCapabilityPatterns.add(processId);
 							textoCapabilityPattern +=
 		    				"\t\t<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processComponentId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
@@ -234,14 +246,62 @@ public class ExportarModeloBean {
 					}
 				}
 				
-				texto += textoContentCategory +
-									"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n" +
-								"\t\t\t</ContentCategory>" + "\n" +
-			  					//\t\t\t<ContentCategory ...
-	  						"\t\t</MethodPackage>" + "\n";
+				texto += textoContentCategory;
+				int n = 0;
+				String[] categorizedElementsArray = null;
+				if (categorizedElements.equals("")){
+					texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
+				}
+				else{
+					categorizedElementsArray =	categorizedElements.split(" ");
+					n = categorizedElementsArray.length;
+					for (int i = 0; i < n; i++){
+						texto += 		"\t\t\t\t<CategorizedElement>" + categorizedElementsArray[i] + "</CategorizedElement>" + "\n";
+					}
+				}
+				texto += 		"\t\t\t</ContentCategory>" + "\n";
+				
+				for (int i = 0; i < n; i++){
+					String key = categorizedElementsArray[i];
+					TipoContentCategory element = categorizedElementsContent.get(key);
+					if (element != null){
+						texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + element.getPresentationName() + "\" nodeicon=\"" + element.getNodeicon() + "\" shapeicon=\"" + element.getShapeicon() + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+						String categorizedElementsE = element.getCategorizedElements();
+						if (categorizedElementsE.equals("")){
+							texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
+						}
+						else{
+							String[] categorizedElementsEA = categorizedElementsE.split(" ");
+							int nEA = categorizedElementsEA.length;
+							for (int j = 0; j < nEA; j++){
+								texto += 	"\t\t\t\t<CategorizedElement>" + categorizedElementsEA[j] + "</CategorizedElement>" + "\n";
+							}
+						}
+						texto +=	"\t\t\t</ContentCategory>" + "\n";
+					}
+				}
+				
+				texto += 	"\t\t</MethodPackage>" + "\n";
 			
 				if (textoCapabilityPattern != ""){
+					List<TipoMethodPackage> processPackages = vb.getProcessPackages();
+					// Busco el "padre" de los capabilityPatterns, si los hay
+					Iterator<TipoMethodPackage> iter = processPackages.iterator();
+					TipoMethodPackage pack = null;
+					while (iter.hasNext() && (pack == null)){
+						TipoMethodPackage processPackage = iter.next();
+						if (processPackage.getProcessComponentChild().contains(idCapPattern)){
+							pack = processPackage; 
+						}
+					}
+					if (pack != null){
+						texto += "\t<MethodPackage xsi:type=\"uma:ProcessPackage\" name=\"" + pack.getName() + "\" briefDescription=\"\" id=\"" + pack.getId() + "\" orderingGuide=\"\" suppressed=\"false\" global=\"false\">" + "\n";
+						processIds.add(pack.getId());
+					}
 					texto += textoCapabilityPattern;
+					if (pack != null){
+						texto += "\t</MethodPackage>" + "\n";
+					}
 				}
 				
 				if (textoDeliveryProcess != ""){

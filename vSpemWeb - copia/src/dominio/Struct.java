@@ -30,10 +30,15 @@ public class Struct {
     private List<String> optionalInputs;
     private List<String> externalInputs;
     private List<String> outputs;
-   
-    
+    private List<String> responsableDe;
+    private List<String> modifica;
+    private List<String> linkToPredecessor;
+    private String processComponentId;
+	private String processComponentName;
+	private String presentationId;
+	private String elementIDExtends;
 
-	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen){
+	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
 		this.nombre = nombre;
 		this.type = type;
@@ -60,7 +65,13 @@ public class Struct {
 		this.optionalInputs = null;
 		this.externalInputs = null;
 		this.outputs = null;
-				
+		this.responsableDe = null;
+		this.modifica = null;
+		this.linkToPredecessor = null;
+		this.processComponentId = processComponentId;
+		this.processComponentName = processComponentName;
+		this.presentationId = presentationId;
+		this.elementIDExtends = elementIDExtends;
 	}
 
 	public String getElementID() {
@@ -222,7 +233,61 @@ public class Struct {
 	public void setOutputs(List<String> outputs) {
 		this.outputs = outputs;
 	}
+
+	public List<String> getResponsableDe() {
+		return responsableDe;
+	}
+
+	public void setResponsableDe(List<String> responsableDe) {
+		this.responsableDe = responsableDe;
+	}
+
+	public List<String> getModifica() {
+		return modifica;
+	}
+
+	public void setModifica(List<String> modifica) {
+		this.modifica = modifica;
+	}
+
+	public List<String> getLinkToPredecessor() {
+		return linkToPredecessor;
+	}
+
+	public void setLinkToPredecessor(List<String> linkToPredecessor) {
+		this.linkToPredecessor = linkToPredecessor;
+	}
 	
-	
+    public String getProcessComponentId() {
+		return processComponentId;
+	}
+
+	public void setProcessComponentId(String processComponentId) {
+		this.processComponentId = processComponentId;
+	}
+
+	public String getProcessComponentName() {
+		return processComponentName;
+	}
+
+	public void setProcessComponentName(String processComponentName) {
+		this.processComponentName = processComponentName;
+	}
+
+	public String getPresentationId() {
+		return presentationId;
+	}
+
+	public void setPresentationId(String presentationId) {
+		this.presentationId = presentationId;
+	}
+
+	public String getElementIDExtends() {
+		return elementIDExtends;
+	}
+
+	public void setElementIDExtends(String elementIDExtends) {
+		this.elementIDExtends = elementIDExtends;
+	}
 
 }

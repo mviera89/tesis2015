@@ -1,3 +1,0 @@
-eclipse.preferences.version=1
-module-start-timeout=300000
-runtimes=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<runtimes>\r\n  <runtime PROPERTY_EXEC_ENVIRONMENT\="JavaSE-1.6" id\="jboss-eap Runtime (2)" location\="C\:/Users/Fabiana/jbdevstudio/runtimes/jboss-eap" name\="jboss-eap Runtime (2)" org.jboss.ide.eclipse.as.core.runtime.configurationName\="" runtime-type-id\="org.jboss.ide.eclipse.as.runtime.eap.61" timestamp\="0"/>\r\n</runtimes>\r\n
