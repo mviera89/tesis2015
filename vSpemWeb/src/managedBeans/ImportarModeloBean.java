@@ -47,15 +47,9 @@ public class ImportarModeloBean {
 	private String repositorio = "";
 	private String nombreArchivo = "";
 	private List<String> archivosDisponibles = new ArrayList<String>();
-	private String dirPlugin;
-	private String dirDeliveryProcess;
-	private String dirCustomCategories;
 
 	@PostConstruct
 	public void init(){
-		dirPlugin = "";
-		dirDeliveryProcess = "";
-		dirCustomCategories = "";
 	}
 	
 	public String getMensajeAyudaRepositorio() {
@@ -96,30 +90,6 @@ public class ImportarModeloBean {
 
 	public void setArchivosDisponibles(List<String> archivosDisponibles) {
 		this.archivosDisponibles = archivosDisponibles;
-	}
-
-	public String getDirPlugin() {
-		return dirPlugin;
-	}
-
-	public void setDirPlugin(String dirPlugin) {
-		this.dirPlugin = dirPlugin;
-	}
-
-	public String getDirDeliveryProcess() {
-		return dirDeliveryProcess;
-	}
-
-	public void setDirDeliveryProcess(String dirDeliveryProcess) {
-		this.dirDeliveryProcess = dirDeliveryProcess;
-	}
-
-	public String getDirCustomCategories() {
-		return dirCustomCategories;
-	}
-
-	public void setDirCustomCategories(String dirCustomCategories) {
-		this.dirCustomCategories = dirCustomCategories;
 	}
 
 	/*** CARGA REMOTA DE ARCHIVOS ***/
@@ -210,57 +180,79 @@ public class ImportarModeloBean {
 					String archivoPlugin = urlPlugin;
 					// archivoPlugin puede ser de la forma: dir1/dir2/.../nombre
 					int indexDiv = archivoPlugin.indexOf("/");
+					String dirPlugin = "";
 					while (indexDiv != -1){
 						String dir = archivoPlugin.substring(0, indexDiv);
 						archivoPlugin = archivoPlugin.substring(indexDiv + 1, archivoPlugin.length());
 						indexDiv = archivoPlugin.indexOf("/");
 						dirPlugin += dir + "/";
 					}
-					TipoPlugin plugin = cargarArchivoPluginRepositorio(archivoPlugin);
+					TipoPlugin plugin = cargarArchivoPluginRepositorio(dirPlugin, archivoPlugin);
 					List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(archivoPlugin);
 					
+					// Cargo los datos del method plugin en vistaBean 
+					FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+					HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+					VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+					vb.setLibrary(library);
+					vb.setPlugin(plugin);
+			        vb.setMethodConfiguration(methodConfiguration);
+			        vb.setProcessPackages(processPackages);
+			        
+//			        parsearDatosPlugin(plugin, archivoPlugin);
+			        
 					if (plugin != null){
+						// Si hay una linea de procesos definida => La parseo
+						String lineProcessDir = plugin.getLineProcessDir();
+						if (lineProcessDir != null){
+							String archivoLP = lineProcessDir;
+							// lineProcessDir puede ser de la forma: dir1/dir2/.../nombre
+							indexDiv = archivoLP.indexOf("/");
+							String dirLineProcess = "";
+							while (indexDiv != -1){
+								String dir = archivoLP.substring(0, indexDiv);
+								archivoLP = archivoLP.substring(indexDiv + 1, archivoLP.length());
+								indexDiv = archivoLP.indexOf("/");
+								dirLineProcess += dir + "/";
+							}
+							TipoPlugin modelLineProcess = cargarLineProcessRepositorio(dirPlugin, dirLineProcess, archivoLP);
+							parsearDatosPlugin(dirPlugin, dirLineProcess, modelLineProcess, archivoLP);
+						}
 						String deliveryProcessDir = plugin.getDeliveryProcessDir();
 						if (deliveryProcessDir != null){
 							String archivoDP = deliveryProcessDir;
 							// deliveryProcessDir puede ser de la forma: dir1/dir2/.../nombre
 							indexDiv = archivoDP.indexOf("/");
+							String dirDeliveryProcess = "";
 							while (indexDiv != -1){
 								String dir = archivoDP.substring(0, indexDiv);
 								archivoDP = archivoDP.substring(indexDiv + 1, archivoDP.length());
 								indexDiv = archivoDP.indexOf("/");
 								dirDeliveryProcess += dir + "/";
 							}
-							cargarDeliveryProcessRepositorio(archivoDP);
+							cargarDeliveryProcessRepositorio(dirPlugin, null, dirDeliveryProcess, archivoDP);
 							
 							String customCategoriesDir = plugin.getCustomCategoriesDir();
 							if (customCategoriesDir != null){
 								String archivoCC = customCategoriesDir;
 								// customCategoriesDir puede ser de la forma: dir1/dir2/.../nombre
 								indexDiv = archivoCC.indexOf("/");
+								String dirCustomCategories = "";
 								while (indexDiv != -1){
 									String dir = archivoCC.substring(0, indexDiv);
 									archivoCC = archivoCC.substring(indexDiv + 1, archivoCC.length());
 									indexDiv = archivoCC.indexOf("/");
 									dirCustomCategories += dir + "/";
 								}
-								TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(archivoCC, archivoPlugin);
+								TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(dirPlugin, dirCustomCategories, archivoCC, archivoPlugin);
 								
 								Map<String, TipoContentCategory> categorizedElements = null;
 								if (contentCategory != null){
 									categorizedElements = cargarCategorizedElementsRepositorio(archivoPlugin, contentCategory.getCategorizedElements());
 								}
 								
-								// Cargo los datos del method plugin en vistaBean 
-								FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-								HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-								VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
-								vb.setLibrary(library);
-						        vb.setPlugin(plugin);
 						        vb.setContentCategory(contentCategory);
-						        vb.setMethodConfiguration(methodConfiguration);
 						        vb.setCategorizedElements(categorizedElements);
-						        vb.setProcessPackages(processPackages);
 							}
 							else{
 								/*****************/
@@ -291,6 +283,63 @@ public class ImportarModeloBean {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void parsearDatosPlugin(String dirPlugin, String dirLineProcess, TipoPlugin plugin, String archivoPlugin) throws Exception{
+		if (plugin != null){
+			int indexDiv = 0;
+			// Si hay una linea de procesos definida => La parseo
+			String lineProcessDir = plugin.getLineProcessDir();
+			if (lineProcessDir != null){
+				String archivoLP = lineProcessDir;
+				// lineProcessDir puede ser de la forma: dir1/dir2/.../nombre
+				indexDiv = archivoLP.indexOf("/");
+				while (indexDiv != -1){
+					String dir = archivoLP.substring(0, indexDiv);
+					archivoLP = archivoLP.substring(indexDiv + 1, archivoLP.length());
+					indexDiv = archivoLP.indexOf("/");
+					dirLineProcess += dir + "/";
+				}
+				TipoPlugin modelLineProcess = cargarLineProcessRepositorio(dirPlugin, dirLineProcess, archivoLP);
+				parsearDatosPlugin(dirPlugin, dirLineProcess, modelLineProcess, archivoLP);
+			}
+			String deliveryProcessDir = plugin.getDeliveryProcessDir();
+			if (deliveryProcessDir != null){
+				String archivoDP = deliveryProcessDir;
+				// deliveryProcessDir puede ser de la forma: dir1/dir2/.../nombre
+				indexDiv = archivoDP.indexOf("/");
+				String dirDeliveryProcess = "";
+				while (indexDiv != -1){
+					String dir = archivoDP.substring(0, indexDiv);
+					archivoDP = archivoDP.substring(indexDiv + 1, archivoDP.length());
+					indexDiv = archivoDP.indexOf("/");
+					dirDeliveryProcess += dir + "/";
+				}
+				cargarDeliveryProcessRepositorio(dirPlugin, dirLineProcess, dirDeliveryProcess, archivoDP);
+			}
+			String customCategoriesDir = plugin.getCustomCategoriesDir();
+			TipoContentCategory contentCategory = null;
+			Map<String, TipoContentCategory> categorizedElements = null;
+			if (customCategoriesDir != null){
+				String archivoCC = customCategoriesDir;
+				// customCategoriesDir puede ser de la forma: dir1/dir2/.../nombre
+				indexDiv = archivoCC.indexOf("/");
+				String dirCustomCategories = "";
+				while (indexDiv != -1){
+					String dir = archivoCC.substring(0, indexDiv);
+					archivoCC = archivoCC.substring(indexDiv + 1, archivoCC.length());
+					indexDiv = archivoCC.indexOf("/");
+					dirCustomCategories += dir + "/";
+				}
+				contentCategory = cargarCustomCategoriesRepositorio(dirPlugin, dirLineProcess + dirCustomCategories, archivoCC, archivoPlugin);
+				
+				if (contentCategory != null){
+					categorizedElements = cargarCategorizedElementsRepositorio(archivoPlugin, contentCategory.getCategorizedElements());
+				}
+			}
+		}
+		else{
 		}
 	}
 
@@ -413,7 +462,7 @@ public class ImportarModeloBean {
 		return null;
 	}
 	
-	public TipoPlugin cargarArchivoPluginRepositorio(String archivoPlugin){
+	public TipoPlugin cargarArchivoPluginRepositorio(String dirPlugin, String archivoPlugin){
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
 		int index = repositorio.indexOf("blob/");
 		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
@@ -456,15 +505,51 @@ public class ImportarModeloBean {
 		}
 		return null;		
 	}
-	
-	public void cargarDeliveryProcessRepositorio(String archivoDP) throws Exception {
+
+	public TipoPlugin cargarLineProcessRepositorio(String dirPlugin, String dirLineProcess, String archivoLP) throws Exception {
+		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+		int index = repositorio.indexOf("blob/");
+		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirLineProcess + archivoLP);
+		
+		try{
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirLineProcess + archivoLP);
+			URLConnection urlCon = url.openConnection();
+			
+			InputStream is = urlCon.getInputStream();
+			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoLP);
+			byte [] array = new byte[1000];
+			int leido = is.read(array);
+			while (leido > 0) {
+			   fos.write(array, 0, leido);
+			   leido = is.read(array);
+			}
+			is.close();
+			
+			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoLP);
+		}
+		catch (FileNotFoundException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoLP + "'.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (IOException e){
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void cargarDeliveryProcessRepositorio(String dirPlugin, String dirLineProcess, String dirDP, String archivoDP) throws Exception {
 		nombreArchivo = archivoDP;
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
 		int index = repositorio.indexOf("blob/");
 		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirDeliveryProcess + archivoDP);
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + (dirLineProcess != null ? dirLineProcess + dirDP : dirDP) + archivoDP);
 		
-		URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirDeliveryProcess + archivoDP);
+		URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + (dirLineProcess != null ? dirLineProcess + dirDP : dirDP) + archivoDP);
 		URLConnection urlCon = url.openConnection();
 		
 		InputStream is = urlCon.getInputStream();
@@ -483,7 +568,7 @@ public class ImportarModeloBean {
 		Iterator<Struct> it = nodos.iterator();
 		while (it.hasNext()){
 			Struct nodo = it.next();
-			cargarCapabilityPatternsRepositorio(archivoDP, nodo);
+			cargarCapabilityPatternsRepositorio(dirPlugin, dirLineProcess, archivoDP, nodo);
 		}
 		
 		fos.close();
@@ -498,14 +583,14 @@ public class ImportarModeloBean {
         vb.setRepositorio(repositorio);
 	}
 	
-	public TipoContentCategory cargarCustomCategoriesRepositorio(String archivoCC, String archivoPlugin){
+	public TipoContentCategory cargarCustomCategoriesRepositorio(String dirPlugin, String dirCC, String archivoCC, String archivoPlugin){
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
 		int index = repositorio.indexOf("blob/");
 		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCustomCategories + archivoCC);
+		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCC + archivoCC);
 		
 		try{
-			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCustomCategories + archivoCC);
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dirPlugin + dirCC + archivoCC);
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
@@ -538,12 +623,12 @@ public class ImportarModeloBean {
 		return null;
 	}
 
-	public void cargarCapabilityPatternsRepositorio(String nombreArchivo, Struct nodo) throws Exception {
+	public void cargarCapabilityPatternsRepositorio(String dirPlugin, String dirLineProcess, String nombreArchivo, Struct nodo) throws Exception {
 		if (nodo.getType() == TipoElemento.CAPABILITY_PATTERN){
 			String fileCapabilityPattern = Constantes.nomArchivoDownload; // model.xmi
 			String nombreArchivoCapabilityPattern = nombreArchivo.substring(0, nombreArchivo.length() - 4) + "_" + nodo.getNombre().replace(" ", "_") + ".xmi";
 			String nameCapabilityPatterns = nodo.getNombre().replace(" ", "%20");
-			String repoCapabilityPatterns = repositorio + dirPlugin + "capabilitypatterns/" + nameCapabilityPatterns + "/";
+			String repoCapabilityPatterns = repositorio + dirPlugin + (dirLineProcess != null ? dirLineProcess : "") + "capabilitypatterns/" + nameCapabilityPatterns + "/";
 			
 			int index = repoCapabilityPatterns.indexOf("blob/");
 			String urlDescargar = (index != -1) ? repoCapabilityPatterns.replace("blob/", "") : repoCapabilityPatterns.concat("master/");
@@ -565,7 +650,7 @@ public class ImportarModeloBean {
 		}
 		Iterator<Struct> it = nodo.getHijos().iterator();
 		while (it.hasNext()){
-			cargarCapabilityPatternsRepositorio(nombreArchivo, it.next());
+			cargarCapabilityPatternsRepositorio(dirPlugin, dirLineProcess, nombreArchivo, it.next());
 		}
 	}
 

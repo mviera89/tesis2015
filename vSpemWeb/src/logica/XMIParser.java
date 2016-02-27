@@ -145,6 +145,7 @@ public class XMIParser {
 	        Document doc = dBuilder.parse(inputFile);
 	        doc.getDocumentElement().normalize();
 
+	        String lineProcessDir = null;
 	        String deliveryProcessDir = null;
 	        String customCategoriesDir = null;
 	        NodeList nodosResource = doc.getElementsByTagName("org.eclipse.epf.uma.resourcemanager:ResourceManager");
@@ -153,7 +154,7 @@ public class XMIParser {
 				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
 					NodeList childNodes = nodo.getChildNodes();
 					int i = 0;
-					while ((i < childNodes.getLength()) && ((deliveryProcessDir == null) || (customCategoriesDir == null))){
+					while ((i < childNodes.getLength()) && ((lineProcessDir == null) || (deliveryProcessDir == null) || (customCategoriesDir == null))){
 						Node child = childNodes.item(i);
 						if (child.getNodeType() == Node.ELEMENT_NODE) {
 							if (child.getNodeName().equals("resourceDescriptors")){
@@ -164,7 +165,10 @@ public class XMIParser {
 										int indexDiv = uri.indexOf("/");
 										if (indexDiv != -1){
 											String dir = uri.substring(0, indexDiv);
-											if (dir.equals("deliveryprocesses")){
+											if (dir.equals("lineprocess")){
+												lineProcessDir = uri;
+											}
+											else if (dir.equals("deliveryprocesses")){
 												deliveryProcessDir = uri;
 											}
 											else if (dir.equals("customcategories")){
@@ -180,20 +184,19 @@ public class XMIParser {
 				}
 	        }
 	        
-	        
+			String id = "";
+			String name = "";
+			String guid = "";
+			String briefDescription = "";
+			String authors = ""; 
+			String changeDate = "";
+			String changeDescription = "";
+			String version = "";
 	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
         	if (nodos.getLength() > 0){
         		int temp = 0;
 				Node nodo = nodos.item(temp);
 				Element eHijo = (Element) nodo;
-				String id = "";
-				String name = "";
-				String guid = "";
-				String briefDescription = "";
-				String authors = ""; 
-				String changeDate = "";
-				String changeDescription = "";
-				String version = "";
 				if (eHijo.hasAttribute("xmi:id")){
 					id = eHijo.getAttribute("xmi:id");
 				}
@@ -220,9 +223,8 @@ public class XMIParser {
 				if (eHijo.hasAttribute("version")){
 					version = eHijo.getAttribute("version");
 				}
-				
-				return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, deliveryProcessDir, customCategoriesDir);
         	}
+        	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, lineProcessDir, deliveryProcessDir, customCategoriesDir);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1268,7 +1270,7 @@ public class XMIParser {
 		while (it.hasNext()){
 			Struct hijo = it.next();
 			if(hijo.getElementID().equals(padre)){
-				return hijo;       			
+				return hijo;
         	}
 			else {
 				return buscoEnHijos(hijo,padre);
@@ -1320,7 +1322,7 @@ public class XMIParser {
     						else {
     							List<String> lista = new ArrayList<String>();
     							lista.add(s.getElementID());
-    							predS.setSucesores(lista);    							
+    							predS.setSucesores(lista);
     						}
     						if (!result.contains(predS)){
     							if (!result.contains(s)){

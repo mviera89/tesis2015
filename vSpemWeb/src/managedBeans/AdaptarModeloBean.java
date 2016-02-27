@@ -435,15 +435,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOptionalInputs.containsKey(s.getNombre())){
-			        				/*Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPOptionalInputs.get(s.getNombre()).add(wp);
-			        				}*/
 			        				List<String> idsWps = tareasWPOptionalInputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -463,15 +454,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPExternalInputs.containsKey(s.getNombre())){
-			        				/*Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
-			        				boolean fin = false;
-			        				while (itWP.hasNext() && !fin){
-			        					String st = itWP.next();
-			        					fin = (st.equals(s.getElementID()));
-			        				}
-			        				if (!fin){ // La tarea no está => La agrego
-			        					tareasWPExternalInputs.get(s.getNombre()).add(wp);
-			        				}*/
 			        				List<String> idsWps = tareasWPExternalInputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -491,17 +473,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOutputs.containsKey(s.getNombre())){
-			        				/*if (tareasWPOutputs.get(wp) != null){
-				        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
-				        				boolean fin = false;
-				        				while (itWP.hasNext() && !fin){
-				        					String st = itWP.next();
-				        					fin = (st.equals(s.getElementID()));
-				        				}
-				        				if (!fin){ // La tarea no está => La agrego
-				        					tareasWPOutputs.get(s.getNombre()).add(wp);
-				        				}
-			        				}*/
 			        				List<String> idsWps = tareasWPOutputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -742,17 +713,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOptionalInputs.containsKey(s.getNombre())){
-			        				/*if (tareasWPOptionalInputs.get(wp) != null){
-				        				Iterator<String> itWP = tareasWPOptionalInputs.get(wp).iterator();
-				        				boolean fin = false;
-				        				while (itWP.hasNext() && !fin){
-				        					String st = itWP.next();
-				        					fin = (st.equals(s.getElementID()));
-				        				}
-				        				if (!fin){ // La tarea no está => La agrego
-				        					tareasWPOptionalInputs.get(s.getNombre()).add(wp);
-				        				}
-			        				}*/
 			        				List<String> idsWps = tareasWPOptionalInputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -771,17 +731,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPExternalInputs.containsKey(s.getNombre())){
-			        				/*if (tareasWPExternalInputs.get(wp) != null){
-				        				Iterator<String> itWP = tareasWPExternalInputs.get(wp).iterator();
-				        				boolean fin = false;
-				        				while (itWP.hasNext() && !fin){
-				        					String st = itWP.next();
-				        					fin = (st.equals(s.getElementID()));
-				        				}
-				        				if (!fin){ // La tarea no está => La agrego
-				        					tareasWPExternalInputs.get(s.getNombre()).add(wp);
-				        				}
-			        				}*/
 			        				List<String> idsWps = tareasWPExternalInputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -800,17 +749,6 @@ public class AdaptarModeloBean {
 		        			while (it1.hasNext()){
 		        				String wp = it1.next();
 			        			if (tareasWPOutputs.containsKey(s.getNombre())){
-			        				/*if (tareasWPOutputs.get(wp) != null){
-				        				Iterator<String> itWP = tareasWPOutputs.get(wp).iterator();
-				        				boolean fin = false;
-				        				while (itWP.hasNext() && !fin){
-				        					String st = itWP.next();
-				        					fin = (st.equals(s.getElementID()));
-				        				}
-				        				if (!fin){ // La tarea no está => La agrego
-				        					tareasWPOutputs.get(s.getNombre()).add(wp);
-				        				}
-			        				}*/
 			        				List<String> idsWps = tareasWPOutputs.get(s.getNombre());
 			        				// Si el wp no está => Lo agrego
 			        				if (!idsWps.contains(wp)){
@@ -1041,7 +979,7 @@ public class AdaptarModeloBean {
 	public void actualizarVariantesParaPV(){
 		String clave = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 		this.puntosDeVariacion.put(clave, this.variantesSeleccionadas);
-		this.restriccionesPV.replace(clave, ""); // Si estoy agregando las variantes es porque cumple las restricciones
+		this.restriccionesPV.put(clave, ""); //.replace(clave, ""); // Si estoy agregando las variantes es porque cumple las restricciones
 	}
 
 	/*** Modelo roles-tareas ***/
@@ -1257,7 +1195,7 @@ public class AdaptarModeloBean {
     	float y = 0;
     	// Para cada wp lo busco y lo agrego
     	Iterator<String> itWP = wps.iterator();
-    	List<String> wpAgregados = new ArrayList<String>(); 
+    	List<String> wpAgregados = new ArrayList<String>();
     	while (itWP.hasNext()){
     		String wp = itWP.next();
     		Struct wpS = buscarWP(wp, nodos);

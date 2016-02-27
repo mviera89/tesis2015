@@ -6,15 +6,16 @@ public class TipoPlugin {
 	private String name;
 	private String guid;
 	private String briefDescription;
-	private String authors; 
+	private String authors;
 	private String changeDate;
 	private String changeDescription;
 	private String version;
+	private String lineProcessDir;
 	private String deliveryProcessDir;
 	private String customCategoriesDir;
 
 	public TipoPlugin(String id, String name, String guid, String briefDescription, String authors, String changeDate, String changeDescription, String version, 
-					  String deliveryProcessDir, String customCategoriesDir) {
+					  String lineProcessDir, String deliveryProcessDir, String customCategoriesDir) {
 		this.id = id;
 		this.name = name;
 		this.guid = guid;
@@ -23,6 +24,7 @@ public class TipoPlugin {
 		this.changeDate = changeDate;
 		this.changeDescription = changeDescription;
 		this.version = version;
+		this.lineProcessDir = lineProcessDir;
 		this.deliveryProcessDir = deliveryProcessDir;
 		this.customCategoriesDir = customCategoriesDir;
 	}
@@ -89,6 +91,14 @@ public class TipoPlugin {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getLineProcessDir() {
+		return lineProcessDir;
+	}
+
+	public void setLineProcessDir(String lineProcessDir) {
+		this.lineProcessDir = lineProcessDir;
 	}
 
 	public String getDeliveryProcessDir() {
