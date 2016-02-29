@@ -1,5 +1,6 @@
 package managedBeans;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -260,7 +261,11 @@ public class AdaptarModeloBean {
 		if ((vb != null) && (!vb.getNombreArchivo().isEmpty())){
 			String nomArchivo = Constantes.destinoDescargas + vb.getNombreArchivo();
 		   	this.nodos = XMIParser.getElementXMI(nomArchivo);
-		   	
+		   	// Luego de parsear el proceso elimino el archivo
+		   	File f = new File(nomArchivo);
+		   	if (f.isFile()){
+		   		f.delete();
+		   	}
 		   	/*** Creo el modelo con los nodos obtenidos del archivo ***/
 		   	
 	    	FlowChartConnector conector = new FlowChartConnector();

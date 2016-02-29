@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
 import dataTypes.TipoElemento;
@@ -33,8 +34,8 @@ public class XMIParser {
 	public static Object[] getElementsXMIResource(String nomFile){
 		String uriPlugin = null;
 		TipoLibrary library = null;
+		File inputFile = new File(nomFile);
 		try{
-			File inputFile = new File(nomFile);
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	        Document doc = dBuilder.parse(inputFile);
@@ -96,13 +97,14 @@ public class XMIParser {
 			e.printStackTrace();
 		}
 		Object[] res = {uriPlugin, library};
+		inputFile.delete();
 		return res;
 		 
 	}
 	
 	public static TipoMethodConfiguration getElementsXMIConfigurations(String nomFile){
+		File inputFile = new File(nomFile);
 		try{
-			File inputFile = new File(nomFile);
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	        Document doc = dBuilder.parse(inputFile);
@@ -127,6 +129,7 @@ public class XMIParser {
 					if (eNodo.hasAttribute("briefDescription")){
 						briefDescription = eNodo.getAttribute("briefDescription");
 					}
+					inputFile.delete();
 					return new TipoMethodConfiguration(id, name, briefDescription);
 				}
         	}
@@ -134,6 +137,7 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		inputFile.delete();
 		return null;
 	}
 	
@@ -147,6 +151,7 @@ public class XMIParser {
 
 	        String lineProcessDir = null;
 	        String deliveryProcessDir = null;
+	        List<String> capabilityPatternsDir = new ArrayList<String>();
 	        String customCategoriesDir = null;
 	        NodeList nodosResource = doc.getElementsByTagName("org.eclipse.epf.uma.resourcemanager:ResourceManager");
 	        if (nodosResource.getLength() > 0){
@@ -154,7 +159,7 @@ public class XMIParser {
 				if (nodo.getNodeType() == Node.ELEMENT_NODE) {
 					NodeList childNodes = nodo.getChildNodes();
 					int i = 0;
-					while ((i < childNodes.getLength()) && ((lineProcessDir == null) || (deliveryProcessDir == null) || (customCategoriesDir == null))){
+					while (i < childNodes.getLength()){
 						Node child = childNodes.item(i);
 						if (child.getNodeType() == Node.ELEMENT_NODE) {
 							if (child.getNodeName().equals("resourceDescriptors")){
@@ -170,6 +175,9 @@ public class XMIParser {
 											}
 											else if (dir.equals("deliveryprocesses")){
 												deliveryProcessDir = uri;
+											}
+											else if (dir.equals("capabilitypatterns")){
+												capabilityPatternsDir.add(uri);
 											}
 											else if (dir.equals("customcategories")){
 												customCategoriesDir = uri;
@@ -224,7 +232,7 @@ public class XMIParser {
 					version = eHijo.getAttribute("version");
 				}
         	}
-        	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, lineProcessDir, deliveryProcessDir, customCategoriesDir);
+        	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, lineProcessDir, deliveryProcessDir, capabilityPatternsDir, customCategoriesDir);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -384,8 +392,8 @@ public class XMIParser {
 	}
 	
 	public static TipoContentDescription getElementsXMICustomCategories(String nomFile){
+		File inputFile = new File(nomFile);
 		try{
-			File inputFile = new File(nomFile);
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	        Document doc = dBuilder.parse(inputFile);
@@ -464,6 +472,7 @@ public class XMIParser {
 						i++;
 					}
 					
+					inputFile.delete();
 					return new TipoContentDescription(xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, authors, changeDate, changeDescription, version, mainDescription, keyConsiderations);
 				}
         	}
@@ -471,13 +480,14 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		inputFile.delete();
 		return null;
 	}
 	
 	public static Map<String, TipoContentCategory> getElementsXMICategorizedElements(String nomFile, String[] categorizedElementsArray){
 		Map<String, TipoContentCategory> res = new HashMap<String, TipoContentCategory>();
+		File inputFile = new File(nomFile);
 		try{
-			File inputFile = new File(nomFile);
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	        Document doc = dBuilder.parse(inputFile);
@@ -542,6 +552,7 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		inputFile.delete();
 		return res;
 	}
 	
@@ -945,7 +956,8 @@ public class XMIParser {
 							}
 						}
 					}
-	      		    
+	      		    inputFile.delete();
+					
 	      		    if (h != null){
 						boolean tienePadre = false;
 						if (eHijo.hasAttribute("superActivities") &&

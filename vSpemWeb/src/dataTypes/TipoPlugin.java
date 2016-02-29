@@ -1,5 +1,7 @@
 package dataTypes;
 
+import java.util.List;
+
 public class TipoPlugin {
 
 	private String id;
@@ -12,10 +14,11 @@ public class TipoPlugin {
 	private String version;
 	private String lineProcessDir;
 	private String deliveryProcessDir;
+	private List<String> capabilityPatternsDir;
 	private String customCategoriesDir;
 
 	public TipoPlugin(String id, String name, String guid, String briefDescription, String authors, String changeDate, String changeDescription, String version, 
-					  String lineProcessDir, String deliveryProcessDir, String customCategoriesDir) {
+					  String lineProcessDir, String deliveryProcessDir, List<String> capabilityPatternsDir, String customCategoriesDir) {
 		this.id = id;
 		this.name = name;
 		this.guid = guid;
@@ -26,6 +29,7 @@ public class TipoPlugin {
 		this.version = version;
 		this.lineProcessDir = lineProcessDir;
 		this.deliveryProcessDir = deliveryProcessDir;
+		this.capabilityPatternsDir = capabilityPatternsDir;
 		this.customCategoriesDir = customCategoriesDir;
 	}
 
@@ -107,6 +111,14 @@ public class TipoPlugin {
 
 	public void setDeliveryProcessDir(String deliveryProcessDir) {
 		this.deliveryProcessDir = deliveryProcessDir;
+	}
+
+	public List<String> getCapabilityPatternsDir() {
+		return capabilityPatternsDir;
+	}
+
+	public void setCapabilityPatternsDir(List<String> capabilityPatternsDir) {
+		this.capabilityPatternsDir = capabilityPatternsDir;
 	}
 
 	public String getCustomCategoriesDir() {
