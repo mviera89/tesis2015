@@ -23,6 +23,7 @@ public class Struct {
     private String etiqueta; // Si es opcional, obligatorio, etc.
 
 	private String description;
+	private String briefDescription;
     private String presentationName;
     private String performedPrimaryBy;
     private List<String> performedAditionallyBy;
@@ -178,6 +179,14 @@ public class Struct {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getBriefDescription() {
+		return briefDescription;
+	}
+
+	public void setBriefDescription(String briefDescription) {
+		this.briefDescription = briefDescription;
 	}
 
 	public String getPresentationName() {

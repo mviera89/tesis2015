@@ -1,6 +1,7 @@
 package logica;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,11 +12,13 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import config.Constantes;
 import dataTypes.TipoContentCategory;
@@ -152,6 +155,9 @@ public class XMIParser {
 	        String lineProcessDir = null;
 	        String deliveryProcessDir = null;
 	        List<String> capabilityPatternsDir = new ArrayList<String>();
+	        List<String> tasksDir = new ArrayList<String>();
+	        List<String> workproductsDir = new ArrayList<String>();
+	        List<String> guidancesDir = new ArrayList<String>();
 	        String customCategoriesDir = null;
 	        NodeList nodosResource = doc.getElementsByTagName("org.eclipse.epf.uma.resourcemanager:ResourceManager");
 	        if (nodosResource.getLength() > 0){
@@ -181,6 +187,15 @@ public class XMIParser {
 											}
 											else if (dir.equals("customcategories")){
 												customCategoriesDir = uri;
+											}
+											else if (dir.equals("tasks")){
+												tasksDir.add(uri);
+											}
+											else if (dir.equals("workproducts")){
+												workproductsDir.add(uri);
+											}
+											else if (dir.equals("guidances")){
+												guidancesDir.add(uri);
 											}
 										}
 									}
@@ -232,7 +247,8 @@ public class XMIParser {
 					version = eHijo.getAttribute("version");
 				}
         	}
-        	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, lineProcessDir, deliveryProcessDir, capabilityPatternsDir, customCategoriesDir);
+        	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version, 
+        						  lineProcessDir, deliveryProcessDir, capabilityPatternsDir, customCategoriesDir, tasksDir, workproductsDir, guidancesDir);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -552,7 +568,7 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		inputFile.delete();
+		//inputFile.delete();
 		return res;
 	}
 	
@@ -940,6 +956,52 @@ public class XMIParser {
 							}
 							
 							workProducts.put(h,lwp);
+							
+							boolean salir = false;
+							NodeList hijos = nodo.getChildNodes();
+							//for (int i = 0; i < hijos.getLength(); i++){
+							int i = 0;
+							while ((i < hijos.getLength()) && !salir){
+								Node nodoHijo= hijos.item(i);
+								if (nodoHijo.getNodeType() == Node.ELEMENT_NODE) {
+									if (nodoHijo.getNodeName().equals("Task")){
+										Element eNodoHijo = (Element) nodoHijo;
+										
+										String href = "";
+										if (eNodoHijo.hasAttribute("href")){
+											href = eNodoHijo.getAttribute("href");
+											int index = href.indexOf("#");
+											href = href.substring(index + 1, href.length());
+										}
+										
+										File pluginFile = new File(Constantes.destinoDescargas + "plugin.xmi");
+								        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+										try {
+											DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+											Document doc = dBuilder.parse(pluginFile);
+									        doc.getDocumentElement().normalize();
+									        
+									        NodeList nodosMethodPlugin = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+								        	if (nodosMethodPlugin.getLength() > 0){
+												Node resNode = obtenerNodoId(nodosMethodPlugin.item(0), href);
+												// Si encontré el id que buscaba
+												if (resNode != null){
+													Element e = (Element) resNode;
+													if (e.hasAttribute("briefDescription")){
+														String briefDescription = e.getAttribute("briefDescription");
+														h.setBriefDescription(briefDescription.replaceAll("\"", "'"));
+														salir = true;
+													}
+												}
+								        	}
+										}
+										catch (Exception e) {
+											e.printStackTrace();
+										}
+									}
+								}
+								i++;
+							}
 						}
 						else if (tipo == TipoElemento.ROLE || tipo == TipoElemento.VP_ROLE){
 							if (eHijo.hasAttribute("responsibleFor")){
@@ -1127,11 +1189,70 @@ public class XMIParser {
 		      		    }
 	      		    }
 				}
+				else if (nodo.getNodeName().equals("Task")){ // <Task href="uma://_HtQ6kOMfEd6OoK0l17K4LA#_l-QkIOMwEd6OoK0l17K4LA"/>
+					/*System.out.println("############## TASK ###############");
+					String href = "";
+					
+					if (eHijo.hasAttribute("href")){
+						href = eHijo.getAttribute("href");
+						System.out.println("########### href1: " + href);
+						int index = href.indexOf("#");
+						href = href.substring(index + 1, href.length());
+						System.out.println("########### href2: " + href);
+					}
+					
+					File inputFile = new File(Constantes.destinoDescargas + "plugin.xmi");
+			        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			        DocumentBuilder dBuilder;
+					try {
+						dBuilder = dbFactory.newDocumentBuilder();
+						try {
+							Document doc = dBuilder.parse(inputFile);
+					        doc.getDocumentElement().normalize();
+					        
+					        NodeList nodosMethodPlugin = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+				        	if (nodosMethodPlugin.getLength() > 0){
+								Node resNode = obtenerNodoId(nodosMethodPlugin.item(0), href);
+								// Si encontré el id que buscaba
+								if (resNode != null){
+									
+//									 <contentElements xsi:type="org.eclipse.epf.uma:Task" xmi:id="_l-QkIOMwEd6OoK0l17K4LA"
+//							              name="specify_services" guid="_l-QkIOMwEd6OoK0l17K4LA" presentationName="D2 - Specify services"
+//							              briefDescription="To specify services by defining for each one its contract with the interfaces it provides and its operations and parameters. 
+//							              					To define all the information for modeling the service in SoaML using the diagrams for Service Contract, Interfaces and associated Choreograpy. "
+//							              performedBy="_ssT6EOM8Ed6OoK0l17K4LA" mandatoryInput="_N4bXIOMxEd6OoK0l17K4LA"
+//							              output="_N4bXIOMxEd6OoK0l17K4LA" additionallyPerformedBy="_3dMfMOM7Ed6OoK0l17K4LA">
+//							            <presentation xmi:id="-Z9KdJtq_FANdN4BHQ-9cHQ" href="uma://-Z9KdJtq_FANdN4BHQ-9cHQ#-Z9KdJtq_FANdN4BHQ-9cHQ"/>
+//							          </contentElements>
+									 
+									Element e = (Element) resNode;
+									String briefDescription = "";
+									if (e.hasAttribute("briefDescription")){
+										briefDescription = e.getAttribute("briefDescription");
+									}
+									System.out.println("############## briefDescription: " + briefDescription);
+								}
+				        	}
+						}
+						catch (SAXException e) {
+							e.printStackTrace();
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					catch (ParserConfigurationException e) {
+						e.printStackTrace();
+					}
+
+					System.out.println("###################################");*/
+				}
 				NodeList hijos = nodo.getChildNodes();
 				getNodos(nomFile, hijos, result, registroVar, vpToVar, registroHijos, performedPrimaryBy, performedAditionallyBy, workProducts, predecesores, dataProcess);
 			}
 		}
 	}
+
 	
 	public static String getNombreProcesoXMI(String nomFile){
 		try {
@@ -1159,6 +1280,7 @@ public class XMIParser {
 		}
 		return "";
     }
+
 
 	public static TipoElemento obtenerTipoElemento(String t){
 		TipoElemento type = (t.equals(TipoElemento.PROCESS_PACKAGE.toString()))    ? TipoElemento.PROCESS_PACKAGE 	 :
@@ -1189,7 +1311,8 @@ public class XMIParser {
     	return type;
     }
 
-    public static String obtenerIconoPorTipo(TipoElemento tipo){
+
+	public static String obtenerIconoPorTipo(TipoElemento tipo){
     	String icono = (tipo == TipoElemento.PROCESS_PACKAGE) 	 ? TipoElemento.PROCESS_PACKAGE.getImagen()    :
     				   (tipo == TipoElemento.ACTIVITY)	      	 ? TipoElemento.ACTIVITY.getImagen()		   :
     				   (tipo == TipoElemento.VP_ACTIVITY)     	 ? TipoElemento.VP_ACTIVITY.getImagen()	 	   :

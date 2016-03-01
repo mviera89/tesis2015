@@ -90,13 +90,13 @@ public class ExportarModeloBean {
 				// <MethodPackage... />
 				String contentCategoryPackageName = "ContentCategories";
 				String contentCategoryId = "_J3AlUNK2EeWyCYG0_iINEw";
-					String contentCategoryName =  (contentCategory != null) ? contentCategory.getName() : null;
-					String contentCategoryBriefDescription = (contentCategory != null) ? contentCategory.getBriefDescription() : null;
-					String idProcessView = (contentCategory != null) ? contentCategory.getId() : null;
-					String contentCategoryPresentationName = (contentCategory != null) ? contentCategory.getPresentationName() : null;
-					String categorizedElements = (contentCategory != null) ? contentCategory.getCategorizedElements() : null;
-					String contentCategoryNodeicon = (contentCategory != null) ? contentCategory.getNodeicon() : null;
-					String contentCategoryShapeicon = (contentCategory != null) ? contentCategory.getShapeicon() : null;
+				String contentCategoryName =  (contentCategory != null) ? contentCategory.getName() : null;
+				String contentCategoryBriefDescription = (contentCategory != null) ? contentCategory.getBriefDescription() : null;
+				String idProcessView = (contentCategory != null) ? contentCategory.getId() : null;
+				String contentCategoryPresentationName = (contentCategory != null) ? contentCategory.getPresentationName() : null;
+				String categorizedElements = (contentCategory != null) ? contentCategory.getCategorizedElements() : null;
+				String contentCategoryNodeicon = (contentCategory != null) ? contentCategory.getNodeicon() : null;
+				String contentCategoryShapeicon = (contentCategory != null) ? contentCategory.getShapeicon() : null;
 				String contentDescriptionName = (contentDescription != null) ? contentDescription.getName() : null;
 				String contentDescriptionId = (contentDescription != null) ? contentDescription.getId() : null;
 				String contentDescriptionAutors = (contentDescription != null) ? contentDescription.getAuthors() : null;
@@ -376,8 +376,8 @@ public class ExportarModeloBean {
 			String nombre = s.getNombre();
 			String nombrePresentacion = s.getPresentationName();
 			TipoElemento tipo = s.getType();
+			String briefDescription = s.getBriefDescription() != null ? s.getBriefDescription() : "";
 			
-			String briefDescription = "";
 			String orderingGuide = "";
 			String suppressed = "false";
 			String hasMultipleOccurrences = "false";

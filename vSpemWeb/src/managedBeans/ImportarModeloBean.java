@@ -447,6 +447,20 @@ public class ImportarModeloBean {
 			        vb.setCategorizedElements(categorizedElements);
 				}
 			}
+			
+			/*// Parseo las tasks
+			List<String> tasksDir = plugin.getTasksDir();
+			Iterator<String> itTasks = tasksDir.iterator();
+			while (itTasks.hasNext()){
+				String taskDir = itTasks.next();
+				String[] dirRes = separarDireccion(taskDir);
+				String dirTask = dirRes[0];
+				String archivoTask = dirRes[1];
+				cargarTaskRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, archivoTask);
+			}*/
+			
+			// Parseo los workproducts
+			// Parseo las guidances
 		}
 		else{
 			/*****************/

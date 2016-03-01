@@ -16,9 +16,13 @@ public class TipoPlugin {
 	private String deliveryProcessDir;
 	private List<String> capabilityPatternsDir;
 	private String customCategoriesDir;
+	private List<String> tasksDir;
+	private List<String> workproductsDir;
+	private List<String> guidancesDir;
 
 	public TipoPlugin(String id, String name, String guid, String briefDescription, String authors, String changeDate, String changeDescription, String version, 
-					  String lineProcessDir, String deliveryProcessDir, List<String> capabilityPatternsDir, String customCategoriesDir) {
+					  String lineProcessDir, String deliveryProcessDir, List<String> capabilityPatternsDir, String customCategoriesDir, 
+					  List<String> tasksDir, List<String> workproductsDir, List<String> guidancesDir) {
 		this.id = id;
 		this.name = name;
 		this.guid = guid;
@@ -31,6 +35,9 @@ public class TipoPlugin {
 		this.deliveryProcessDir = deliveryProcessDir;
 		this.capabilityPatternsDir = capabilityPatternsDir;
 		this.customCategoriesDir = customCategoriesDir;
+		this.tasksDir = tasksDir;
+		this.workproductsDir = workproductsDir;
+		this.guidancesDir = guidancesDir;
 	}
 
 	public String getId() {
@@ -127,6 +134,30 @@ public class TipoPlugin {
 
 	public void setCustomCategoriesDir(String customCategoriesDir) {
 		this.customCategoriesDir = customCategoriesDir;
+	}
+
+	public List<String> getTasksDir() {
+		return tasksDir;
+	}
+
+	public void setTasksDir(List<String> tasksDir) {
+		this.tasksDir = tasksDir;
+	}
+
+	public List<String> getWorkproductsDir() {
+		return workproductsDir;
+	}
+
+	public void setWorkproductsDir(List<String> workproductsDir) {
+		this.workproductsDir = workproductsDir;
+	}
+
+	public List<String> getGuidancesDir() {
+		return guidancesDir;
+	}
+
+	public void setGuidancesDir(List<String> guidancesDir) {
+		this.guidancesDir = guidancesDir;
 	}
 
 }

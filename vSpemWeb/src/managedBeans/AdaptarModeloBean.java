@@ -305,6 +305,7 @@ public class AdaptarModeloBean {
 	        
 	        Struct r = new Struct(raiz.getElementID(), raiz.getNombre(), t, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(t), raiz.getProcessComponentId(), raiz.getProcessComponentName(), raiz.getPresentationId(), raiz.getElementIDExtends());
 	        r.setDescription(raiz.getDescription());
+	        r.setBriefDescription(raiz.getBriefDescription());
 	        r.setPresentationName(raiz.getPresentationName());
 	        r.setHijos(raiz.getHijos());
 	        Element root = new Element(r);
@@ -585,6 +586,8 @@ public class AdaptarModeloBean {
 				Struct s = (Struct) hijo.getData();
 				s.setHijos(hijos);
 				s.setPresentationName(presentationName);
+				s.setDescription(v.getDescription());
+				s.setBriefDescription(v.getBriefDescription());
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
 	    		hijo.setDraggable(false);
@@ -850,6 +853,9 @@ public class AdaptarModeloBean {
 			    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
 			    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
 			    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			    	        	
+			    	        	st.setDescription(var.getDescription());
+			    	        	st.setBriefDescription(var.getBriefDescription());
 			    	        	
 			        			mostrarHijos(e, modelo, esVistaPrevia);
 		        			}
@@ -1175,6 +1181,9 @@ public class AdaptarModeloBean {
 				        modeloRolesTareas.connect(crearConexion(endPointPV_B, endPointH1));
 				        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
 				        
+				        s.setDescription(v.getDescription());
+				        s.setBriefDescription(v.getBriefDescription());
+				        
 				        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			    	}
 		    	}
@@ -1412,6 +1421,8 @@ public class AdaptarModeloBean {
 					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
 					Struct s = (Struct) hijo.getData();
 					s.setHijos(hijos);
+					s.setDescription(v.getDescription());
+					s.setBriefDescription(v.getBriefDescription());
 		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 		    		hijo.addEndPoint(endPointH1);
 		    		hijo.setDraggable(false);
@@ -1642,6 +1653,7 @@ public class AdaptarModeloBean {
 				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
 					Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
 					newS.setDescription(s.getDescription());
+					newS.setBriefDescription(s.getBriefDescription());
 					newS.setPresentationName(s.getPresentationName());
 					newS.setHijos(s.getHijos());
 					Element newE = new Element(newS, e.getX(), e.getY());
@@ -1667,6 +1679,7 @@ public class AdaptarModeloBean {
 								Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
 								newS.setHijos(v.getHijos());
 								newS.setDescription(v.getDescription());
+								newS.setBriefDescription(v.getBriefDescription());
 								newS.setPresentationName(v.getPresentationName());
 								///
 								// Seteo las variantes
@@ -1746,6 +1759,7 @@ public class AdaptarModeloBean {
 		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
 		
 		newS.setDescription(s.getDescription());
+		newS.setBriefDescription(s.getBriefDescription());
 		newS.setPresentationName(s.getPresentationName());
 		
 		// Seteo los hijos
@@ -1791,6 +1805,7 @@ public class AdaptarModeloBean {
 		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
 		
 		newV.setDescription(v.getDescription());
+		newV.setBriefDescription(v.getBriefDescription());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();

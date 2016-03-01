@@ -9,6 +9,7 @@ public class Variant {
 	private String name;
     private String presentationName;
 	private String description;
+	private String briefDescription;
 	private String IDVarPoint;
 	private boolean isInclusive;
 	private String varType;
@@ -68,6 +69,14 @@ public class Variant {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getBriefDescription() {
+		return briefDescription;
+	}
+
+	public void setBriefDescription(String briefDescription) {
+		this.briefDescription = briefDescription;
 	}
 
 	public String getIDVarPoint() {
