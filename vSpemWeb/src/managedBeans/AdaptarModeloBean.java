@@ -1820,13 +1820,15 @@ public class AdaptarModeloBean {
 	        Element e = obtenerElemento(id);
 	        if (e != null){
 		        Struct s = (Struct) e.getData();
-		    	Iterator<Struct> it = s.getHijos().iterator();
-		    	while (it.hasNext()){
-		    		TipoElemento t = it.next().getType();
-		    		if ((t != TipoElemento.ROLE) && (t != TipoElemento.VP_ROLE) && (t != TipoElemento.WORK_PRODUCT) && (t != TipoElemento.VP_WORK_PRODUCT)){
-		    			return true;
-		    		}
-		    	}
+		        if (s.getType() != TipoElemento.DELIVERY_PROCESS){
+			    	Iterator<Struct> it = s.getHijos().iterator();
+			    	while (it.hasNext()){
+			    		TipoElemento t = it.next().getType();
+			    		if ((t != TipoElemento.ROLE) && (t != TipoElemento.VP_ROLE) && (t != TipoElemento.WORK_PRODUCT) && (t != TipoElemento.VP_WORK_PRODUCT)){
+			    			return true;
+			    		}
+			    	}
+		        }
 	        }
         }
     	return false;
