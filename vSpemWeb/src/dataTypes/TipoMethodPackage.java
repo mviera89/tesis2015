@@ -10,12 +10,11 @@ public class TipoMethodPackage {
 	private String guid;
 	private List<String> processComponentChild;
 	
-	public TipoMethodPackage(String type, String id, String name, String guid, List<String> processComponentChild) {
+	public TipoMethodPackage(String type, String id, String name, String guid) {
 		this.type = type;
 		this.id = id;
 		this.name = name;
 		this.guid = guid;
-		this.processComponentChild = processComponentChild;
 	}
 
 	public String getType() {
@@ -56,6 +55,13 @@ public class TipoMethodPackage {
 
 	public void setProcessComponentChild(List<String> processComponentChild) {
 		this.processComponentChild = processComponentChild;
+	}
+
+	@Override
+	public String toString() {
+		return "TipoMethodPackage [type=" + type + ", id=" + id + ", name="
+				+ name + ", guid=" + guid + ", processComponentChild="
+				+ processComponentChild + "]";
 	}
 
 }

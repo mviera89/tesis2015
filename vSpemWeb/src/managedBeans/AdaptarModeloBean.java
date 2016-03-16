@@ -307,6 +307,7 @@ public class AdaptarModeloBean {
 	        r.setDescription(raiz.getDescription());
 	        r.setBriefDescription(raiz.getBriefDescription());
 	        r.setPresentationName(raiz.getPresentationName());
+	        r.setIdTask(raiz.getIdTask());
 	        r.setHijos(raiz.getHijos());
 	        Element root = new Element(r);
 	        
@@ -588,6 +589,8 @@ public class AdaptarModeloBean {
 				s.setPresentationName(presentationName);
 				s.setDescription(v.getDescription());
 				s.setBriefDescription(v.getBriefDescription());
+				s.setIdTask(v.getIdTask());
+				
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
 	    		hijo.setDraggable(false);
@@ -856,7 +859,7 @@ public class AdaptarModeloBean {
 			    	        	
 			    	        	st.setDescription(var.getDescription());
 			    	        	st.setBriefDescription(var.getBriefDescription());
-			    	        	
+			    	        	st.setIdTask(var.getIdTask());
 			        			mostrarHijos(e, modelo, esVistaPrevia);
 		        			}
 		        			
@@ -1183,6 +1186,7 @@ public class AdaptarModeloBean {
 				        
 				        s.setDescription(v.getDescription());
 				        s.setBriefDescription(v.getBriefDescription());
+				        s.setIdTask(v.getIdTask());
 				        
 				        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			    	}
@@ -1423,6 +1427,8 @@ public class AdaptarModeloBean {
 					s.setHijos(hijos);
 					s.setDescription(v.getDescription());
 					s.setBriefDescription(v.getBriefDescription());
+					s.setIdTask(v.getIdTask());
+					
 		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 		    		hijo.addEndPoint(endPointH1);
 		    		hijo.setDraggable(false);
@@ -1655,6 +1661,7 @@ public class AdaptarModeloBean {
 					newS.setDescription(s.getDescription());
 					newS.setBriefDescription(s.getBriefDescription());
 					newS.setPresentationName(s.getPresentationName());
+					newS.setIdTask(s.getIdTask());
 					newS.setHijos(s.getHijos());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
@@ -1681,6 +1688,7 @@ public class AdaptarModeloBean {
 								newS.setDescription(v.getDescription());
 								newS.setBriefDescription(v.getBriefDescription());
 								newS.setPresentationName(v.getPresentationName());
+								newS.setIdTask(v.getIdTask());
 								///
 								// Seteo las variantes
 								List<Variant> lstVariantes = s.getVariantes();
@@ -1761,6 +1769,7 @@ public class AdaptarModeloBean {
 		newS.setDescription(s.getDescription());
 		newS.setBriefDescription(s.getBriefDescription());
 		newS.setPresentationName(s.getPresentationName());
+		newS.setIdTask(s.getIdTask());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
@@ -1806,6 +1815,7 @@ public class AdaptarModeloBean {
 		
 		newV.setDescription(v.getDescription());
 		newV.setBriefDescription(v.getBriefDescription());
+		newV.setIdTask(v.getIdTask());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();

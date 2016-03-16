@@ -10,7 +10,8 @@ public class Constantes {
 	
 	// Constantes de Github
 	public static final String URL_GITHUB = "https://github.com/";
-	public static final String URL_GITHUB_DEFAULT = "mviera89/tesis2015/tree/master/upload/";
+	public static final String URL_GITHUB_DEFAULT = "mviera89/modelosXMI/tree/master/bpsom_a/";
+	public static final String DIRECTORIO_LOCAL_DEFAULT ="C:/wsEclipse/modelosXMI/bpsom_a/";
 	public static final String URL_GITHUB_DOWNLOAD = "https://raw.githubusercontent.com/";
 	
 	// Constantes para la representación del modelo

@@ -11,10 +11,12 @@ import javax.servlet.http.HttpSession;
 
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
+import dataTypes.TipoContentPackage;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
+import dataTypes.TipoTask;
 
 @ManagedBean(name="VistaBean")
 @SessionScoped
@@ -32,6 +34,8 @@ public class VistaBean {
 	private TipoMethodConfiguration methodConfiguration = null;
 	private Map<String, TipoContentCategory> categorizedElements = null;
 	private List<TipoMethodPackage> processPackages = null;
+	private Map<String, TipoTask> tasks = null;
+	private List<TipoContentPackage> contentPackages = null;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -128,6 +132,22 @@ public class VistaBean {
 
 	public void setProcessPackages(List<TipoMethodPackage> processPackages) {
 		this.processPackages = processPackages;
+	}
+
+	public Map<String, TipoTask> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(Map<String, TipoTask> tasks) {
+		this.tasks = tasks;
+	}
+
+	public List<TipoContentPackage> getContentPackages() {
+		return contentPackages;
+	}
+
+	public void setContentPackages(List<TipoContentPackage> contentPackages) {
+		this.contentPackages = contentPackages;
 	}
 
 	public void actualizarIndiceActivo(int indice){

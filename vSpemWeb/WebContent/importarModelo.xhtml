@@ -11,7 +11,7 @@
 					<p:outputLabel value="Repositorio (https://github.com/):" style="width: 150px;"/>
 					<p:inputText value="#{importarModeloBean.repositorioIngresado}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
 					<p:graphicImage value="/iconos/info.png" title="#{importarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
-					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivosRepositorio}" update=":panel_principal" />
+					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos(true)}" update=":panel_principal" />
 				</h:panelGrid>
 				
 				<h:panelGrid columns="3">
@@ -19,7 +19,7 @@
 					<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivo}" filter="true" style="margin: 10px 10px 0px 10px;" >
 						<f:selectItems value="#{importarModeloBean.archivosDisponibles}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
 					</p:selectOneListbox>
-					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivoRepositorio}" disabled="#{importarModeloBean.archivosDisponibles.size() == 0}" update="importar_form:msg, importar_form:sig"/>
+					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponibles.size() == 0}" update="importar_form:msg, importar_form:sig"/>
 				</h:panelGrid>
 			</p:tab>
 	        <p:tab title="Directorio local">

@@ -21,6 +21,7 @@ public class Variant {
 	private String processComponentName;
 	private String presentationId;
 	private String elementIDExtends;
+	private String idTask; 
 	
 	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.ID = ID;
@@ -165,6 +166,14 @@ public class Variant {
 
 	public void setElementIDExtends(String elementIDExtends) {
 		this.elementIDExtends = elementIDExtends;
+	}
+
+	public String getIdTask() {
+		return idTask;
+	}
+
+	public void setIdTask(String idTask) {
+		this.idTask = idTask;
 	}
 
 }

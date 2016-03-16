@@ -40,6 +40,8 @@ public class Struct {
 	private String presentationId;
 	private String elementIDExtends;
 
+    private String idTask;
+    
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
 		this.nombre = nombre;
@@ -308,6 +310,35 @@ public class Struct {
 	public void setSucesores(List<String> sucesores) {
 		this.sucesores = sucesores;
 	}
-	
+
+	public String getIdTask() {
+		return idTask;
+	}
+
+	public void setIdTask(String idTask) {
+		this.idTask = idTask;
+	}
+
+	@Override
+	public String toString() {
+		return "Struct [elementID=" + elementID + ", nombre=" + nombre
+				+ ", type=" + type + ", variantes=" + variantes + ", hijos="
+				+ hijos + ", min=" + min + ", max=" + max + ", color=" + color
+				+ ", imagen=" + imagen + ", esPV=" + esPV + ", estaExpandido="
+				+ estaExpandido + ", etiqueta=" + etiqueta + ", description="
+				+ description + ", briefDescription=" + briefDescription
+				+ ", presentationName=" + presentationName
+				+ ", performedPrimaryBy=" + performedPrimaryBy
+				+ ", performedAditionallyBy=" + performedAditionallyBy
+				+ ", mandatoryInputs=" + mandatoryInputs + ", optionalInputs="
+				+ optionalInputs + ", externalInputs=" + externalInputs
+				+ ", outputs=" + outputs + ", responsableDe=" + responsableDe
+				+ ", modifica=" + modifica + ", linkToPredecessor="
+				+ linkToPredecessor + ", sucesores=" + sucesores
+				+ ", processComponentId=" + processComponentId
+				+ ", processComponentName=" + processComponentName
+				+ ", presentationId=" + presentationId + ", elementIDExtends="
+				+ elementIDExtends + ", idTask=" + idTask + "]";
+	}
 
 }
