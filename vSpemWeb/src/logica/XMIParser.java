@@ -806,6 +806,7 @@ public class XMIParser {
 							}
 							if (eChild.hasAttribute("name")){
 								nameSection = eChild.getAttribute("name");
+								nameSection = nameSection.replaceAll("\"", "'");
 							}
 							if (eChild.hasAttribute("guid")){
 								guidSection = eChild.getAttribute("guid");

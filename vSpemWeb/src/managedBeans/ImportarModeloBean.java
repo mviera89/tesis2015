@@ -199,7 +199,10 @@ public class ImportarModeloBean {
 	        FacesContext.getCurrentInstance().addMessage(null, mensaje);
 		}
 		catch(Exception e){
-			System.out.println(e.getMessage());
+			System.out.println("No se pudo conectar a la URL: " + e.getMessage() + ".");
+		    FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", Constantes.MENSAJE_URL_NO_ACCESIBLE + "'" + Constantes.URL_GITHUB + repositorioIngresado + "'.");
+	        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			e.printStackTrace();
 		}
 	}
 

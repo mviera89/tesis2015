@@ -307,7 +307,7 @@ public class ExportarModeloBean {
 				while (itCP.hasNext()){
 					TipoContentPackage tcp = itCP.next();
 					TipoContentCategory cp = tcp.getContentPackages();
-					texto += "\t\t<MethodPackage xsi:type=\"uma:ContentPackage\" name=\"" + cp.getName() + "\" briefDescription=\"" + cp.getBriefDescription() + "\" id=\"" + cp.getId() + "\" orderingGuide=\"" + methodPackageOrderingGuide + "\" presentationName=\"" + cp.getPresentationName() + "\" suppressed=\"" + methodPackageSuppressed + "\" global=\"" + methodPackageGlobal + "\">" + "\n";
+					texto += "\t\t<MethodPackage xsi:type=\"uma:ContentPackage\" name=\"" + cp.getName() + "\" briefDescription=\"" + cp.getBriefDescription() + "\" id=\"" + cp.getId() + "\" orderingGuide=\"" + methodPackageOrderingGuide + "\" suppressed=\"" + methodPackageSuppressed + "\" global=\"" + methodPackageGlobal + "\">" + "\n";
 					Iterator<TipoTask> itCE = tcp.getTasksCP().iterator();
 					while (itCE.hasNext()){
 						TipoTask tt = itCE.next();
@@ -319,13 +319,12 @@ public class ExportarModeloBean {
 						String ttPresentationName = ((elem != null) && (elem.getPresentationName() != null)) ? elem.getPresentationName() : "";
 						String ttBriefDescriptionPresentation = "";
 						String ttOrderingGuide = "";
-						String ttPresentationNamePresentation = "";
 						String ttSuppressed = "false";
 						String ttChangeDescription = "";
 						String ttExternalId = "";
 						texto += "\t\t\t<ContentElement xsi:type=\"uma:Task\" name=\"" + elem.getNombre() + "\" briefDescription=\"" + ttBriefDescription + "\" id=\"" + elem.getIdTask() + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + ttPresentationName + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
 						
-									"\t\t\t\t<Presentation xsi:type=\"uma:TaskDescription\" name=\"" + tt.getName() + "\" briefDescription=\"" + ttBriefDescriptionPresentation + "\" id=\"" + tt.getId() + "\" orderingGuide=\"" + ttOrderingGuide + "\" presentationName=\"" + ttPresentationNamePresentation + "\" suppressed=\"" + ttSuppressed + "\" authors=\"" + tt.getAuthors() + "\" changeDate=\"" + tt.getChangeDate() + "\" changeDescription=\"" + ttChangeDescription + "\" version=\"" + tt.getVersion() + "\" externalId=\"" + ttExternalId + "\">" + "\n" +
+									"\t\t\t\t<Presentation xsi:type=\"uma:TaskDescription\" name=\"" + tt.getName() + "\" briefDescription=\"" + ttBriefDescriptionPresentation + "\" id=\"" + tt.getId() + "\" orderingGuide=\"" + ttOrderingGuide + "\" suppressed=\"" + ttSuppressed + "\" authors=\"" + tt.getAuthors() + "\" changeDate=\"" + tt.getChangeDate() + "\" changeDescription=\"" + ttChangeDescription + "\" version=\"" + tt.getVersion() + "\" externalId=\"" + ttExternalId + "\">" + "\n" +
 				    					"\t\t\t\t\t<MainDescription>" + ((tt.getMainDescription() != null) ? "<![CDATA[" + tt.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
 				    					"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n";
 						
@@ -333,14 +332,13 @@ public class ExportarModeloBean {
 							Iterator<TipoSection> itSections = tt.getSections().iterator();
 							String sectionBriefDescription = "";
 							String sectionOrderingGuide = "";
-							String sectionPresentationName = "";
 							String sectionSuppressed = "false";
 							String sectionSectionName = "";
 							String sectionVariabilityType = "na";
 							while (itSections.hasNext()){
 								TipoSection section = itSections.next();
 								texto +=
-										"\t\t\t\t\t<Section name=\"" + section.getName() + "\" briefDescription=\"" + sectionBriefDescription + "\" id=\"" + section.getXmiId() + "\" orderingGuide=\"" + sectionOrderingGuide + "\" presentationName=\"" + sectionPresentationName + "\" suppressed=\"" + sectionSuppressed +"\" sectionName=\"" + sectionSectionName + "\" variabilityType=\"" + sectionVariabilityType + "\">" + "\n" +
+										"\t\t\t\t\t<Section name=\"" + section.getName() + "\" briefDescription=\"" + sectionBriefDescription + "\" id=\"" + section.getXmiId() + "\" orderingGuide=\"" + sectionOrderingGuide + "\" suppressed=\"" + sectionSuppressed +"\" sectionName=\"" + sectionSectionName + "\" variabilityType=\"" + sectionVariabilityType + "\">" + "\n" +
 											"\t\t\t\t\t\t<Description></Description>" + "\n" +
 										"\t\t\t\t\t</Section>" + "\n";
 							}
@@ -392,37 +390,6 @@ public class ExportarModeloBean {
 						texto += "\t\t\t</ContentElement>" + "\n";
 					}
 					texto += "\t\t</MethodPackage>" + "\n";
-					/*
-					 <MethodPackage xsi:type="uma:ContentPackage" name="implementation_package" briefDescription="" id="_QK85wOM5Ed6OoK0l17K4LA" orderingGuide="" presentationName="Services Implementation" suppressed="false" global="false">
-      <ContentElement xsi:type="uma:Role" name="developer" briefDescription="" id="_x4Y9YOM8Ed6OoK0l17K4LA" orderingGuide="" presentationName="Developer" suppressed="false" isAbstract="false" variabilityType="na">
-        <ResponsibleFor>_SDch4OM4Ed6OoK0l17K4LA</ResponsibleFor>
-      </ContentElement>
-      <ContentElement xsi:type="uma:Artifact" name="service_implemented" briefDescription="" id="_o6dUQEexEd-iTvGQFwAspw" orderingGuide="" presentationName="Service Implemented" suppressed="false" isAbstract="false" variabilityType="na"/>
-      <ContentElement xsi:type="uma:Task" name="implement_services" briefDescription="" id="_hdEQcEfDEd-iNY7TQq4TSw" orderingGuide="" presentationName="I1 - Implement services" suppressed="false" isAbstract="false" variabilityType="na">
-        <Presentation xsi:type="uma:TaskDescription" name="implement_services,_hdEQcEfDEd-iNY7TQq4TSw" briefDescription="" id="-0k89H-5aWSSJjGjhjQJctQ" orderingGuide="" presentationName="" suppressed="false" authors="Andrea Delgado " changeDate="2010-04-15T10:13:33" changeDescription="" version="1.0" externalId="">
-          <MainDescription><![CDATA[To implement the described services&nbsp;taking into account the type of service, the designed interfaces, the interaction
-with other services (with or without a repository of services, binding in development or execution time).]]></MainDescription>
-          <KeyConsiderations></KeyConsiderations>
-          <Section name="For each service recall the defined interfaces with its operations, parameters, pre and post conditions from the services document " briefDescription="" id="_2JK88EiQEd-6ten92sIKgg" orderingGuide="" presentationName="" suppressed="false" sectionName="" variabilityType="na">
-            <Description></Description>
-          </Section>
-          <Section name="Implement the service defining if invocations to other services will be through a services repository or not, and the time of binding for the invocation (development, execution)" briefDescription="" id="_99qM8EiQEd-6ten92sIKgg" orderingGuide="" presentationName="" suppressed="false" sectionName="" variabilityType="na">
-            <Description></Description>
-          </Section>
-          <Section name="Implement the service defining how invocations to other software pieces will be handled, and the time of binding for the invocation (development, execution)" briefDescription="" id="_XqA2YEiREd-6ten92sIKgg" orderingGuide="" presentationName="" suppressed="false" sectionName="" variabilityType="na">
-            <Description></Description>
-          </Section>
-          <Alternatives></Alternatives>
-          <Purpose><![CDATA[To implement the described services.]]></Purpose>
-        </Presentation>
-        <PerformedBy>_x4Y9YOM8Ed6OoK0l17K4LA</PerformedBy>
-        <MandatoryInput>_N4bXIOMxEd6OoK0l17K4LA</MandatoryInput>
-        <MandatoryInput>_P1dnYOM4Ed6OoK0l17K4LA</MandatoryInput>
-        <MandatoryInput>_SDch4OM4Ed6OoK0l17K4LA</MandatoryInput>
-        <Output>_o6dUQEexEd-iTvGQFwAspw</Output>
-      </ContentElement>
-    </MethodPackage>
-					 */
 				}
 				
 				if (textoCapabilityPattern != ""){
@@ -692,11 +659,9 @@ with other services (with or without a repository of services, binding in develo
 	}
 	
 	public Struct buscarElementoEnModelo(String id, DefaultDiagramModel modelo){
-		System.out.println("###### id: " + id);
 		Iterator<Element> it = modelo.getElements().iterator();
 		while (it.hasNext()){
 			Struct s = (Struct) it.next().getData();
-			System.out.println("######### s: " + s.toString());
 			if ((s.getIdTask() != null) && (s.getIdTask().equals(id))){
 				return s;
 			}
