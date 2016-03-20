@@ -41,6 +41,7 @@ public class Struct {
 	private String elementIDExtends;
 
     private String idTask;
+    private String idWorkProduct;
     
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
@@ -317,6 +318,14 @@ public class Struct {
 
 	public void setIdTask(String idTask) {
 		this.idTask = idTask;
+	}
+
+	public String getIdWorkProduct() {
+		return idWorkProduct;
+	}
+
+	public void setIdWorkProduct(String idWorkProduct) {
+		this.idWorkProduct = idWorkProduct;
 	}
 
 	@Override

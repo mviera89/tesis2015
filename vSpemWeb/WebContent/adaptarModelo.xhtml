@@ -228,7 +228,7 @@
 	  	</p:tabView>
 	  	
 		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() == 0}" update=":panel_principal"
-					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado)}"
+					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado, adaptarModeloBean.rolesWP)}"
 					 	 action="#{VistaBean.actualizarIndiceActivo(2)}" />
 		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() > 0}"
 						 onclick="PF('erroresDialog').show(); return false;" />

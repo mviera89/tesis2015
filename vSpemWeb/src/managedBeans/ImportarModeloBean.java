@@ -33,12 +33,14 @@ import org.primefaces.model.UploadedFile;
 import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
+import dataTypes.TipoContentElement;
 import dataTypes.TipoContentPackage;
+import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
-import dataTypes.TipoTask;
+import dataTypes.TipoTag;
 
 @ManagedBean
 @ViewScoped
@@ -490,36 +492,62 @@ public class ImportarModeloBean {
 			// Parseo las tasks
 			List<String> tasksDir = plugin.getTasksDir();
 			Iterator<String> itTasks = tasksDir.iterator();
-			Map<String, TipoTask> lstTask = new HashMap<String, TipoTask>();
+			Map<String, TipoContentElement> lstTask = new HashMap<String, TipoContentElement>();
 			while (itTasks.hasNext()){
 				String taskDir = itTasks.next();
 				String[] dirRes = separarDireccion(taskDir);
 				String dirTask = dirRes[0];
 				String archivoTask = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, "task_" + archivoTask);
-				TipoTask task = cargarTasksRepositorio("task_" + archivoTask);
+				TipoContentElement task = cargarContentElementsRepositorio("task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
 				if (task != null){
 					lstTask.put(task.getId(), task);
 				}
 			}
 			vb.setTasks(lstTask);
-
+			
+			// Parseo los workproducts
+			List<String> workproductsDir = plugin.getWorkproductsDir();
+			Iterator<String> itWorkproducts = workproductsDir.iterator();
+			Map<String, TipoContentElement> lstWorkproducts = new HashMap<String, TipoContentElement>();
+			while (itWorkproducts.hasNext()){
+				String workproductDir = itWorkproducts.next();
+				String[] dirRes = separarDireccion(workproductDir);
+				String dirWorkproduct = dirRes[0];
+				String archivoWorkproduct = dirRes[1];
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, "workproduct_" + archivoWorkproduct);
+				TipoContentElement workproduct = cargarContentElementsRepositorio("workproduct_" + archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
+				if (workproduct != null){
+					lstWorkproducts.put(workproduct.getId(), workproduct);
+				}
+			}
+			vb.setWorkproducts(lstWorkproducts);
+			
+			// Parseo las guidances
+			
+			// Cargo en el contentPackage
 			List<TipoContentPackage> contentPackages = new ArrayList<TipoContentPackage>();
+			Map<String, TipoContentElement> lstCE = new HashMap<String, TipoContentElement>();
+			lstCE.putAll(lstWorkproducts);
+			lstCE.putAll(lstTask);
 			List<String> cpAgregados = new ArrayList<String>();
-			Iterator<Entry<String, TipoTask>> itTask = lstTask.entrySet().iterator();
-			while (itTask.hasNext()){
-				TipoTask task = itTask.next().getValue();
-				String idTask = task.getId();
-				TipoContentCategory contentElement = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "contentElements", idTask);
+			Iterator<Entry<String, TipoContentElement>> itCE = lstCE.entrySet().iterator();
+			while (itCE.hasNext()){
+				TipoContentElement tce = itCE.next().getValue();
+				String idTce = tce.getId();
+				TipoContentCategory contentElement = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce);
 				if (contentElement != null){
 					TipoContentCategory childPackage = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId());
 					if ((childPackage != null) && (!cpAgregados.contains(childPackage.getId()))){
 						cpAgregados.add(childPackage.getId());
-						/*contentPackages.add(childPackage);
-						tasksCP.add(task);*/
 						TipoContentPackage tcp = new TipoContentPackage();
 						tcp.setContentPackages(childPackage);
-						tcp.getTasksCP().add(task);
+						if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
+							tcp.getWorkproductsCP().add(tce);
+						}
+						else if (tce.getTipoElemento() == TipoElemento.TASK){
+							tcp.getTasksCP().add(tce);
+						}
 						contentPackages.add(tcp);
 					}
 					else{
@@ -529,7 +557,12 @@ public class ImportarModeloBean {
 						while ((i < n) && (!fin)){
 							TipoContentPackage tcp = contentPackages.get(i);
 							if (tcp.getContentPackages().getId().equals(childPackage.getId())){
-								tcp.getTasksCP().add(task);
+								if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
+									tcp.getWorkproductsCP().add(tce);
+								}
+								else if (tce.getTipoElemento() == TipoElemento.TASK){
+									tcp.getTasksCP().add(tce);
+								}
 								fin = true;
 							}
 							i++;
@@ -538,8 +571,6 @@ public class ImportarModeloBean {
 				}
 			}
 			vb.setContentPackages(contentPackages);
-			// Parseo los workproducts
-			// Parseo las guidances
 		}
 		else{
 			/*****************/
@@ -579,14 +610,14 @@ public class ImportarModeloBean {
 		return null;
 	}
 	
-	public TipoTask cargarTasksRepositorio(String archivoTask){
+	public TipoContentElement cargarContentElementsRepositorio(String archivoTask, String tag){
 		File f = new File(Constantes.destinoDescargas + archivoTask);
 		if (f.isFile()){
-			return XMIParser.getElementsXMITasks(Constantes.destinoDescargas + archivoTask);	
+			return XMIParser.getElementsXMIContentElement(Constantes.destinoDescargas + archivoTask, tag);	
 		}
 		return null;
 	}
-
+	
 	/*** CARGA LOCAL DE ARCHIVOS ***/
 
 	public void cargarArchivoLocal(FileUploadEvent event) {

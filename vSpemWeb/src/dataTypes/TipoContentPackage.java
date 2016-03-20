@@ -6,13 +6,15 @@ import java.util.List;
 public class TipoContentPackage {
 
 	private TipoContentCategory contentPackages;
-	private List<TipoTask> tasksCP;
+	private List<TipoContentElement> tasksCP;
+	private List<TipoContentElement> workproductsCP;
 
 	public TipoContentPackage() {
-		tasksCP = new ArrayList<TipoTask>();
+		tasksCP = new ArrayList<TipoContentElement>();
+		workproductsCP = new ArrayList<TipoContentElement>();
 	}
 
-	public TipoContentPackage(TipoContentCategory contentPackages, List<TipoTask> tasksCP) {
+	public TipoContentPackage(TipoContentCategory contentPackages, List<TipoContentElement> tasksCP) {
 		this.contentPackages = contentPackages;
 		this.tasksCP = tasksCP;
 	}
@@ -25,12 +27,20 @@ public class TipoContentPackage {
 		this.contentPackages = contentPackages;
 	}
 
-	public List<TipoTask> getTasksCP() {
+	public List<TipoContentElement> getTasksCP() {
 		return tasksCP;
 	}
 
-	public void setTasksCP(List<TipoTask> tasksCP) {
+	public void setTasksCP(List<TipoContentElement> tasksCP) {
 		this.tasksCP = tasksCP;
+	}
+
+	public List<TipoContentElement> getWorkproductsCP() {
+		return workproductsCP;
+	}
+
+	public void setWorkproductsCP(List<TipoContentElement> workproductsCP) {
+		this.workproductsCP = workproductsCP;
 	}
 
 }

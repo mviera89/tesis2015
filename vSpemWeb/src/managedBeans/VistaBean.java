@@ -11,12 +11,12 @@ import javax.servlet.http.HttpSession;
 
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
+import dataTypes.TipoContentElement;
 import dataTypes.TipoContentPackage;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
-import dataTypes.TipoTask;
 
 @ManagedBean(name="VistaBean")
 @SessionScoped
@@ -34,8 +34,9 @@ public class VistaBean {
 	private TipoMethodConfiguration methodConfiguration = null;
 	private Map<String, TipoContentCategory> categorizedElements = null;
 	private List<TipoMethodPackage> processPackages = null;
-	private Map<String, TipoTask> tasks = null;
+	private Map<String, TipoContentElement> tasks = null;
 	private List<TipoContentPackage> contentPackages = null;
+	private Map<String, TipoContentElement> workproducts = null; 
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -134,11 +135,11 @@ public class VistaBean {
 		this.processPackages = processPackages;
 	}
 
-	public Map<String, TipoTask> getTasks() {
+	public Map<String, TipoContentElement> getTasks() {
 		return tasks;
 	}
 
-	public void setTasks(Map<String, TipoTask> tasks) {
+	public void setTasks(Map<String, TipoContentElement> tasks) {
 		this.tasks = tasks;
 	}
 
@@ -148,6 +149,14 @@ public class VistaBean {
 
 	public void setContentPackages(List<TipoContentPackage> contentPackages) {
 		this.contentPackages = contentPackages;
+	}
+
+	public Map<String, TipoContentElement> getWorkproducts() {
+		return workproducts;
+	}
+
+	public void setWorkproducts(Map<String, TipoContentElement> workproducts) {
+		this.workproducts = workproducts;
 	}
 
 	public void actualizarIndiceActivo(int indice){

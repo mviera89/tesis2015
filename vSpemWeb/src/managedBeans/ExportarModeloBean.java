@@ -8,12 +8,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
-import javax.mail.FolderClosedException;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -22,14 +20,15 @@ import org.primefaces.model.diagram.Element;
 import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
+import dataTypes.TipoContentElement;
 import dataTypes.TipoContentPackage;
 import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
+import dataTypes.TipoRolesWorkProducts;
 import dataTypes.TipoSection;
-import dataTypes.TipoTask;
 import dominio.Struct;
  
 @ManagedBean
@@ -40,7 +39,7 @@ public class ExportarModeloBean {
 	private List<String> processIds = new ArrayList<String>();
 	private String textoCapabilityPattern = "";
 	
-	public void exportarModelo(DefaultDiagramModel modeloAdaptado){
+	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP){
 		try{
 			if (modeloAdaptado != null){
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
@@ -308,86 +307,115 @@ public class ExportarModeloBean {
 					TipoContentPackage tcp = itCP.next();
 					TipoContentCategory cp = tcp.getContentPackages();
 					texto += "\t\t<MethodPackage xsi:type=\"uma:ContentPackage\" name=\"" + cp.getName() + "\" briefDescription=\"" + cp.getBriefDescription() + "\" id=\"" + cp.getId() + "\" orderingGuide=\"" + methodPackageOrderingGuide + "\" suppressed=\"" + methodPackageSuppressed + "\" global=\"" + methodPackageGlobal + "\">" + "\n";
-					Iterator<TipoTask> itCE = tcp.getTasksCP().iterator();
+					List<TipoContentElement> lstCE = new ArrayList<TipoContentElement>(); 
+					lstCE.addAll(tcp.getTasksCP());
+					lstCE.addAll(tcp.getWorkproductsCP());
+					Iterator<TipoContentElement> itCE = lstCE.iterator();
 					while (itCE.hasNext()){
-						TipoTask tt = itCE.next();
-						String name = tt.getName();
+						TipoContentElement element = itCE.next();
+						String name = element.getName();
 						String[] resSplit = name.split(",");
 						String id = resSplit.length > 1 ? resSplit[1] : "";
-						Struct elem = buscarElementoEnModelo(id, modeloAdaptado);
-						String ttBriefDescription = ((elem != null) && (elem.getBriefDescription() != null)) ? elem.getBriefDescription() : "";
-						String ttPresentationName = ((elem != null) && (elem.getPresentationName() != null)) ? elem.getPresentationName() : "";
-						String ttBriefDescriptionPresentation = "";
-						String ttOrderingGuide = "";
-						String ttSuppressed = "false";
-						String ttChangeDescription = "";
-						String ttExternalId = "";
-						texto += "\t\t\t<ContentElement xsi:type=\"uma:Task\" name=\"" + elem.getNombre() + "\" briefDescription=\"" + ttBriefDescription + "\" id=\"" + elem.getIdTask() + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + ttPresentationName + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
-						
-									"\t\t\t\t<Presentation xsi:type=\"uma:TaskDescription\" name=\"" + tt.getName() + "\" briefDescription=\"" + ttBriefDescriptionPresentation + "\" id=\"" + tt.getId() + "\" orderingGuide=\"" + ttOrderingGuide + "\" suppressed=\"" + ttSuppressed + "\" authors=\"" + tt.getAuthors() + "\" changeDate=\"" + tt.getChangeDate() + "\" changeDescription=\"" + ttChangeDescription + "\" version=\"" + tt.getVersion() + "\" externalId=\"" + ttExternalId + "\">" + "\n" +
-				    					"\t\t\t\t\t<MainDescription>" + ((tt.getMainDescription() != null) ? "<![CDATA[" + tt.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
-				    					"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n";
-						
-						if (tt.getSections() != null){
-							Iterator<TipoSection> itSections = tt.getSections().iterator();
-							String sectionBriefDescription = "";
-							String sectionOrderingGuide = "";
-							String sectionSuppressed = "false";
-							String sectionSectionName = "";
-							String sectionVariabilityType = "na";
-							while (itSections.hasNext()){
-								TipoSection section = itSections.next();
-								texto +=
-										"\t\t\t\t\t<Section name=\"" + section.getName() + "\" briefDescription=\"" + sectionBriefDescription + "\" id=\"" + section.getXmiId() + "\" orderingGuide=\"" + sectionOrderingGuide + "\" suppressed=\"" + sectionSuppressed +"\" sectionName=\"" + sectionSectionName + "\" variabilityType=\"" + sectionVariabilityType + "\">" + "\n" +
-											"\t\t\t\t\t\t<Description></Description>" + "\n" +
-										"\t\t\t\t\t</Section>" + "\n";
+						Struct elementStruct = (element.getTipoElemento() == TipoElemento.WORK_PRODUCT) ? 
+													buscarElementoEnTipoRolesWorkProducts(id, modeloRolesWP) : 
+													buscarElementoEnModelo(id, modeloAdaptado);
+						if (elementStruct != null){
+							String briefDescriptionStruct = ((elementStruct != null) && (elementStruct.getBriefDescription() != null)) ? elementStruct.getBriefDescription() : "";
+							String presentationNameStruct = ((elementStruct != null) && (elementStruct.getPresentationName() != null)) ? elementStruct.getPresentationName() : "";
+							String briefDescriptionPresentationStruct = "";
+							String orderingGuideStruct = "";
+							String suppressedStruct = "false";
+							String changeDescriptionStruct = "";
+							String externalIdStruct = "";
+							TipoElemento typeStruct = elementStruct.getType();
+							String type = (typeStruct == TipoElemento.TASK) ? "uma:Task" : 
+										  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : "";
+							String typeDescription = (typeStruct == TipoElemento.TASK) ? "uma:TaskDescription" : 
+								  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : "";
+							
+							String idStruct = (typeStruct == TipoElemento.TASK) ? elementStruct.getIdTask() : 
+								  		(typeStruct == TipoElemento.WORK_PRODUCT) ? elementStruct.getIdWorkProduct() : "";
+								  		
+							texto += "\t\t\t<ContentElement xsi:type=\"" + type + "\" name=\"" + elementStruct.getNombre() + "\" briefDescription=\"" + briefDescriptionStruct + "\" id=\"" + idStruct + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + presentationNameStruct + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
+							
+										"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + element.getAuthors() + "\" changeDate=\"" + element.getChangeDate() + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + element.getVersion() + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
+					    					"\t\t\t\t\t<MainDescription>" + (((element.getMainDescription() != null) && (!element.getMainDescription().equals("")) ) ? "<![CDATA[" + element.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
+					    					"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n";
+							
+							if (element.getSections() != null){
+								Iterator<TipoSection> itSections = element.getSections().iterator();
+								String sectionBriefDescription = "";
+								String sectionOrderingGuide = "";
+								String sectionSuppressed = "false";
+								String sectionSectionName = "";
+								String sectionVariabilityType = "na";
+								while (itSections.hasNext()){
+									TipoSection section = itSections.next();
+									texto +=
+											"\t\t\t\t\t<Section name=\"" + section.getName() + "\" briefDescription=\"" + sectionBriefDescription + "\" id=\"" + section.getXmiId() + "\" orderingGuide=\"" + sectionOrderingGuide + "\" suppressed=\"" + sectionSuppressed +"\" sectionName=\"" + sectionSectionName + "\" variabilityType=\"" + sectionVariabilityType + "\">" + "\n" +
+												"\t\t\t\t\t\t<Description></Description>" + "\n" +
+											"\t\t\t\t\t</Section>" + "\n";
+								}
 							}
+							
+							if (typeStruct != TipoElemento.WORK_PRODUCT){
+								texto +=
+											"\t\t\t\t\t<Alternatives></Alternatives>" + "\n";
+							}
+							
+							texto +=
+					    					"\t\t\t\t\t<Purpose>" + (((element.getPurpose() != null) && (!element.getPurpose().equals(""))) ? "<![CDATA[" + element.getPurpose() + "]]>" : "") + "</Purpose>" + "\n";
+							
+							if (typeStruct == TipoElemento.WORK_PRODUCT){
+								texto +=
+				    						"\t\t\t\t\t<ImpactOfNotHaving></ImpactOfNotHaving>" + "\n" +
+					    					"\t\t\t\t\t<ReasonsForNotNeeding></ReasonsForNotNeeding>" + "\n" +
+					    					"\t\t\t\t\t<BriefOutline></BriefOutline>" + "\n" +
+					    					"\t\t\t\t\t<RepresentationOptions></RepresentationOptions>" + "\n" +
+					    					"\t\t\t\t\t<Representation></Representation>" + "\n" +
+					    					"\t\t\t\t\t<Notation></Notation>" + "\n";
+							}
+							
+							texto +=
+			    						"\t\t\t\t</Presentation>" + "\n";
+							
+							String performedPrimaryBy = elementStruct.getPerformedPrimaryBy();
+					    	if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
+					    		texto +=
+					    				"\t\t\t\t<PerformedBy>" + performedPrimaryBy + "</PerformedBy>" + "\n";
+					    	}
+					    	if (elementStruct.getPerformedAditionallyBy() != null){
+						    	Iterator<String> itAdditionallyPerformedBy = elementStruct.getPerformedAditionallyBy().iterator();
+						    	while (itAdditionallyPerformedBy.hasNext()){
+						    		texto +=
+						    				"\t\t\t\t<AdditionallyPerformedBy>" + itAdditionallyPerformedBy.next() + "</AdditionallyPerformedBy>" + "\n";
+						    	}
+					    	}
+					    	
+					    	if (elementStruct.getMandatoryInputs() != null){
+						    	Iterator<String> itMandatoryInputs = elementStruct.getMandatoryInputs().iterator();
+						    	while (itMandatoryInputs.hasNext()){
+						    		texto +=
+						    				"\t\t\t\t<MandatoryInput>" + itMandatoryInputs.next() + "</MandatoryInput>" + "\n";
+						    	}
+					    	}
+					    	if (elementStruct.getOptionalInputs() != null){
+						    	Iterator<String> itOptionalInputs = elementStruct.getOptionalInputs().iterator();
+						    	while (itOptionalInputs.hasNext()){
+						    		texto +=
+						    				"\t\t\t\t<OptionalInput>" + itOptionalInputs.next() + "</OptionalInput>" + "\n";
+						    	}
+					    	}
+					    	if (elementStruct.getOutputs() != null){
+						    	Iterator<String> itOutput = elementStruct.getOutputs().iterator();
+						    	while (itOutput.hasNext()){
+						    		texto +=
+						    				"\t\t\t\t<Output>" + itOutput.next() + "</Output>" + "\n";
+						    	}
+					    	}
+							
+							texto += "\t\t\t</ContentElement>" + "\n";
 						}
-						
-						texto +=
-				    					"\t\t\t\t\t<Alternatives></Alternatives>" + "\n" +
-				    					//"\t\t\t\t\t<HowToStaff></HowToStaff>" + "\n" +
-				    					"\t\t\t\t\t<Purpose>" + ((tt.getPurpose() != null) ? "<![CDATA[" + tt.getPurpose() + "]]>" : "") + "</Purpose>" + "\n" +
-				    					//"\t\t\t\t\t<Scope></Scope>" + "\n" +
-				    					//"\t\t\t\t\t<UsageNotes></UsageNotes>" + "\n" +
-									"\t\t\t\t</Presentation>" + "\n";
-						
-						String performedPrimaryBy = elem.getPerformedPrimaryBy();
-				    	if (performedPrimaryBy != null){
-				    		texto +=
-				    				"\t\t\t\t<PerformedBy>" + performedPrimaryBy + "</PerformedBy>" + "\n";
-				    	}
-				    	if (elem.getPerformedAditionallyBy() != null){
-					    	Iterator<String> itAdditionallyPerformedBy = elem.getPerformedAditionallyBy().iterator();
-					    	while (itAdditionallyPerformedBy.hasNext()){
-					    		texto +=
-					    				"\t\t\t\t<AdditionallyPerformedBy>" + itAdditionallyPerformedBy.next() + "</AdditionallyPerformedBy>" + "\n";
-					    	}
-				    	}
-				    	
-				    	if (elem.getMandatoryInputs() != null){
-					    	Iterator<String> itMandatoryInputs = elem.getMandatoryInputs().iterator();
-					    	while (itMandatoryInputs.hasNext()){
-					    		texto +=
-					    				"\t\t\t\t<MandatoryInput>" + itMandatoryInputs.next() + "</MandatoryInput>" + "\n";
-					    	}
-				    	}
-				    	if (elem.getOptionalInputs() != null){
-					    	Iterator<String> itOptionalInputs = elem.getOptionalInputs().iterator();
-					    	while (itOptionalInputs.hasNext()){
-					    		texto +=
-					    				"\t\t\t\t<OptionalInput>" + itOptionalInputs.next() + "</OptionalInput>" + "\n";
-					    	}
-				    	}
-				    	if (elem.getOutputs() != null){
-					    	Iterator<String> itOutput = elem.getOutputs().iterator();
-					    	while (itOutput.hasNext()){
-					    		texto +=
-					    				"\t\t\t\t<Output>" + itOutput.next() + "</Output>" + "\n";
-					    	}
-				    	}
-						
-						texto += "\t\t\t</ContentElement>" + "\n";
 					}
 					texto += "\t\t</MethodPackage>" + "\n";
 				}
@@ -659,14 +687,38 @@ public class ExportarModeloBean {
 	}
 	
 	public Struct buscarElementoEnModelo(String id, DefaultDiagramModel modelo){
-		Iterator<Element> it = modelo.getElements().iterator();
-		while (it.hasNext()){
-			Struct s = (Struct) it.next().getData();
-			if ((s.getIdTask() != null) && (s.getIdTask().equals(id))){
-				return s;
+		if ((modelo != null) && (modelo.getElements() != null)){
+			Iterator<Element> it = modelo.getElements().iterator();
+			while (it.hasNext()){
+				Struct s = (Struct) it.next().getData();
+				String sId = (s.getIdTask() != null) ? s.getIdTask() :
+							 (s.getIdWorkProduct() != null) ? s.getIdWorkProduct() : null;
+				if ((sId != null) && (sId.equals(id))){
+					return s;
+				}
 			}
 		}
 		return null;
+	}
+	
+	public Struct buscarElementoEnTipoRolesWorkProducts(String id, List<TipoRolesWorkProducts> modeloRolesWP){
+		if (modeloRolesWP != null){
+			Iterator<TipoRolesWorkProducts> it = modeloRolesWP.iterator();
+			while (it.hasNext()){
+				TipoRolesWorkProducts trwp = it.next();
+				DefaultDiagramModel dModifica = trwp.getModifica();
+				Struct sModifica = buscarElementoEnModelo(id, dModifica);
+				if (sModifica != null){
+					return sModifica;
+				}
+				DefaultDiagramModel dResponsable = trwp.getResponsableDe();
+				Struct sResponsable = buscarElementoEnModelo(id, dResponsable);
+				if (sResponsable != null){
+					return sResponsable;
+				}
+			}
+		}
+		return null;	
 	}
 	
 }

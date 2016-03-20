@@ -2,8 +2,9 @@ package dataTypes;
 
 import java.util.List;
 
-public class TipoTask {
+public class TipoContentElement {
 
+	private TipoElemento tipoElemento;
 	private String xmiVersion;
 	private String xmi;
 	private String uma;
@@ -19,8 +20,9 @@ public class TipoTask {
 	private List<TipoSection> sections;
 	private String purpose;
 
-	public TipoTask(String xmiVersion, String xmi, String uma, String epf, String epfVersion, String id, String name, String guid, String authors, String changeDate, String version,
-					String mainDescription, List<TipoSection> sections, String purpose) {
+	public TipoContentElement(TipoElemento tipoElemento, String xmiVersion, String xmi, String uma, String epf, String epfVersion, String id, String name, String guid,
+			String authors, String changeDate, String version, String mainDescription, List<TipoSection> sections, String purpose) {
+		this.tipoElemento = tipoElemento;
 		this.xmiVersion = xmiVersion;
 		this.xmi = xmi;
 		this.uma = uma;
@@ -35,6 +37,14 @@ public class TipoTask {
 		this.mainDescription = mainDescription;
 		this.sections = sections;
 		this.purpose = purpose;
+	}
+
+	public TipoElemento getTipoElemento() {
+		return tipoElemento;
+	}
+
+	public void setTipoElemento(TipoElemento tipoElemento) {
+		this.tipoElemento = tipoElemento;
 	}
 
 	public String getXmiVersion() {
@@ -147,16 +157,6 @@ public class TipoTask {
 
 	public void setPurpose(String purpose) {
 		this.purpose = purpose;
-	}
-
-	@Override
-	public String toString() {
-		return "TipoTask [xmiVersion=" + xmiVersion + ", xmi=" + xmi + ", uma="
-				+ uma + ", epf=" + epf + ", epfVersion=" + epfVersion + ", id="
-				+ id + ", name=" + name + ", guid=" + guid + ", authors="
-				+ authors + ", changeDate=" + changeDate + ", version="
-				+ version + ", mainDescription=" + mainDescription
-				+ ", sections=" + sections + ", purpose=" + purpose + "]";
 	}
 
 }
