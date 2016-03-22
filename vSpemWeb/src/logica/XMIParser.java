@@ -573,7 +573,7 @@ public class XMIParser {
 		return res;
 	}
 	
-	public static TipoContentElement getElementsXMIContentElement(String nomFile, String tag){
+	public static TipoContentElement getElementsXMIContentElement(String dirPrevia, String nomFile, String tag){
 		File inputFile = new File(nomFile);
 		try{
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -595,12 +595,16 @@ public class XMIParser {
 					String id = "";
 					String name = "";
 					String guid = "";
+					String presentationName = "";
 					String authors = "";
 					String changeDate = "";
 					String version = "";
 					String mainDescription = "";
+					String keyConsiderations = "";
 					List<TipoSection> sections = new ArrayList<TipoSection>();
 					String purpose = "";
+					String alternatives = "";
+					String attachments = "";
 					
 					if (eHijo.hasAttribute("xmi:version")){
 						xmiVersion = eHijo.getAttribute("xmi:version");
@@ -626,6 +630,9 @@ public class XMIParser {
 					if (eHijo.hasAttribute("guid")){
 						guid = eHijo.getAttribute("guid");
 					}
+					if (eHijo.hasAttribute("presentationName")){
+						presentationName = eHijo.getAttribute("presentationName");
+					}
 					if (eHijo.hasAttribute("authors")){
 						authors = eHijo.getAttribute("authors");
 					}
@@ -644,6 +651,9 @@ public class XMIParser {
 						Node child = childNodes.item(i);
 						if (child.getNodeName().equals("mainDescription")){
 							mainDescription = child.getFirstChild().getNodeValue();
+						}
+						else if (child.getNodeName().equals("keyConsiderations")){
+							keyConsiderations = child.getFirstChild().getNodeValue();
 						}
 						else if (child.getNodeName().equals("sections")){
 							Element eChild = (Element) child;
@@ -666,15 +676,23 @@ public class XMIParser {
 						else if (child.getNodeName().equals("purpose")){
 							purpose = child.getFirstChild().getNodeValue();
 						}
+						else if (child.getNodeName().equals("alternatives")){
+							alternatives = child.getFirstChild().getNodeValue();
+						}
+						else if (child.getNodeName().equals("attachments")){
+							attachments = dirPrevia + child.getFirstChild().getNodeValue();
+						}
 						i++;
 					}
 					
 					inputFile.delete();
 					
 					TipoElemento tipoElemento = tag.equals(TipoTag.TASK_DESCRIPTION.toString()) ? TipoElemento.TASK :
-												tag.equals(TipoTag.ARTIFACT_DESCRIPTION.toString()) ? TipoElemento.WORK_PRODUCT : null;
+												tag.equals(TipoTag.ARTIFACT_DESCRIPTION.toString()) ? TipoElemento.WORK_PRODUCT : 
+												tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) ? TipoElemento.GUIDANCE : null;
 					
-					return new TipoContentElement(tipoElemento, xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, authors, changeDate, version, mainDescription, sections, purpose);
+					return new TipoContentElement(tipoElemento, xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, presentationName, authors, changeDate, version, 
+												  mainDescription, keyConsiderations, sections, purpose, alternatives, attachments);
 				}
         	}
 		}
@@ -683,6 +701,143 @@ public class XMIParser {
 		}
 		inputFile.delete();
 		return null;
+	}
+	
+	// Retorna todos los elementos del archivo plugin que tengan el tag pasado como parámetro
+	public static List<TipoContentElement> getElementsXMIPlugin(String dirPrevia, String nomFile, String tag){
+		List<TipoContentElement> res = new ArrayList<TipoContentElement>();
+		try{
+			File inputFile = new File(nomFile);
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+
+	        NodeList nodos = doc.getElementsByTagName("org.eclipse.epf.uma:MethodPlugin");
+        	if (nodos.getLength() > 0){
+        		int temp = 0;
+				Node nodo = nodos.item(temp);
+				List<Node> resNode = obtenerNodosType(nodo, tag);
+				Iterator<Node> it = resNode.iterator();
+				while (it.hasNext()){
+					Node n = it.next();
+					if (n.getNodeType() == Node.ELEMENT_NODE) {
+						Element eHijo = (Element) n;
+						String xmiVersion = "";
+						String xmi = "";
+						String uma = "";
+						String epf = "";
+						String epfVersion = "";
+						String id = "";
+						String name = "";
+						String guid = "";
+						String presentationName = "";
+						String authors = "";
+						String changeDate = "";
+						String version = "";
+						String mainDescription = "";
+						String keyConsiderations = "";
+						List<TipoSection> sections = new ArrayList<TipoSection>();
+						String purpose = "";
+						String alternatives = "";
+						String attachments = "";
+						
+						if (eHijo.hasAttribute("xmi:version")){
+							xmiVersion = eHijo.getAttribute("xmi:version");
+						}
+						if (eHijo.hasAttribute("xmlns:xmi")){
+							xmi = eHijo.getAttribute("xmlns:xmi");
+						}
+						if (eHijo.hasAttribute("xmlns:org.eclipse.epf.uma")){
+							uma = eHijo.getAttribute("xmlns:org.eclipse.epf.uma");
+						}
+						if (eHijo.hasAttribute("xmlns:epf")){
+							epf = eHijo.getAttribute("xmlns:epf");
+						}
+						if (eHijo.hasAttribute("epf:version")){
+							epfVersion = eHijo.getAttribute("epf:version");
+						}
+						if (eHijo.hasAttribute("xmi:id")){
+							id = eHijo.getAttribute("xmi:id");
+						}
+						if (eHijo.hasAttribute("name")){
+							name = eHijo.getAttribute("name");
+						}
+						if (eHijo.hasAttribute("guid")){
+							guid = eHijo.getAttribute("guid");
+						}
+						if (eHijo.hasAttribute("presentationName")){
+							presentationName = eHijo.getAttribute("presentationName");
+						}
+						if (eHijo.hasAttribute("authors")){
+							authors = eHijo.getAttribute("authors");
+						}
+						if (eHijo.hasAttribute("changeDate")){
+							changeDate = eHijo.getAttribute("changeDate"); // Es de la forma 2016-02-13T20:59:36.516-0300
+							int index = changeDate.indexOf(".");
+							changeDate = changeDate.substring(0, index);
+						}
+						if (eHijo.hasAttribute("version")){
+							version = eHijo.getAttribute("version");
+						}
+						
+						NodeList childNodes = n.getChildNodes();
+						int i = 0;
+						while ((i < childNodes.getLength()) && (mainDescription.equals("") || (sections.size() == 0) || (purpose.equals("")))){
+							Node child = childNodes.item(i);
+							if (child.getNodeName().equals("mainDescription")){
+								mainDescription = child.getFirstChild().getNodeValue();
+							}
+							else if (child.getNodeName().equals("keyConsiderations")){
+								keyConsiderations = child.getFirstChild().getNodeValue();
+							}
+							else if (child.getNodeName().equals("sections")){
+								Element eChild = (Element) child;
+								String xmiIdSection = "";
+								String nameSection = "";
+								String guidSection = "";
+								if (eChild.hasAttribute("xmi:id")){
+									xmiIdSection = eChild.getAttribute("xmi:id");
+								}
+								if (eChild.hasAttribute("name")){
+									nameSection = eChild.getAttribute("name");
+									nameSection = nameSection.replaceAll("\"", "'");
+								}
+								if (eChild.hasAttribute("guid")){
+									guidSection = eChild.getAttribute("guid");
+								}
+								TipoSection s = new TipoSection(xmiIdSection, nameSection, guidSection);
+								sections.add(s);
+							}
+							else if (child.getNodeName().equals("purpose")){
+								purpose = child.getFirstChild().getNodeValue();
+							}
+							else if (child.getNodeName().equals("alternatives")){
+								alternatives = child.getFirstChild().getNodeValue();
+							}
+							else if (child.getNodeName().equals("attachments")){
+								attachments = dirPrevia + child.getFirstChild().getNodeValue();
+							}
+							i++;
+						}
+						
+						//inputFile.delete();
+						
+						TipoElemento tipoElemento = tag.equals(TipoTag.TASK_DESCRIPTION.toString()) ? TipoElemento.TASK :
+													tag.equals(TipoTag.ARTIFACT_DESCRIPTION.toString()) ? TipoElemento.WORK_PRODUCT : 
+													(tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) || tag.equals(TipoTag.GUIDANCE.toString())) ? TipoElemento.GUIDANCE : null;
+						
+						TipoContentElement tce = new TipoContentElement(tipoElemento, xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, presentationName, authors, changeDate, version, 
+												 	mainDescription, keyConsiderations, sections, purpose, alternatives, attachments);
+						res.add(tce);
+					}
+				}
+        	}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;	
 	}
 	
 	public static List<TipoMethodPackage> getElementsXMIProcessPackage(String nomFile){

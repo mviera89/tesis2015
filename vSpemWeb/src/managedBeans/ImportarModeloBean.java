@@ -244,6 +244,10 @@ public class ImportarModeloBean {
 			        FacesMessage mensaje = new FacesMessage("", "El archivo ha sido cargado correctamente.");
 		            FacesContext.getCurrentInstance().addMessage(null, mensaje);
 				}
+				else{
+					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_INCORRECTO);
+			        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				}
 			}
 			else{
 				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
@@ -499,7 +503,7 @@ public class ImportarModeloBean {
 				String dirTask = dirRes[0];
 				String archivoTask = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, "task_" + archivoTask);
-				TipoContentElement task = cargarContentElementsRepositorio("task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
+				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirRes,"task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
 				if (task != null){
 					lstTask.put(task.getId(), task);
 				}
@@ -516,7 +520,7 @@ public class ImportarModeloBean {
 				String dirWorkproduct = dirRes[0];
 				String archivoWorkproduct = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, "workproduct_" + archivoWorkproduct);
-				TipoContentElement workproduct = cargarContentElementsRepositorio("workproduct_" + archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
+				TipoContentElement workproduct = cargarContentElementsRepositorio(dirPlugin + dirWorkproduct, "workproduct_" + archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
 				if (workproduct != null){
 					lstWorkproducts.put(workproduct.getId(), workproduct);
 				}
@@ -524,12 +528,36 @@ public class ImportarModeloBean {
 			vb.setWorkproducts(lstWorkproducts);
 			
 			// Parseo las guidances
+			List<String> guidancesDir = plugin.getGuidancesDir();
+			Iterator<String> itGuidances = guidancesDir.iterator();
+			Map<String, TipoContentElement> lstGuidances = new HashMap<String, TipoContentElement>();
+			//List<TipoContentElement> lstTemplates = new ArrayList<TipoContentElement>();
+			String dirGuidance = "";
+			while (itGuidances.hasNext()){
+				String guidanceDir = itGuidances.next();
+				String[] dirRes = separarDireccion(guidanceDir);
+				//String dirGuidance = dirRes[0];
+				dirGuidance = dirRes[0];
+				String archivoGuidance = dirRes[1];
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, "guidance_" + archivoGuidance);
+				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, "guidance_" + archivoGuidance, TipoTag.GUIDANCE_DESCRIPTION.toString());
+				if (guidance != null){
+					lstGuidances.put(guidance.getId(), guidance);
+				}
+
+				//TipoContentElement templates = cargarTemplateRepositorio(dirPlugin + dirGuidance, archivoPlugin, TipoTag.GUIDANCE.toString());
+				//lstTemplates.add(templates);
+			}
+			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(dirPlugin + dirGuidance, archivoPlugin, TipoTag.GUIDANCE.toString());
+			vb.setTemplates(lstTemplates);
+			vb.setGuidances(lstGuidances);
 			
 			// Cargo en el contentPackage
 			List<TipoContentPackage> contentPackages = new ArrayList<TipoContentPackage>();
 			Map<String, TipoContentElement> lstCE = new HashMap<String, TipoContentElement>();
 			lstCE.putAll(lstWorkproducts);
 			lstCE.putAll(lstTask);
+			lstCE.putAll(lstGuidances);
 			List<String> cpAgregados = new ArrayList<String>();
 			Iterator<Entry<String, TipoContentElement>> itCE = lstCE.entrySet().iterator();
 			while (itCE.hasNext()){
@@ -545,6 +573,9 @@ public class ImportarModeloBean {
 						if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
 							tcp.getWorkproductsCP().add(tce);
 						}
+						else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+							tcp.getGuidancesCP().add(tce);
+						}
 						else if (tce.getTipoElemento() == TipoElemento.TASK){
 							tcp.getTasksCP().add(tce);
 						}
@@ -559,6 +590,9 @@ public class ImportarModeloBean {
 							if (tcp.getContentPackages().getId().equals(childPackage.getId())){
 								if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
 									tcp.getWorkproductsCP().add(tce);
+								}
+								else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+									tcp.getGuidancesCP().add(tce);
 								}
 								else if (tce.getTipoElemento() == TipoElemento.TASK){
 									tcp.getTasksCP().add(tce);
@@ -610,10 +644,18 @@ public class ImportarModeloBean {
 		return null;
 	}
 	
-	public TipoContentElement cargarContentElementsRepositorio(String archivoTask, String tag){
-		File f = new File(Constantes.destinoDescargas + archivoTask);
+	public TipoContentElement cargarContentElementsRepositorio(String dirPrevia, String archivo, String tag){
+		File f = new File(Constantes.destinoDescargas + archivo);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIContentElement(Constantes.destinoDescargas + archivoTask, tag);	
+			return XMIParser.getElementsXMIContentElement(dirPrevia, Constantes.destinoDescargas + archivo, tag);	
+		}
+		return null;
+	}
+	
+	public List<TipoContentElement> cargarTemplateRepositorio(String dirPrevia, String archivoPlugin, String tag){
+		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		if (f.isFile()){
+			return XMIParser.getElementsXMIPlugin(dirPrevia, Constantes.destinoDescargas + archivoPlugin, tag);	
 		}
 		return null;
 	}

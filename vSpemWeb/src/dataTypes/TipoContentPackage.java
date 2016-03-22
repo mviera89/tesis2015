@@ -8,10 +8,12 @@ public class TipoContentPackage {
 	private TipoContentCategory contentPackages;
 	private List<TipoContentElement> tasksCP;
 	private List<TipoContentElement> workproductsCP;
+	private List<TipoContentElement> guidancesCP;
 
 	public TipoContentPackage() {
 		tasksCP = new ArrayList<TipoContentElement>();
 		workproductsCP = new ArrayList<TipoContentElement>();
+		guidancesCP = new ArrayList<TipoContentElement>();
 	}
 
 	public TipoContentPackage(TipoContentCategory contentPackages, List<TipoContentElement> tasksCP) {
@@ -41,6 +43,14 @@ public class TipoContentPackage {
 
 	public void setWorkproductsCP(List<TipoContentElement> workproductsCP) {
 		this.workproductsCP = workproductsCP;
+	}
+
+	public List<TipoContentElement> getGuidancesCP() {
+		return guidancesCP;
+	}
+
+	public void setGuidancesCP(List<TipoContentElement> guidancesCP) {
+		this.guidancesCP = guidancesCP;
 	}
 
 }

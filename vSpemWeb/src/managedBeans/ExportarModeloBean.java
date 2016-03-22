@@ -14,6 +14,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import logica.XMIParser;
+
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
@@ -310,6 +312,7 @@ public class ExportarModeloBean {
 					List<TipoContentElement> lstCE = new ArrayList<TipoContentElement>(); 
 					lstCE.addAll(tcp.getTasksCP());
 					lstCE.addAll(tcp.getWorkproductsCP());
+					lstCE.addAll(tcp.getGuidancesCP());
 					Iterator<TipoContentElement> itCE = lstCE.iterator();
 					while (itCE.hasNext()){
 						TipoContentElement element = itCE.next();
@@ -318,7 +321,9 @@ public class ExportarModeloBean {
 						String id = resSplit.length > 1 ? resSplit[1] : "";
 						Struct elementStruct = (element.getTipoElemento() == TipoElemento.WORK_PRODUCT) ? 
 													buscarElementoEnTipoRolesWorkProducts(id, modeloRolesWP) : 
-													buscarElementoEnModelo(id, modeloAdaptado);
+													(element.getTipoElemento() == TipoElemento.GUIDANCE) ? 
+														buscarElementoEnVistaBean(id) : 
+														buscarElementoEnModelo(id, modeloAdaptado);
 						if (elementStruct != null){
 							String briefDescriptionStruct = ((elementStruct != null) && (elementStruct.getBriefDescription() != null)) ? elementStruct.getBriefDescription() : "";
 							String presentationNameStruct = ((elementStruct != null) && (elementStruct.getPresentationName() != null)) ? elementStruct.getPresentationName() : "";
@@ -329,18 +334,21 @@ public class ExportarModeloBean {
 							String externalIdStruct = "";
 							TipoElemento typeStruct = elementStruct.getType();
 							String type = (typeStruct == TipoElemento.TASK) ? "uma:Task" : 
-										  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : "";
+										  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : 
+										  (typeStruct == TipoElemento.GUIDANCE) ? "uma:Template" : "";
 							String typeDescription = (typeStruct == TipoElemento.TASK) ? "uma:TaskDescription" : 
-								  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : "";
+								  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : 
+								  					 (typeStruct == TipoElemento.GUIDANCE) ? "uma:GuidanceDescription" : "";
 							
 							String idStruct = (typeStruct == TipoElemento.TASK) ? elementStruct.getIdTask() : 
-								  		(typeStruct == TipoElemento.WORK_PRODUCT) ? elementStruct.getIdWorkProduct() : "";
+								  			  (typeStruct == TipoElemento.WORK_PRODUCT) ? elementStruct.getIdWorkProduct() : 
+								  			  (typeStruct == TipoElemento.GUIDANCE) ? id : "";
 								  		
 							texto += "\t\t\t<ContentElement xsi:type=\"" + type + "\" name=\"" + elementStruct.getNombre() + "\" briefDescription=\"" + briefDescriptionStruct + "\" id=\"" + idStruct + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + presentationNameStruct + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
 							
 										"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + element.getAuthors() + "\" changeDate=\"" + element.getChangeDate() + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + element.getVersion() + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
-					    					"\t\t\t\t\t<MainDescription>" + (((element.getMainDescription() != null) && (!element.getMainDescription().equals("")) ) ? "<![CDATA[" + element.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
-					    					"\t\t\t\t\t<KeyConsiderations></KeyConsiderations>" + "\n";
+					    					"\t\t\t\t\t<MainDescription>" + (((element.getMainDescription() != null) && (!element.getMainDescription().equals(""))) ? "<![CDATA[" + element.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
+					    					"\t\t\t\t\t<KeyConsiderations>" + (((element.getKeyConsiderations() != null) && (!element.getKeyConsiderations().equals(""))) ? "<![CDATA[" + element.getKeyConsiderations() + "]]>" : "") + "</KeyConsiderations>" + "\n";
 							
 							if (element.getSections() != null){
 								Iterator<TipoSection> itSections = element.getSections().iterator();
@@ -358,13 +366,15 @@ public class ExportarModeloBean {
 								}
 							}
 							
-							if (typeStruct != TipoElemento.WORK_PRODUCT){
+							if ((typeStruct != TipoElemento.WORK_PRODUCT) && (typeStruct != TipoElemento.GUIDANCE)){
 								texto +=
-											"\t\t\t\t\t<Alternatives></Alternatives>" + "\n";
+											"\t\t\t\t\t<Alternatives>" + (((element.getAlternatives() != null) && (!element.getAlternatives().equals(""))) ? "<![CDATA[" + element.getAlternatives() + "]]>" : "") + "</Alternatives>" + "\n";
 							}
 							
-							texto +=
+							if (typeStruct != TipoElemento.GUIDANCE){
+								texto +=
 					    					"\t\t\t\t\t<Purpose>" + (((element.getPurpose() != null) && (!element.getPurpose().equals(""))) ? "<![CDATA[" + element.getPurpose() + "]]>" : "") + "</Purpose>" + "\n";
+							}
 							
 							if (typeStruct == TipoElemento.WORK_PRODUCT){
 								texto +=
@@ -374,6 +384,10 @@ public class ExportarModeloBean {
 					    					"\t\t\t\t\t<RepresentationOptions></RepresentationOptions>" + "\n" +
 					    					"\t\t\t\t\t<Representation></Representation>" + "\n" +
 					    					"\t\t\t\t\t<Notation></Notation>" + "\n";
+							}
+							else if (typeStruct == TipoElemento.GUIDANCE){
+								texto +=
+										"\t\t\t\t\t<Attachment>" + ((element.getAttachments() != null) ? element.getAttachments() : "") + "</Attachment>" + "\n";
 							}
 							
 							texto +=
@@ -715,6 +729,28 @@ public class ExportarModeloBean {
 				Struct sResponsable = buscarElementoEnModelo(id, dResponsable);
 				if (sResponsable != null){
 					return sResponsable;
+				}
+			}
+		}
+		return null;	
+	}
+	
+	public Struct buscarElementoEnVistaBean(String id){
+		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		VistaBean vb = (VistaBean) session.getAttribute("VistaBean");
+		List<TipoContentElement> templates = vb.getTemplates();
+		if (templates != null){
+			Iterator<TipoContentElement> it = templates.iterator();
+			while (it.hasNext()){
+				TipoContentElement tce = it.next();
+				if (tce.getId().equals(id)){
+					Struct s = new Struct();
+					s.setElementID(tce.getId());
+					s.setNombre(tce.getName());
+					s.setType(tce.getTipoElemento());
+					s.setPresentationName(tce.getPresentationName());
+					return s;
 				}
 			}
 		}

@@ -43,6 +43,8 @@ public class Struct {
     private String idTask;
     private String idWorkProduct;
     
+	public Struct(){}
+	
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
 		this.nombre = nombre;

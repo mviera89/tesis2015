@@ -13,15 +13,20 @@ public class TipoContentElement {
 	private String id;
 	private String name;
 	private String guid;
+	private String presentationName;
 	private String authors;
 	private String changeDate;
 	private String version;
 	private String mainDescription;
+	private String keyConsiderations;
 	private List<TipoSection> sections;
 	private String purpose;
+	private String alternatives;
+	private String attachments;
 
-	public TipoContentElement(TipoElemento tipoElemento, String xmiVersion, String xmi, String uma, String epf, String epfVersion, String id, String name, String guid,
-			String authors, String changeDate, String version, String mainDescription, List<TipoSection> sections, String purpose) {
+	public TipoContentElement(TipoElemento tipoElemento, String xmiVersion, String xmi, String uma, String epf, String epfVersion, String id, 
+			String name, String guid, String presentationName, String authors, String changeDate, String version, String mainDescription, 
+			String keyConsiderations, List<TipoSection> sections, String purpose, String alternatives, String attachments) {
 		this.tipoElemento = tipoElemento;
 		this.xmiVersion = xmiVersion;
 		this.xmi = xmi;
@@ -31,12 +36,16 @@ public class TipoContentElement {
 		this.id = id;
 		this.name = name;
 		this.guid = guid;
+		this.presentationName = presentationName;
 		this.authors = authors;
 		this.changeDate = changeDate;
 		this.version = version;
 		this.mainDescription = mainDescription;
+		this.keyConsiderations = keyConsiderations;
 		this.sections = sections;
 		this.purpose = purpose;
+		this.alternatives = alternatives;
+		this.attachments = attachments;
 	}
 
 	public TipoElemento getTipoElemento() {
@@ -111,6 +120,14 @@ public class TipoContentElement {
 		this.guid = guid;
 	}
 
+	public String getPresentationName() {
+		return presentationName;
+	}
+
+	public void setPresentationName(String presentationName) {
+		this.presentationName = presentationName;
+	}
+
 	public String getAuthors() {
 		return authors;
 	}
@@ -143,6 +160,14 @@ public class TipoContentElement {
 		this.mainDescription = mainDescription;
 	}
 
+	public String getKeyConsiderations() {
+		return keyConsiderations;
+	}
+
+	public void setKeyConsiderations(String keyConsiderations) {
+		this.keyConsiderations = keyConsiderations;
+	}
+
 	public List<TipoSection> getSections() {
 		return sections;
 	}
@@ -157,6 +182,22 @@ public class TipoContentElement {
 
 	public void setPurpose(String purpose) {
 		this.purpose = purpose;
+	}
+
+	public String getAlternatives() {
+		return alternatives;
+	}
+
+	public void setAlternatives(String alternatives) {
+		this.alternatives = alternatives;
+	}
+
+	public String getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(String attachments) {
+		this.attachments = attachments;
 	}
 
 }
