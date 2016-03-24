@@ -27,6 +27,7 @@ import dataTypes.TipoContentPackage;
 import dataTypes.TipoElemento;
 import dataTypes.TipoLibrary;
 import dataTypes.TipoMethodConfiguration;
+import dataTypes.TipoMethodElementProperty;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dataTypes.TipoRolesWorkProducts;
@@ -194,8 +195,11 @@ public class ExportarModeloBean {
 				    		"\t\t<MethodPackage xsi:type=\"uma:ContentCategoryPackage\" name=\"" + contentCategoryPackageName + "\" id=\"" + contentCategoryId + "\">" + "\n";
 							if (contentCategory != null){
 								textoContentCategory +=
-					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + "\" nodeicon=\"" + contentCategoryNodeicon + "\" shapeicon=\"" + contentCategoryShapeicon + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
-								// "\t\t\t\t<MethodElementProperty name=\"PUBLISH_CATEGORY\" value=\"true\"/>" + "\n" +
+					  			"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + contentCategoryName + "\" briefDescription=\"" + contentCategoryBriefDescription + "\" id=\"" + idProcessView + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + contentCategoryPresentationName + (((contentCategoryNodeicon != null) && (!contentCategoryNodeicon.equals(""))) ? ("\" nodeicon=\"" + contentCategoryNodeicon) : "") + (((contentCategoryShapeicon != null) && (!contentCategoryShapeicon.equals(""))) ? ("\" shapeicon=\"" + contentCategoryShapeicon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+								TipoMethodElementProperty methodElementProperty = contentCategory.getMethodElementProperty();
+								if (methodElementProperty != null){
+									textoContentCategory += "\t\t\t\t<MethodElementProperty name=\"" + methodElementProperty.getName() + "\" value=\"" + methodElementProperty.getValue() + "\"/>" + "\n";
+								}
 							}
 					  		if (contentDescription != null){
 					  			textoContentCategory +=
@@ -285,7 +289,13 @@ public class ExportarModeloBean {
 						String key = categorizedElementsArray[i];
 						TipoContentCategory element = categorizedElementsContent.get(key);
 						if (element != null){
-							texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" suppressed=\"" + contentCategorySuppressed + "\" presentationName=\"" + element.getPresentationName() + "\" nodeicon=\"" + element.getNodeicon() + "\" shapeicon=\"" + element.getShapeicon() + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+							String nodeIcon = element.getNodeicon();
+							String shapeIcon = element.getShapeicon();
+							texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" presentationName=\"" + element.getPresentationName() + "\" suppressed=\"" + contentCategorySuppressed + (((nodeIcon != null) && (!nodeIcon.equals(""))) ? ("\" nodeicon=\"" + nodeIcon) : "") + (((shapeIcon != null) && (!shapeIcon.equals(""))) ? ("\" shapeicon=\"" + shapeIcon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+							TipoMethodElementProperty methodElementProperty = element.getMethodElementProperty();
+							if (methodElementProperty != null){
+								texto += 		"\t\t\t\t<MethodElementProperty name=\"" + methodElementProperty.getName() + "\" value=\"" + methodElementProperty.getValue() + "\"/>" + "\n";
+							}
 							String categorizedElementsE = element.getCategorizedElements();
 							if (categorizedElementsE.equals("")){
 								texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
@@ -346,7 +356,7 @@ public class ExportarModeloBean {
 								  		
 							texto += "\t\t\t<ContentElement xsi:type=\"" + type + "\" name=\"" + elementStruct.getNombre() + "\" briefDescription=\"" + briefDescriptionStruct + "\" id=\"" + idStruct + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + presentationNameStruct + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
 							
-										"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + element.getAuthors() + "\" changeDate=\"" + element.getChangeDate() + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + element.getVersion() + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
+										"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + element.getAuthors() + (((element.getChangeDate() != null) && (!element.getChangeDate().equals(""))) ? ("\" changeDate=\"" + element.getChangeDate()) : "") + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + element.getVersion() + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
 					    					"\t\t\t\t\t<MainDescription>" + (((element.getMainDescription() != null) && (!element.getMainDescription().equals(""))) ? "<![CDATA[" + element.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
 					    					"\t\t\t\t\t<KeyConsiderations>" + (((element.getKeyConsiderations() != null) && (!element.getKeyConsiderations().equals(""))) ? "<![CDATA[" + element.getKeyConsiderations() + "]]>" : "") + "</KeyConsiderations>" + "\n";
 							

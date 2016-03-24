@@ -483,12 +483,12 @@ public class ImportarModeloBean {
 				String dirCustomCategories = dirRes[0];
 				String archivoCC = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirCustomCategories, archivoCC, archivoCC);
-				TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(archivoCC, archivoPlugin);
+				TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(dirPlugin, dirCustomCategories, archivoCC, archivoPlugin);
 				
 		        vb.setContentCategory(contentCategory);
 				
 				if (contentCategory != null){
-					Map<String, TipoContentCategory> categorizedElements = cargarCategorizedElementsRepositorio(archivoPlugin, contentCategory.getCategorizedElements());
+					Map<String, TipoContentCategory> categorizedElements = cargarCategorizedElementsRepositorio(dirPlugin, archivoPlugin, contentCategory.getCategorizedElements());
 			        vb.setCategorizedElements(categorizedElements);
 				}
 			}
@@ -531,24 +531,18 @@ public class ImportarModeloBean {
 			List<String> guidancesDir = plugin.getGuidancesDir();
 			Iterator<String> itGuidances = guidancesDir.iterator();
 			Map<String, TipoContentElement> lstGuidances = new HashMap<String, TipoContentElement>();
-			//List<TipoContentElement> lstTemplates = new ArrayList<TipoContentElement>();
-			String dirGuidance = "";
 			while (itGuidances.hasNext()){
 				String guidanceDir = itGuidances.next();
 				String[] dirRes = separarDireccion(guidanceDir);
-				//String dirGuidance = dirRes[0];
-				dirGuidance = dirRes[0];
+				String dirGuidance = dirRes[0];
 				String archivoGuidance = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, "guidance_" + archivoGuidance);
 				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, "guidance_" + archivoGuidance, TipoTag.GUIDANCE_DESCRIPTION.toString());
 				if (guidance != null){
 					lstGuidances.put(guidance.getId(), guidance);
 				}
-
-				//TipoContentElement templates = cargarTemplateRepositorio(dirPlugin + dirGuidance, archivoPlugin, TipoTag.GUIDANCE.toString());
-				//lstTemplates.add(templates);
 			}
-			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(dirPlugin + dirGuidance, archivoPlugin, TipoTag.GUIDANCE.toString());
+			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(archivoPlugin, TipoTag.GUIDANCE.toString(), false);
 			vb.setTemplates(lstTemplates);
 			vb.setGuidances(lstGuidances);
 			
@@ -563,9 +557,9 @@ public class ImportarModeloBean {
 			while (itCE.hasNext()){
 				TipoContentElement tce = itCE.next().getValue();
 				String idTce = tce.getId();
-				TipoContentCategory contentElement = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce);
+				TipoContentCategory contentElement = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce);
 				if (contentElement != null){
-					TipoContentCategory childPackage = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId());
+					TipoContentCategory childPackage = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId());
 					if ((childPackage != null) && (!cpAgregados.contains(childPackage.getId()))){
 						cpAgregados.add(childPackage.getId());
 						TipoContentPackage tcp = new TipoContentPackage();
@@ -628,18 +622,20 @@ public class ImportarModeloBean {
 		return res;
 	}
 
-	public TipoContentCategory cargarCustomCategoriesRepositorio(String archivoCC, String archivoPlugin){
-		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(Constantes.destinoDescargas + archivoCC);
-		TipoContentCategory contentCategory = XMIParser.getElementsXMIPadreTipoId(Constantes.destinoDescargas + archivoPlugin, "contentElements", contentDescription.getId());
-		contentCategory.setContentDescription(contentDescription);
+	public TipoContentCategory cargarCustomCategoriesRepositorio(String dirPlugin, String dirCustomCategory, String archivoCC, String archivoPlugin){
+		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, Constantes.destinoDescargas + archivoCC);
+		TipoContentCategory contentCategory = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", contentDescription.getId());
+		if (contentCategory != null){
+			contentCategory.setContentDescription(contentDescription);
+		}
 		return contentCategory;
 	}
 	
-	public Map<String, TipoContentCategory> cargarCategorizedElementsRepositorio(String archivoPlugin, String categorizedElements){
+	public Map<String, TipoContentCategory> cargarCategorizedElementsRepositorio(String dirPrevia, String archivoPlugin, String categorizedElements){
 		File f = new File(Constantes.destinoDescargas + archivoPlugin);
 		if (f.isFile()){
 			String[] categorizedElementsArray = categorizedElements.split(" ");
-			return XMIParser.getElementsXMICategorizedElements(Constantes.destinoDescargas + archivoPlugin, categorizedElementsArray);	
+			return XMIParser.getElementsXMICategorizedElements(dirPrevia, Constantes.destinoDescargas + archivoPlugin, categorizedElementsArray);	
 		}
 		return null;
 	}
@@ -652,10 +648,10 @@ public class ImportarModeloBean {
 		return null;
 	}
 	
-	public List<TipoContentElement> cargarTemplateRepositorio(String dirPrevia, String archivoPlugin, String tag){
+	public List<TipoContentElement> cargarTemplateRepositorio(String archivoPlugin, String tag, boolean deleteFile){
 		File f = new File(Constantes.destinoDescargas + archivoPlugin);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIPlugin(dirPrevia, Constantes.destinoDescargas + archivoPlugin, tag);	
+			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, tag, deleteFile);	
 		}
 		return null;
 	}
