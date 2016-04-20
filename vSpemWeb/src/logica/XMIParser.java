@@ -57,7 +57,7 @@ public class XMIParser {
 							Element eChild = (Element) child;
 							if (eChild.hasAttribute("uri")){
 								String uri = eChild.getAttribute("uri");
-								if (uri != null){
+								if ((uri != null) && (!uri.equals(""))){
 									// uri puede ser de la forma: dir1/dir2/.../nombre
 									String nombre = uri;
 									int indexDiv = nombre.indexOf("/");
@@ -1312,9 +1312,9 @@ public class XMIParser {
 		      		    else if(type.equals("WorkOrder")){
 		      		    	if (eHijo.hasAttribute("pred")){
 								predecesoresList = eHijo.getAttribute("pred");
-								if (!predecesores.containsKey(id)){
+								//if (!predecesores.containsKey(id)){
 									predecesores.put(id, predecesoresList);
-			      		    	}
+			      		    	//}
 							}
 		      		    	
 		      		    }
@@ -1528,13 +1528,15 @@ public class XMIParser {
     					// Busco pred
     					Struct predS = buscoPadre(pred,list);
     					if(predS != null){
-    						if (predS.getSucesores() != null){
-    						predS.getSucesores().add(s.getElementID());
+    						if (s.getPredecesores() != null){
+    						s.getPredecesores().put(idLink, predS.getElementID());
+    						//predS.getPredecesores().put(idLink, s.getElementID());
     						}
     						else {
-    							List<String> lista = new ArrayList<String>();
-    							lista.add(s.getElementID());
-    							predS.setSucesores(lista);
+    							Map<String,String> lista = new HashMap<String,String>();
+    							lista.put(idLink, s.getElementID());
+    							//predS.setPredecesores(lista);
+    							s.setPredecesores(lista);
     						}
     						if (!result.contains(predS)){
     							if (!result.contains(s)){

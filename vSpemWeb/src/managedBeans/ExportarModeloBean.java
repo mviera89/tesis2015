@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -30,6 +31,7 @@ import dataTypes.TipoPlugin;
 import dataTypes.TipoRolesWorkProducts;
 import dataTypes.TipoSection;
 import dominio.Struct;
+import dominio.Variant;
  
 @ManagedBean
 public class ExportarModeloBean {
@@ -39,9 +41,10 @@ public class ExportarModeloBean {
 	private List<String> processIds = new ArrayList<String>();
 	private String textoCapabilityPattern = "";
 	
-	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP){
+	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo){
 		try{
 			if (modeloAdaptado != null){
+				
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
@@ -167,6 +170,10 @@ public class ExportarModeloBean {
 						//"\t<MethodElementProperty value=\"" + methodElementPropertyId + "\"/>" + "\n" +
 						//"\t<MethodElementProperty value=\"" + methodElementPropertyName + "\"/>" + "\n" +
 						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + (!methodPluginSelectionChangeDate.equals("") ? "\" changeDate=\"" + methodPluginSelectionChangeDate : "" ) + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
+				
+				//actualizo predecesores
+				actualizarPredecesoresModelo(modeloAdaptado, modelo);
+				
 				
 				List<Element> elementos = modeloAdaptado.getElements();
 				Iterator<Element> it = elementos.iterator();
@@ -589,14 +596,15 @@ public class ExportarModeloBean {
 				texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
 				
 				//Agrego sucesores
-				List<String> sucesores = s.getSucesores();
-				if ((sucesores != null) && (sucesores.size() > 0)){
-					Iterator<String> it = sucesores.iterator();
-					while (it.hasNext()){
-						String next = it.next();
-						texto += "\t\t\t\t\t<Predecessor id=\"_xaj2g0u2Ed-vjd_3xeIJwQ\" linkType=\"finishToStart\">" + id + "</Predecessor>" + "\n";
-						//<Predecessor id="_xaj2g0u2Ed-vjd_3xeIJwQ" linkType="finishToStart" properties="name=successor&#xA;value=_oMNV4EerEd-iTvGQFwAspw&#xA;scope=_ab5yQUesEd-iTvGQFwAspw">_3iR0EEfDEd-iNY7TQq4TSw</Predecessor>
-					}
+				Map<String,String> sucesores = s.getPredecesores();
+				if (sucesores != null){
+					Iterator<Entry<String, String>> iter = sucesores.entrySet().iterator();
+			  		while (iter.hasNext()){
+			  			Entry<String, String> e = iter.next();
+			  			String idLink = e.getKey();
+			        	String sucesor = e.getValue();
+			        	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\">" + sucesor + "</Predecessor>" + "\n";
+			  		}
 				}
 				
 				// Si tiene asignado un rol principal, se lo agrego
@@ -720,5 +728,212 @@ public class ExportarModeloBean {
 		}
 		return null;	
 	}
+	
+	public void actualizarPredecesoresModelo(DefaultDiagramModel modeloAdaptado, DefaultDiagramModel modelo){
+		//recorro modelo, para cada variante busco si el id esta en modelo adapatado
+		//(fue seleccionada), si esta busco el id del var point
+		//con este id busco en los predecesores, si alguien lo tiene se lo quito y se agrega la variante como predecesor
+		Iterator<Element> itModelo = modelo.getElements().iterator();
+		while (itModelo.hasNext()){
+			Element e = itModelo.next();
+			Struct s = (Struct) e.getData();
+			TipoElemento tipo = s.getType();
+			if(tipo == TipoElemento.VP_ACTIVITY  ||
+	        		tipo == TipoElemento.VP_TASK 	  ||
+	        		tipo == TipoElemento.VP_PHASE 	  ||
+	        		tipo == TipoElemento.VP_ITERATION ||
+	        		tipo == TipoElemento.VP_ROLE 	  ||
+	        		tipo == TipoElemento.VP_MILESTONE ||
+	        		tipo == TipoElemento.VP_WORK_PRODUCT){
+					//tomo las variantes
+					List<Variant> variants = s.getVariantes();
+					String idVarPoint = s.getElementID();
+					Iterator<Variant> itV = variants.iterator();
+					int num = 0;
+					while (itV.hasNext()){
+						num ++;
+						Variant v = itV.next();
+						//veo si v esta en modelo adaptado
+						String idV = v.getID();
+						boolean pertenece = false;
+						Iterator<Element> it = modeloAdaptado.getElements().iterator();
+						while (it.hasNext() && !pertenece){
+							Element el = it.next();
+							Struct st = (Struct) el.getData();
+							if (st.getElementID().equals(idV)){
+								pertenece = true;
+							}
+							else{
+								pertenece = elementoPerteneceAModelo(idV, s.getHijos());
+								
+							}
+						}
+							
+							if (pertenece){
+								
+								//buscar quien tiene este id como predecessor
+								Iterator<Element> itModeloA = modeloAdaptado.getElements().iterator();
+								boolean encontre = false;
+								while (itModeloA.hasNext() && !encontre){
+									Element ele = itModeloA.next();
+									Struct str = (Struct) ele.getData();
+									
+									if (str.getPredecesores() != null){
+										Iterator<Entry<String, String>> iter = str.getPredecesores().entrySet().iterator();
+										String link = "";
+								  		while (iter.hasNext()){
+								  			
+								  			Entry<String, String> elem = iter.next();
+								  			String idLink = elem.getKey();
+								        	String predecesor = elem.getValue();
+								        	if (predecesor.equals(idVarPoint)){
+								        		encontre = true;
+								        		link = idLink;
+								        	}
+								  		}
+								  		str.getPredecesores().put(link+num, idV);
+									}
+								  	if (!encontre){
+								  			actualizarPredecesor(idVarPoint, idV, str.getHijos(), num);
+								  	}
+								}
+							}
+						
+					}
+					//sacar el varpoint de quien lo tiene como predecesor
+					Iterator<Element> itModeloA = modeloAdaptado.getElements().iterator();
+					boolean encontre = false;
+					while (itModeloA.hasNext() && !encontre){
+						Element ele = itModeloA.next();
+						Struct str = (Struct) ele.getData();
+						
+						if (str.getPredecesores() != null){
+							Iterator<Entry<String, String>> iter = str.getPredecesores().entrySet().iterator();
+							String link = "";
+					  		while (iter.hasNext()){
+					  			
+					  			Entry<String, String> elem = iter.next();
+					  			String idLink = elem.getKey();
+					        	String predecesor = elem.getValue();
+					        	if (predecesor.equals(idVarPoint)){
+					        		encontre = true;
+					        		link = idLink;
+					        	}
+					  		}
+					  		str.getPredecesores().remove(link);
+						}
+					  	if (!encontre){
+					  			quitarPredecessor(idVarPoint, str.getHijos());
+					  	}
+					}
+					
+					
+			}
+			
+		}
+		
+		
+		
+	
+	
+	}
+	
+	public boolean elementoPerteneceAModelo(String id, List<Struct> lista){
+		Iterator<Struct> it = lista.iterator();
+		while (it.hasNext()){
+			Struct s =it.next();
+			if (s.getElementID().equals(id)){
+				return true;
+			}
+			else{
+				return elementoPerteneceAModelo(id, s.getHijos());
+			}
+		}
+		return false;
+		
+	}
+	
+	public void actualizarPredecesor(String idVP, String idVariant, List<Struct> list, int num){
+		//quien tenga idVP como predecesor, se agrega idVariant como predecesor
+		if (list != null){
+			Iterator<Struct> it = list.iterator();
+			while (it.hasNext()){
+				
+				Struct s = it.next();
+				Map<String,String> predecesores = s.getPredecesores();
+				
+				
+				if (predecesores != null) {
+					Iterator<Entry<String, String>> iter = predecesores.entrySet().iterator();
+					boolean encontre = false;
+					String link = "";
+			  		while (iter.hasNext() && !encontre){
+			  			
+			  			Entry<String, String> e = iter.next();
+			  			String idLink = e.getKey();
+			        	String predecesor = e.getValue();
+			        	if (predecesor.equals(idVP)){
+			        		encontre = true;
+			        		link = idLink;
+			        	}
+			  		}
+			  		if (encontre){
+			  			s.getPredecesores().put(link+num, idVariant);
+			  		}
+			  		else {
+			  			List<Struct> hijos = s.getHijos();
+			  			Iterator<Struct> ite = hijos.iterator();
+			  			while (ite.hasNext()){
+			  				Struct st = ite.next();
+			  				actualizarPredecesor(idVP, idVariant, st.getHijos(), num);
+			  			}
+			  			
+			  		}
+			}
+		}
+	}
+}
+	
+public void quitarPredecessor(String Id, List<Struct> elementos){
+	
+	Iterator<Struct> it = elementos.iterator();
+	boolean encontre = false;
+	while (it.hasNext()){
+		Struct str = it.next();
+		
+		Map<String,String> predecesores = str.getPredecesores();
+		if (predecesores != null) {
+			Iterator<Entry<String, String>> iter = predecesores.entrySet().iterator();
+			String link = "";
+	  		while (iter.hasNext() && !encontre){
+	  			
+	  			Entry<String, String> e = iter.next();
+	  			String idLink = e.getKey();
+	        	String predecesor = e.getValue();
+	        	if (predecesor.equals(Id)){
+	        		encontre = true;
+	        		link = idLink;
+	        	}
+	  		}
+	  		if (encontre){
+	  			str.getPredecesores().remove(link);
+	  		}
+	  		else {
+	  			List<Struct> hijos = str.getHijos();
+	  			Iterator<Struct> ite = hijos.iterator();
+	  			while (ite.hasNext()){
+	  				Struct s = ite.next();
+	  				quitarPredecessor(Id, s.getHijos());
+	  			}
+	  			
+	  		}
+	}
+		
+	}
+	
+}
+		
+		
+	
 	
 }
