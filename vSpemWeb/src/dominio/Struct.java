@@ -5,6 +5,8 @@ import java.util.List;
 
 import config.Constantes;
 import dataTypes.TipoElemento;
+import dataTypes.TipoMethodElementProperty;
+import dataTypes.TipoSection;
 
 public class Struct {
 	
@@ -25,6 +27,13 @@ public class Struct {
 	private String description;
 	private String briefDescription;
     private String presentationName;
+	private String guid;
+	private String isPlanned;
+	private String superActivities;
+	private String isOptional;
+	private String variabilityType;
+	private String isSynchronizedWithSource;
+	
     private String performedPrimaryBy;
     private List<String> performedAditionallyBy;
     private List<String> mandatoryInputs;
@@ -37,12 +46,16 @@ public class Struct {
     private List<String> sucesores;
     private String processComponentId;
 	private String processComponentName;
+	private String processComponentPresentationName;
 	private String presentationId;
 	private String elementIDExtends;
-
+	
     private String idTask;
     private String idWorkProduct;
-    
+    private String idRole;
+    private List<TipoSection> steps;
+    private List<TipoMethodElementProperty> methodElementProperties;
+	
 	public Struct(){}
 	
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
@@ -66,6 +79,9 @@ public class Struct {
 		this.hijos = new ArrayList<Struct>();
 		this.description = "";
 		this.presentationName = "";
+		this.guid = "";
+		this.isPlanned = "";
+		this.superActivities = "";
 		this.performedPrimaryBy = "";
 		this.performedAditionallyBy = null;
 		this.mandatoryInputs = null;
@@ -80,6 +96,8 @@ public class Struct {
 		this.processComponentName = processComponentName;
 		this.presentationId = presentationId;
 		this.elementIDExtends = elementIDExtends;
+		this.steps = new ArrayList<TipoSection>();
+		this.methodElementProperties = new ArrayList<TipoMethodElementProperty>();
 	}
 
 	public String getElementID() {
@@ -112,6 +130,10 @@ public class Struct {
 
 	public void setType(TipoElemento type) {
 		this.type = type;
+	}
+
+	public void setVariantes(List<Variant> variantes) {
+		this.variantes = variantes;
 	}
 
 	public int getMin() {
@@ -202,6 +224,54 @@ public class Struct {
 		this.presentationName = presentationName;
 	}
 
+	public String getGuid() {
+		return guid;
+	}
+
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
+
+	public String getIsPlanned() {
+		return isPlanned;
+	}
+
+	public void setIsPlanned(String isPlanned) {
+		this.isPlanned = isPlanned;
+	}
+
+	public String getSuperActivities() {
+		return superActivities;
+	}
+
+	public void setSuperActivities(String superActivities) {
+		this.superActivities = superActivities;
+	}
+
+	public String getIsOptional() {
+		return isOptional;
+	}
+
+	public void setIsOptional(String isOptional) {
+		this.isOptional = isOptional;
+	}
+
+	public String getVariabilityType() {
+		return variabilityType;
+	}
+
+	public void setVariabilityType(String variabilityType) {
+		this.variabilityType = variabilityType;
+	}
+
+	public String getIsSynchronizedWithSource() {
+		return isSynchronizedWithSource;
+	}
+
+	public void setIsSynchronizedWithSource(String isSynchronizedWithSource) {
+		this.isSynchronizedWithSource = isSynchronizedWithSource;
+	}
+
 	public String getPerformedPrimaryBy() {
 		return performedPrimaryBy;
 	}
@@ -290,6 +360,15 @@ public class Struct {
 		this.processComponentName = processComponentName;
 	}
 
+	public String getProcessComponentPresentationName() {
+		return processComponentPresentationName;
+	}
+
+	public void setProcessComponentPresentationName(
+			String processComponentPresentationName) {
+		this.processComponentPresentationName = processComponentPresentationName;
+	}
+
 	public String getPresentationId() {
 		return presentationId;
 	}
@@ -330,6 +409,31 @@ public class Struct {
 		this.idWorkProduct = idWorkProduct;
 	}
 
+	public String getIdRole() {
+		return idRole;
+	}
+
+	public void setIdRole(String idRole) {
+		this.idRole = idRole;
+	}
+
+	public List<TipoSection> getSteps() {
+		return steps;
+	}
+
+	public void setSteps(List<TipoSection> steps) {
+		this.steps = steps;
+	}
+
+	public List<TipoMethodElementProperty> getMethodElementProperties() {
+		return methodElementProperties;
+	}
+
+	public void setMethodElementProperties(
+			List<TipoMethodElementProperty> methodElementProperties) {
+		this.methodElementProperties = methodElementProperties;
+	}
+
 	@Override
 	public String toString() {
 		return "Struct [elementID=" + elementID + ", nombre=" + nombre
@@ -338,7 +442,11 @@ public class Struct {
 				+ ", imagen=" + imagen + ", esPV=" + esPV + ", estaExpandido="
 				+ estaExpandido + ", etiqueta=" + etiqueta + ", description="
 				+ description + ", briefDescription=" + briefDescription
-				+ ", presentationName=" + presentationName
+				+ ", presentationName=" + presentationName + ", guid=" + guid
+				+ ", isPlanned=" + isPlanned + ", superActivities="
+				+ superActivities + ", isOptional=" + isOptional
+				+ ", variabilityType=" + variabilityType
+				+ ", isSynchronizedWithSource=" + isSynchronizedWithSource
 				+ ", performedPrimaryBy=" + performedPrimaryBy
 				+ ", performedAditionallyBy=" + performedAditionallyBy
 				+ ", mandatoryInputs=" + mandatoryInputs + ", optionalInputs="
@@ -349,7 +457,9 @@ public class Struct {
 				+ ", processComponentId=" + processComponentId
 				+ ", processComponentName=" + processComponentName
 				+ ", presentationId=" + presentationId + ", elementIDExtends="
-				+ elementIDExtends + ", idTask=" + idTask + "]";
+				+ elementIDExtends + ", idTask=" + idTask + ", idWorkProduct="
+				+ idWorkProduct + ", idRole=" + idRole + ", steps=" + steps
+				+ "]";
 	}
 
 }

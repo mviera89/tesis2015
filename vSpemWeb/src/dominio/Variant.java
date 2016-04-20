@@ -3,11 +3,20 @@ package dominio;
 import java.util.ArrayList;
 import java.util.List;
 
+import dataTypes.TipoMethodElementProperty;
+import dataTypes.TipoSection;
+
 public class Variant {
 
 	private String ID;
 	private String name;
     private String presentationName;
+	private String guid;
+	private String isPlanned;
+	private String superActivities;
+	private String isOptional;
+	private String variabilityType;
+	private String isSynchronizedWithSource;
 	private String description;
 	private String briefDescription;
 	private String IDVarPoint;
@@ -19,9 +28,14 @@ public class Variant {
     private Boolean estaExpandido;
     private String processComponentId;
 	private String processComponentName;
+	private String processComponentPresentationName;
 	private String presentationId;
 	private String elementIDExtends;
-	private String idTask; 
+	private String idTask;
+	private String idRole;
+	private String idWorkProduct;
+    private List<TipoSection> steps;
+    private List<TipoMethodElementProperty> methodElementProperties;
 	
 	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.ID = ID;
@@ -38,6 +52,8 @@ public class Variant {
 		this.processComponentName = processComponentName;
 		this.presentationId = presentationId;
 		this.elementIDExtends = elementIDExtends;
+		this.steps = new ArrayList<TipoSection>();
+		this.methodElementProperties = new ArrayList<TipoMethodElementProperty>();
 	}
 
 	public String getID() {
@@ -62,6 +78,54 @@ public class Variant {
 
 	public void setPresentationName(String presentationName) {
 		this.presentationName = presentationName;
+	}
+
+	public String getGuid() {
+		return guid;
+	}
+
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
+
+	public String getIsPlanned() {
+		return isPlanned;
+	}
+
+	public void setIsPlanned(String isPlanned) {
+		this.isPlanned = isPlanned;
+	}
+
+	public String getSuperActivities() {
+		return superActivities;
+	}
+
+	public void setSuperActivities(String superActivities) {
+		this.superActivities = superActivities;
+	}
+
+	public String getIsOptional() {
+		return isOptional;
+	}
+
+	public void setIsOptional(String isOptional) {
+		this.isOptional = isOptional;
+	}
+
+	public String getVariabilityType() {
+		return variabilityType;
+	}
+
+	public void setVariabilityType(String variabilityType) {
+		this.variabilityType = variabilityType;
+	}
+
+	public String getIsSynchronizedWithSource() {
+		return isSynchronizedWithSource;
+	}
+
+	public void setIsSynchronizedWithSource(String isSynchronizedWithSource) {
+		this.isSynchronizedWithSource = isSynchronizedWithSource;
 	}
 
 	public String getDescription() {
@@ -152,6 +216,15 @@ public class Variant {
 		this.processComponentName = processComponentName;
 	}
 
+	public String getProcessComponentPresentationName() {
+		return processComponentPresentationName;
+	}
+
+	public void setProcessComponentPresentationName(
+			String processComponentPresentationName) {
+		this.processComponentPresentationName = processComponentPresentationName;
+	}
+
 	public String getPresentationId() {
 		return presentationId;
 	}
@@ -174,6 +247,39 @@ public class Variant {
 
 	public void setIdTask(String idTask) {
 		this.idTask = idTask;
+	}
+
+	public String getIdRole() {
+		return idRole;
+	}
+
+	public void setIdRole(String idRole) {
+		this.idRole = idRole;
+	}
+
+	public String getIdWorkProduct() {
+		return idWorkProduct;
+	}
+
+	public void setIdWorkProduct(String idWorkProduct) {
+		this.idWorkProduct = idWorkProduct;
+	}
+
+	public List<TipoSection> getSteps() {
+		return steps;
+	}
+
+	public void setSteps(List<TipoSection> steps) {
+		this.steps = steps;
+	}
+
+	public List<TipoMethodElementProperty> getMethodElementProperties() {
+		return methodElementProperties;
+	}
+
+	public void setMethodElementProperties(
+			List<TipoMethodElementProperty> methodElementProperties) {
+		this.methodElementProperties = methodElementProperties;
 	}
 
 }

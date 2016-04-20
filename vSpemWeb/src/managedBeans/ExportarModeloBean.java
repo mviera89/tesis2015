@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
-
-import logica.XMIParser;
 
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
@@ -78,11 +77,7 @@ public class ExportarModeloBean {
 				String methodLibraryChangeDescription = "";
 				String methodLibraryVersion = "";
 				String methodLibraryTool = "epf=1.2.0";
-				
-				// <MethodElementProperty... />
-				/*String methodElementPropertyId = "_rZz1MFyXEeWvU7GfTaR-Wg";
-				String methodElementPropertyName = "EjemploPublish1";*/
-				
+								
 				// <MethodPlugin... />
 				String methodPluginSelectionId = plugin.getId();
 				String methodPluginSelectionName = plugin.getName();
@@ -136,14 +131,11 @@ public class ExportarModeloBean {
 				String processChangeDescription = "";
 				String processVersion = "";
 				String processHasMultipleOccurrences = "false";
-				String processIsOptional = "false";
-				String processIsPlanned = "true";
 				String processPrefix = "";
 				String processIsEventDriven = "false";
 				String processIsOngoing = "false";
 				String processIsRepeatable = "false";
-				String processIsEnactable = "false";
-				String processVariabilityType = "na";
+				//String processIsEnactable = "false";
 				String processExternalId = "";
 				String processUsageGuidance = "";
 				
@@ -166,9 +158,7 @@ public class ExportarModeloBean {
 				String texto =
 					"<?xml version=\"" + versionXML + "\" encoding=\"" + encodingXML + "\"?>" + "\n" +
 					"<uma:MethodLibrary xmlns:xsi=\"" + xmlns_xsi + "\" xmlns:uma=\"" + xmlns_uma + "\" name=\"" + methodLibraryName + "\" briefDescription=\"" + methodLibraryBriefDescription + "\" id=\"" + methodLibraryId + "\" orderingGuide=\"" + methodLibraryOrderingGuide + "\" suppressed=\"" + methodLibrarySuppressed + "\" authors=\"" + methodLibraryAuthors + "\" changeDescription=\"" + methodLibraryChangeDescription + "\" version=\"" + methodLibraryVersion + "\" tool=\"" + methodLibraryTool + "\">" + "\n" +
-						//"\t<MethodElementProperty value=\"0\"/>" + "\n" +
-						//"\t<MethodElementProperty value=\"" + methodElementPropertyId + "\"/>" + "\n" +
-						//"\t<MethodElementProperty value=\"" + methodElementPropertyName + "\"/>" + "\n" +
+						//"\t<MethodElementProperty value=\"" + methodElementPropertyId + "\"/>" + "\n" +...
 						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + (!methodPluginSelectionChangeDate.equals("") ? "\" changeDate=\"" + methodPluginSelectionChangeDate : "" ) + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
 				
 				List<Element> elementos = modeloAdaptado.getElements();
@@ -182,6 +172,10 @@ public class ExportarModeloBean {
 						String processComponentId = s.getProcessComponentId();
 						String processId = s.getElementID();
 						String processDescriptionId = s.getPresentationId();
+						String processIsPlanned = s.getIsPlanned();
+						String processIsOptional = s.getIsOptional();
+						String processVariabilityType = s.getVariabilityType();
+						String diagramURI = ""; //s.getDiagramURI(); 
 						
 						if (tipo == TipoElemento.DELIVERY_PROCESS){
 					  		// ContentCategory
@@ -211,7 +205,7 @@ public class ExportarModeloBean {
 							
 							textoDeliveryProcess +=
 		    				"\t\t<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processComponentId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
-	    						"\t\t\t<Process xsi:type=\"uma:" + tipo.toString() + "\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + "\" IsEnactable=\"" + processIsEnactable + "\" variabilityType=\"" + processVariabilityType + "\">" + "\n" +
+	    						"\t\t\t<Process xsi:type=\"uma:" + tipo.toString() + "\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + /*"\" IsEnactable=\"" + processIsEnactable +*/ "\" variabilityType=\"" + processVariabilityType + "\" diagramURI=\"" + diagramURI + "\">" + "\n" +
 	    							
 						    		"\t\t\t\t<Presentation xsi:type=\"uma:DeliveryProcessDescription\" name=\"" + processName + "," + processId + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
 					    				"\t\t\t\t\t<MainDescription></MainDescription>" + "\n" +
@@ -232,8 +226,8 @@ public class ExportarModeloBean {
 							List<Struct> hijos = s.getHijos();
 							Iterator<Struct> itHijos = hijos.iterator();
 							while (itHijos.hasNext()){
-								Struct hijo = itHijos.next(); 
-								textoDeliveryProcess += agregarElementoAxml(hijo, processId);
+								Struct hijo = itHijos.next();								
+								textoDeliveryProcess += agregarElementoAxml(hijo, contentPackages);
 							}
 						}
 						else if (tipo == TipoElemento.CAPABILITY_PATTERN){
@@ -241,7 +235,7 @@ public class ExportarModeloBean {
 							idCapabilityPatterns.add(processId);
 							textoCapabilityPattern +=
 		    				"\t\t<MethodPackage xsi:type=\"uma:ProcessComponent\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processComponentId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" global=\"" + processGlobal + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\">" + "\n" +
-								"\t\t\t\t<Process xsi:type=\"uma:" + tipo.toString() + "\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + "\" IsEnactable=\"" + processIsEnactable + "\" variabilityType=\"" + processVariabilityType + "\">" + "\n" +
+								"\t\t\t\t<Process xsi:type=\"uma:" + tipo.toString() + "\" name=\"" + processName + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" presentationName=\"" + processPresentationName + "\" hasMultipleOccurrences=\"" + processHasMultipleOccurrences + "\" isOptional=\"" + processIsOptional + "\" isPlanned=\"" + processIsPlanned + "\" prefix=\"" + processPrefix + "\" isEventDriven=\"" + processIsEventDriven + "\" isOngoing=\"" + processIsOngoing + "\" isRepeatable=\"" + processIsRepeatable + /*"\" IsEnactable=\"" + processIsEnactable +*/ "\" variabilityType=\"" + processVariabilityType + "\" diagramURI=\"" + diagramURI + "\">" + "\n" +
 									
 									"\t\t\t\t\t<Presentation xsi:type=\"uma:ProcessDescription\" name=\"" + processName + "," + processId + "\" briefDescription=\"" + processBriefDescription + "\" id=\"" + processDescriptionId + "\" orderingGuide=\"" + processOrderingGuide + "\" suppressed=\"" + processSuppressed + "\" authors=\"" + processAuthors + "\" changeDescription=\"" + processChangeDescription + "\" version=\"" + processVersion + "\" externalId=\"" + processExternalId + "\" usageGuidance=\"" + processUsageGuidance + "\">" + "\n" +
 				    					"\t\t\t\t\t\t<MainDescription></MainDescription>" + "\n" +
@@ -256,8 +250,8 @@ public class ExportarModeloBean {
 							List<Struct> hijos = s.getHijos();
 							Iterator<Struct> itHijos = hijos.iterator();
 							while (itHijos.hasNext()){
-								Struct hijo = itHijos.next(); 
-								textoCapabilityPattern += agregarElementoAxml(hijo, processId);
+								Struct hijo = itHijos.next();
+								textoCapabilityPattern += agregarElementoAxml(hijo, contentPackages);
 							}
 							
 							textoCapabilityPattern +=
@@ -285,26 +279,38 @@ public class ExportarModeloBean {
 					}
 					texto +=	"\t\t\t</ContentCategory>" + "\n";
 					
-					for (int i = 0; i < n; i++){
-						String key = categorizedElementsArray[i];
-						TipoContentCategory element = categorizedElementsContent.get(key);
-						if (element != null){
+					Iterator<Entry<String, TipoContentCategory>> iter = categorizedElementsContent.entrySet().iterator();
+					while (iter.hasNext()){
+						Entry<String, TipoContentCategory> entry = iter.next();
+						TipoContentCategory element = entry.getValue();
+						if ((element != null) && (!element.getId().equals(idProcessView)) && (!element.getCategorizedElements().contains(idProcessView))){
+							String type = element.getType().equals("org.eclipse.epf.uma:CustomCategory") ? "uma:CustomCategory" :
+										  element.getType().equals("org.eclipse.epf.uma:Discipline") ? "uma:Discipline" : "";
 							String nodeIcon = element.getNodeicon();
 							String shapeIcon = element.getShapeicon();
-							texto +=	"\t\t\t<ContentCategory xsi:type=\"uma:CustomCategory\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" presentationName=\"" + element.getPresentationName() + "\" suppressed=\"" + contentCategorySuppressed + (((nodeIcon != null) && (!nodeIcon.equals(""))) ? ("\" nodeicon=\"" + nodeIcon) : "") + (((shapeIcon != null) && (!shapeIcon.equals(""))) ? ("\" shapeicon=\"" + shapeIcon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+							texto +=	"\t\t\t<ContentCategory xsi:type=\"" + type + "\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" presentationName=\"" + element.getPresentationName() + "\" suppressed=\"" + contentCategorySuppressed + (((nodeIcon != null) && (!nodeIcon.equals(""))) ? ("\" nodeicon=\"" + nodeIcon) : "") + (((shapeIcon != null) && (!shapeIcon.equals(""))) ? ("\" shapeicon=\"" + shapeIcon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
 							TipoMethodElementProperty methodElementProperty = element.getMethodElementProperty();
 							if (methodElementProperty != null){
 								texto += 		"\t\t\t\t<MethodElementProperty name=\"" + methodElementProperty.getName() + "\" value=\"" + methodElementProperty.getValue() + "\"/>" + "\n";
 							}
 							String categorizedElementsE = element.getCategorizedElements();
-							if (categorizedElementsE.equals("")){
-								texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
+							if (type.equals("uma:Discipline")){
+								String[] tasks = element.getTasks().split(" ");
+								int nTasks = tasks.length;
+								for (int j = 0; j < nTasks; j++){
+									texto += "\t\t\t\t<Task>" + tasks[j] + "</Task>" + "\n";
+								}
 							}
 							else{
-								String[] categorizedElementsEA = categorizedElementsE.split(" ");
-								int nEA = categorizedElementsEA.length;
-								for (int j = 0; j < nEA; j++){
-									texto += 	"\t\t\t\t<CategorizedElement>" + categorizedElementsEA[j] + "</CategorizedElement>" + "\n";
+								if (categorizedElementsE.equals("")){
+									texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
+								}
+								else{
+									String[] categorizedElementsEA = categorizedElementsE.split(" ");
+									int nEA = categorizedElementsEA.length;
+									for (int j = 0; j < nEA; j++){
+										texto += 	"\t\t\t\t<CategorizedElement>" + categorizedElementsEA[j] + "</CategorizedElement>" + "\n";
+									}
 								}
 							}
 							texto +=	"\t\t\t</ContentCategory>" + "\n";
@@ -323,45 +329,83 @@ public class ExportarModeloBean {
 					lstCE.addAll(tcp.getTasksCP());
 					lstCE.addAll(tcp.getWorkproductsCP());
 					lstCE.addAll(tcp.getGuidancesCP());
+					
 					Iterator<TipoContentElement> itCE = lstCE.iterator();
 					while (itCE.hasNext()){
 						TipoContentElement element = itCE.next();
 						String name = element.getName();
 						String[] resSplit = name.split(",");
 						String id = resSplit.length > 1 ? resSplit[1] : "";
-						Struct elementStruct = (element.getTipoElemento() == TipoElemento.WORK_PRODUCT) ? 
-													buscarElementoEnTipoRolesWorkProducts(id, modeloRolesWP) : 
-													(element.getTipoElemento() == TipoElemento.GUIDANCE) ? 
-														buscarElementoEnVistaBean(id) : 
-														buscarElementoEnModelo(id, modeloAdaptado);
-						if (elementStruct != null){
-							String briefDescriptionStruct = ((elementStruct != null) && (elementStruct.getBriefDescription() != null)) ? elementStruct.getBriefDescription() : "";
-							String presentationNameStruct = ((elementStruct != null) && (elementStruct.getPresentationName() != null)) ? elementStruct.getPresentationName() : "";
-							String briefDescriptionPresentationStruct = "";
-							String orderingGuideStruct = "";
-							String suppressedStruct = "false";
-							String changeDescriptionStruct = "";
-							String externalIdStruct = "";
-							TipoElemento typeStruct = elementStruct.getType();
-							String type = (typeStruct == TipoElemento.TASK) ? "uma:Task" : 
-										  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : 
-										  (typeStruct == TipoElemento.GUIDANCE) ? "uma:Template" : "";
-							String typeDescription = (typeStruct == TipoElemento.TASK) ? "uma:TaskDescription" : 
-								  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : 
-								  					 (typeStruct == TipoElemento.GUIDANCE) ? "uma:GuidanceDescription" : "";
+						
+						if ((element.getTipoElemento() == TipoElemento.WORK_PRODUCT) || (element.getTipoElemento() == TipoElemento.TASK)){ 
+							name = ((element.getContentDescription() != null) ? element.getContentDescription().getName() : "");
+							if (name.equals("")){
+								name = element.getName();
+							}
+							resSplit = name.split(",");
+							id = resSplit.length > 1 ? resSplit[1] : "";
+						}
+						
+						TipoElemento typeStruct = element.getTipoElemento();
+						String briefDescriptionStruct = (element.getBriefDescription() != null) ? element.getBriefDescription() : "";
+						String presentationNameStruct = (element.getPresentationName() != null) ? element.getPresentationName() : "";
+						String orderingGuideStruct = "";
+						String suppressedStruct = "false";
+						String changeDescriptionStruct = "";
+						String externalIdStruct = "";
+						
+						String type = (typeStruct == TipoElemento.TASK) ? "uma:Task" : 
+									  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : 
+									  (typeStruct == TipoElemento.GUIDANCE) ? "uma:Template" : "";
+						
+						String typeDescription = (typeStruct == TipoElemento.TASK) ? "uma:TaskDescription" : 
+							  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : 
+							  					 (typeStruct == TipoElemento.GUIDANCE) ? "uma:GuidanceDescription" : "";
+						
+						String idStruct = element.getId();
+						
+						texto += "\t\t\t<ContentElement xsi:type=\"" + type + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionStruct + "\" id=\"" + idStruct + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + presentationNameStruct + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\"";
+
+						TipoContentElement elementDescription = ((typeStruct == TipoElemento.WORK_PRODUCT) || (typeStruct == TipoElemento.TASK)) ? element.getContentDescription() : element;
+						TipoContentElement guidance = null;
+						String idPresentation = "";
+						if (elementDescription != null){
+							guidance = elementDescription.getGuidance();
+							idPresentation = (typeStruct == TipoElemento.GUIDANCE) ? 
+												((guidance != null) ? guidance.getId() : "") :
+												elementDescription.getId();
+						}
+						if ((idPresentation != null) && (!idPresentation.equals(""))){
+
+							String namePresentation = (typeStruct == TipoElemento.GUIDANCE) ? 
+														((guidance != null) ? guidance.getName() : "") :
+														elementDescription.getName();
+							String briefDescriptionPresentationStruct = elementDescription.getBriefDescription();
+							String mainDescription = (typeStruct == TipoElemento.GUIDANCE) ? 
+														(((guidance != null) && (guidance.getMainDescription() != null) && (!guidance.getMainDescription().equals(""))) ? "<![CDATA[" + guidance.getMainDescription() + "]]>" : "") :
+														(((elementDescription.getMainDescription() != null) && (!elementDescription.getMainDescription().equals(""))) ? "<![CDATA[" + elementDescription.getMainDescription() + "]]>" : "");
 							
-							String idStruct = (typeStruct == TipoElemento.TASK) ? elementStruct.getIdTask() : 
-								  			  (typeStruct == TipoElemento.WORK_PRODUCT) ? elementStruct.getIdWorkProduct() : 
-								  			  (typeStruct == TipoElemento.GUIDANCE) ? id : "";
-								  		
-							texto += "\t\t\t<ContentElement xsi:type=\"" + type + "\" name=\"" + elementStruct.getNombre() + "\" briefDescription=\"" + briefDescriptionStruct + "\" id=\"" + idStruct + "\" orderingGuide=\"" + contentElementOrderingGuide + "\" presentationName=\"" + presentationNameStruct + "\" suppressed=\"" + contentElementSuppressed + "\" variabilityType=\"" + contentElementVariabilityType + "\">" + "\n" +
+							String keyConsiderations = (typeStruct == TipoElemento.GUIDANCE) ?
+														(((guidance != null) && (guidance.getKeyConsiderations() != null) && (!guidance.getKeyConsiderations().equals(""))) ? "<![CDATA[" + guidance.getKeyConsiderations() + "]]>" : "") :
+														(((elementDescription.getKeyConsiderations() != null) && (!elementDescription.getKeyConsiderations().equals(""))) ? "<![CDATA[" + elementDescription.getKeyConsiderations() + "]]>" : "");
 							
-										"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + element.getName() + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + element.getAuthors() + (((element.getChangeDate() != null) && (!element.getChangeDate().equals(""))) ? ("\" changeDate=\"" + element.getChangeDate()) : "") + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + element.getVersion() + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
-					    					"\t\t\t\t\t<MainDescription>" + (((element.getMainDescription() != null) && (!element.getMainDescription().equals(""))) ? "<![CDATA[" + element.getMainDescription() + "]]>" : "") + "</MainDescription>" + "\n" +
-					    					"\t\t\t\t\t<KeyConsiderations>" + (((element.getKeyConsiderations() != null) && (!element.getKeyConsiderations().equals(""))) ? "<![CDATA[" + element.getKeyConsiderations() + "]]>" : "") + "</KeyConsiderations>" + "\n";
-							
-							if (element.getSections() != null){
-								Iterator<TipoSection> itSections = element.getSections().iterator();
+							String autors = elementDescription.getAuthors();
+							String date = elementDescription.getChangeDate();
+							String changeDate = ((date != null) && (!date.equals(""))) ? ("\" changeDate=\"" + date) : "";
+							String version = elementDescription.getVersion();
+							List<TipoSection> sections = elementDescription.getSections();
+							texto += ">" + "\n" +
+									"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + namePresentation + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + idPresentation + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + autors + changeDate + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + version + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
+				    					"\t\t\t\t\t<MainDescription>" + mainDescription + "</MainDescription>" + "\n" +
+				    					"\t\t\t\t\t<KeyConsiderations>" + keyConsiderations + "</KeyConsiderations>" + "\n";
+						
+							boolean haySections = (typeStruct == TipoElemento.GUIDANCE) ? 
+													((guidance != null) ? (guidance.getSections() != null) : false) : 
+													(elementDescription.getSections() != null);
+							if (haySections){
+								Iterator<TipoSection> itSections = (typeStruct == TipoElemento.GUIDANCE) ? 
+																		guidance.getSections().iterator() : 
+																		sections.iterator();
 								String sectionBriefDescription = "";
 								String sectionOrderingGuide = "";
 								String sectionSuppressed = "false";
@@ -377,13 +421,17 @@ public class ExportarModeloBean {
 							}
 							
 							if ((typeStruct != TipoElemento.WORK_PRODUCT) && (typeStruct != TipoElemento.GUIDANCE)){
+								String alt = elementDescription.getAlternatives();
+								String alternatives = ((alt != null) && (!alt.equals(""))) ? "<![CDATA[" + alt + "]]>" : "";
 								texto +=
-											"\t\t\t\t\t<Alternatives>" + (((element.getAlternatives() != null) && (!element.getAlternatives().equals(""))) ? "<![CDATA[" + element.getAlternatives() + "]]>" : "") + "</Alternatives>" + "\n";
+											"\t\t\t\t\t<Alternatives>" + alternatives + "</Alternatives>" + "\n";
 							}
 							
 							if (typeStruct != TipoElemento.GUIDANCE){
+								String pur = elementDescription.getPurpose();
+								String purpose = ((pur != null) && (!pur.equals(""))) ? "<![CDATA[" + pur + "]]>" : "";
 								texto +=
-					    					"\t\t\t\t\t<Purpose>" + (((element.getPurpose() != null) && (!element.getPurpose().equals(""))) ? "<![CDATA[" + element.getPurpose() + "]]>" : "") + "</Purpose>" + "\n";
+					    					"\t\t\t\t\t<Purpose>" + purpose + "</Purpose>" + "\n";
 							}
 							
 							if (typeStruct == TipoElemento.WORK_PRODUCT){
@@ -396,51 +444,100 @@ public class ExportarModeloBean {
 					    					"\t\t\t\t\t<Notation></Notation>" + "\n";
 							}
 							else if (typeStruct == TipoElemento.GUIDANCE){
+								String attachment = ((guidance != null) && (guidance.getAttachments() != null)) ? guidance.getAttachments() : "";
 								texto +=
-										"\t\t\t\t\t<Attachment>" + ((element.getAttachments() != null) ? element.getAttachments() : "") + "</Attachment>" + "\n";
+										"\t\t\t\t\t<Attachment>" + attachment + "</Attachment>" + "\n";
 							}
-							
+						
 							texto +=
-			    						"\t\t\t\t</Presentation>" + "\n";
+		    							"\t\t\t\t</Presentation>" + "\n";
 							
-							String performedPrimaryBy = elementStruct.getPerformedPrimaryBy();
-					    	if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
-					    		texto +=
-					    				"\t\t\t\t<PerformedBy>" + performedPrimaryBy + "</PerformedBy>" + "\n";
-					    	}
-					    	if (elementStruct.getPerformedAditionallyBy() != null){
-						    	Iterator<String> itAdditionallyPerformedBy = elementStruct.getPerformedAditionallyBy().iterator();
-						    	while (itAdditionallyPerformedBy.hasNext()){
-						    		texto +=
-						    				"\t\t\t\t<AdditionallyPerformedBy>" + itAdditionallyPerformedBy.next() + "</AdditionallyPerformedBy>" + "\n";
-						    	}
-					    	}
+				    		String performedPrimaryBy = element.getPerformedBy();
+				    		if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
+				    			String[] performedBy = performedPrimaryBy.split(" ");
+				    			int n = performedBy.length;
+				    			for (int i = 0; i < n; i++){
+				    				texto +=
+					    					"\t\t\t\t<PerformedBy>" + performedBy[i] + "</PerformedBy>" + "\n";
+				    			}
+				    		}
+				    		
+				    		String additionallyPerformedBy = element.getAdditionallyPerformedBy();
+				    		if ((additionallyPerformedBy != null) && (!additionallyPerformedBy.equals(""))){
+				    			String[] performedBy =  additionallyPerformedBy.split(" ");
+				    			int n = performedBy.length;
+				    			for (int i = 0; i < n; i++){
+				    				texto +=
+					    					"\t\t\t\t<AdditionallyPerformedBy>" + performedBy[i] + "</AdditionallyPerformedBy>" + "\n";
+				    			}
+				    		}
 					    	
-					    	if (elementStruct.getMandatoryInputs() != null){
-						    	Iterator<String> itMandatoryInputs = elementStruct.getMandatoryInputs().iterator();
-						    	while (itMandatoryInputs.hasNext()){
-						    		texto +=
-						    				"\t\t\t\t<MandatoryInput>" + itMandatoryInputs.next() + "</MandatoryInput>" + "\n";
-						    	}
-					    	}
-					    	if (elementStruct.getOptionalInputs() != null){
-						    	Iterator<String> itOptionalInputs = elementStruct.getOptionalInputs().iterator();
-						    	while (itOptionalInputs.hasNext()){
-						    		texto +=
-						    				"\t\t\t\t<OptionalInput>" + itOptionalInputs.next() + "</OptionalInput>" + "\n";
-						    	}
-					    	}
-					    	if (elementStruct.getOutputs() != null){
-						    	Iterator<String> itOutput = elementStruct.getOutputs().iterator();
-						    	while (itOutput.hasNext()){
-						    		texto +=
-						    				"\t\t\t\t<Output>" + itOutput.next() + "</Output>" + "\n";
-						    	}
-					    	}
-							
+				    		String mandatoryInput = element.getMandatoryInput();
+				    		if ((mandatoryInput != null) && (!mandatoryInput.equals(""))){
+				    			String[] input =  mandatoryInput.split(" ");
+				    			int n = input.length;
+				    			for (int i = 0; i < n; i++){
+				    				texto +=
+					    					"\t\t\t\t<MandatoryInput>" + input[i] + "</MandatoryInput>" + "\n";
+				    			}
+				    		}
+				    		
+				    		String optionalInput = element.getOptionalInput();
+				    		if ((optionalInput != null) && (!optionalInput.equals(""))){
+				    			String[] input =  optionalInput.split(" ");
+				    			int n = input.length;
+				    			for (int i = 0; i < n; i++){
+				    				texto +=
+					    					"\t\t\t\t<OptionalInput>" + input[i] + "</OptionalInput>" + "\n";
+				    			}
+				    		}
+				    		
+				    		String output = element.getOutput();
+				    		if ((output != null) && (!output.equals(""))){
+				    			String[] outStr =  output.split(" ");
+				    			int n = outStr.length;
+				    			for (int i = 0; i < n; i++){
+				    				texto +=
+					    					"\t\t\t\t<Output>" + outStr[i] + "</Output>" + "\n";
+				    			}
+				    		}
 							texto += "\t\t\t</ContentElement>" + "\n";
 						}
+						else{
+							texto += "/>" + "\n";
+						}
 					}
+					
+					Map<String, List<TipoContentElement>> roles = vb.getRoles();
+					if (roles != null){
+						String orderingGuide = "";
+						String suppressed = "false";
+						String variabilityType = "na";
+						
+						List<TipoContentElement> lstTce = roles.get(cp.getId());
+						if (lstTce != null){
+							Iterator<TipoContentElement> itTCE = lstTce.iterator();
+							while (itTCE.hasNext()){
+								TipoContentElement tce = itTCE.next();
+								texto += 
+										"\t\t\t<ContentElement xsi:type=\"uma:Role\" name=\"" + tce.getName() + "\" briefDescription=\"" + tce.getBriefDescription() + "\" id=\"" + tce.getId() + "\" orderingGuide=\"" + orderingGuide + "\" presentationName=\"" + tce.getPresentationName() + "\" suppressed=\"" + suppressed + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+								
+								String[] responsableDe = tce.getResponsibleFor().split(" ");
+								int n = responsableDe.length;
+								for (int i = 0; i < n; i++){
+									String responsable = responsableDe[i];
+									if (!responsable.equals("")){
+										texto += 
+											"\t\t\t\t<ResponsibleFor>" + responsableDe[i] + "</ResponsibleFor>" + "\n";
+									}
+								}
+								
+								texto +=
+										"\t\t\t</ContentElement>" + "\n";
+							}
+						}
+					}
+					
 					texto += "\t\t</MethodPackage>" + "\n";
 				}
 				
@@ -521,7 +618,7 @@ public class ExportarModeloBean {
 		}
 	}
 	
-	public String agregarElementoAxml(Struct s, String superactivity){
+	public String agregarElementoAxml(Struct s, List<TipoContentPackage> contentPackages){
 		String texto = "";
 		String id = s.getElementID();
 		if (!idsAgregados.contains(id)){
@@ -531,18 +628,20 @@ public class ExportarModeloBean {
 			TipoElemento tipo = s.getType();
 			String briefDescription = s.getBriefDescription() != null ? s.getBriefDescription() : "";
 			
+			String isPlanned = s.getIsPlanned();
+			String superactivity = s.getSuperActivities();
+			String isOptional = s.getIsOptional();
+			String variabilityType = s.getVariabilityType();
+			String isSynchronizedWithSource = s.getIsSynchronizedWithSource();
+			
 			String orderingGuide = "";
 			String suppressed = "false";
 			String hasMultipleOccurrences = "false";
-			String isOptional = "false";
-			String isPlanned = "true";
 			String prefix = "";
 			String isEventDriven = "false";
 			String isOngoing = "false";
 			String isRepeatable = "false";
-			String isEnactable = "false";
-			String variabilityType = "na";
-			String isSynchronizedWithSource = "true";
+			//String isEnactable = "false";
 			String activityEntryState = "";
 			String activityExitState = "";
 			
@@ -551,21 +650,21 @@ public class ExportarModeloBean {
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
 						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+						/*"\" IsEnactable=\"" + isEnactable +*/ "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 			}
 			else if (tipo == TipoElemento.ITERATION){
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
 						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+						/*"\" IsEnactable=\"" + isEnactable +*/ "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 			}
 			else if (tipo == TipoElemento.PHASE){
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
 						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" IsEnactable=\"" + isEnactable + "\" variabilityType=\"" + variabilityType + "\">" + "\n";
+						/*"\" IsEnactable=\"" + isEnactable +*/ "\" variabilityType=\"" + variabilityType + "\">" + "\n";
 			}
 			else if (tipo == TipoElemento.TASK){
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
@@ -599,12 +698,24 @@ public class ExportarModeloBean {
 				String categorizedElement = s.getElementID();
 				String idExtends = s.getElementIDExtends();
 				variabilityType = "extends";
+				String diagramURI = "";
+				nombrePresentacion = s.getProcessComponentPresentationName();
+				List<TipoMethodElementProperty> methodElementProperties = s.getMethodElementProperties();
 				
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:CapabilityPattern\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + idExtends +
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
 						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" IsEnactable=\"" + isEnactable + "\" variabilityBasedOnElement=\"" + categorizedElement + "\" variabilityType=\"" + variabilityType + "\">" + "\n" +
+						"\" variabilityBasedOnElement=\"" + categorizedElement + "\" variabilityType=\"" + variabilityType + "\" diagramURI=\"" + diagramURI + "\">" + "\n";
+				if (methodElementProperties.size() > 0){
+					Iterator<TipoMethodElementProperty> itProperties = methodElementProperties.iterator();
+					while (itProperties.hasNext()){
+						TipoMethodElementProperty property = itProperties.next();
+						texto += 
+							"\t\t\t\t\t<MethodElementProperty name=\"" + property.getName() + "\" value=\"" + property.getValue() + "\"/>" + "\n";
+					}
+				}
+				texto += 
 							"\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
 						"\t\t\t\t</BreakdownElement>" + "\n";
 			}
@@ -619,7 +730,33 @@ public class ExportarModeloBean {
 					while (it.hasNext()){
 						String next = it.next();
 						texto += "\t\t\t\t\t<Predecessor id=\"_xaj2g0u2Ed-vjd_3xeIJwQ\" linkType=\"finishToStart\">" + id + "</Predecessor>" + "\n";
-						//<Predecessor id="_xaj2g0u2Ed-vjd_3xeIJwQ" linkType="finishToStart" properties="name=successor&#xA;value=_oMNV4EerEd-iTvGQFwAspw&#xA;scope=_ab5yQUesEd-iTvGQFwAspw">_3iR0EEfDEd-iNY7TQq4TSw</Predecessor>
+					}
+				}
+
+				// Si es un rol => Agrego el rol
+				String idRole = s.getIdRole();
+				if ((idRole != null) && (!idRole.equals(""))){
+					texto += "\t\t\t\t\t<Role>" + idRole + "</Role>" + "\n";
+				}
+				
+				// Si es una task => Agrego la task
+				String idTask = s.getIdTask();
+				if ((idTask != null) && (!idTask.equals(""))){
+					texto += "\t\t\t\t\t<Task>" + idTask + "</Task>" + "\n";
+				}
+
+				// Si es un workproduct => Agrego el workproduct
+				String idWp = s.getIdWorkProduct();
+				if ((idWp != null) && (!idWp.equals(""))){
+					texto += "\t\t\t\t\t<WorkProduct>" + idWp + "</WorkProduct>" + "\n"; 
+				}
+				
+				// Si es responsable de algo => Lo agrego
+				List<String> responsable = s.getResponsableDe();
+				if ((responsable != null) && (responsable.size() > 0)){
+					Iterator<String> itResp = responsable.iterator();
+					while (itResp.hasNext()){
+						texto += "\t\t\t\t\t<ResponsibleFor>" + itResp.next() + "</ResponsibleFor>" + "\n";
 					}
 				}
 				
@@ -671,6 +808,23 @@ public class ExportarModeloBean {
 					}
 				}
 				
+				List<TipoSection> steps = s.getSteps();
+				if (steps != null){
+					Iterator<TipoSection> it = steps.iterator();
+					while (it.hasNext()){
+						TipoSection step = it.next();
+						String briefDescriptionStep = "";
+						String orderingGuideStep = "";
+						String presentationNameStep = "";
+						String suppressedStep = "false";
+						String sectionNameStep = "";
+						String variabilityTypeStep = "na";
+						texto += "\t\t\t\t\t<Step name=\"" + step.getName() + "\" briefDescription=\""+ briefDescriptionStep + "\" id=\"" + step.getXmiId() + "\" orderingGuide=\"" + orderingGuideStep + "\" presentationName=\"" + presentationNameStep + "\" suppressed=\"" + suppressedStep + "\" sectionName=\"" + sectionNameStep + "\" variabilityType=\"" + variabilityTypeStep + "\">" + "\n" +
+									"\t\t\t\t\t<Description></Description>" + "\n" +
+								 "\t\t\t\t\t</Step>" + "\n";
+					}
+				}
+				
 				// Agrego los hijos
 				List<Struct> roles = new ArrayList<Struct>();
 				List<Struct> workProduct = new ArrayList<Struct>();
@@ -678,7 +832,7 @@ public class ExportarModeloBean {
 				while (it.hasNext()){
 					Struct hijo = it.next();
 					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT)){
-						texto += agregarElementoAxml(hijo, id);
+						texto += agregarElementoAxml(hijo, contentPackages);
 					}
 					else if (hijo.getType() == TipoElemento.ROLE){
 						roles.add(hijo);
@@ -694,7 +848,7 @@ public class ExportarModeloBean {
 				if (roles.size() > 0){
 					it = roles.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), superactivity);
+						texto += agregarElementoAxml(it.next(), contentPackages);
 					}
 				}
 				
@@ -702,7 +856,7 @@ public class ExportarModeloBean {
 				if (workProduct.size() > 0){
 					it = workProduct.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), superactivity);
+						texto += agregarElementoAxml(it.next(), contentPackages);
 					}
 				}
 			}
@@ -710,33 +864,62 @@ public class ExportarModeloBean {
 		return texto;
 	}
 	
-	public Struct buscarElementoEnModelo(String id, DefaultDiagramModel modelo){
-		if ((modelo != null) && (modelo.getElements() != null)){
-			Iterator<Element> it = modelo.getElements().iterator();
+	
+	public Struct buscarElemento(String id, List<Struct> elementos, String buscarPor){
+		if (elementos != null){
+			Iterator<Struct> it = elementos.iterator();
 			while (it.hasNext()){
-				Struct s = (Struct) it.next().getData();
-				String sId = (s.getIdTask() != null) ? s.getIdTask() :
-							 (s.getIdWorkProduct() != null) ? s.getIdWorkProduct() : null;
+				Struct s = it.next();
+				String sId = (buscarPor.equals("idTask")) ? s.getIdTask() :
+					 		 (buscarPor.equals("idWorkProduct")) ? s.getIdWorkProduct() :
+			 			 	 (buscarPor.equals("idRole")) ? s.getIdRole() :
+		 			 		 s.getElementID();
+					 
 				if ((sId != null) && (sId.equals(id))){
 					return s;
+				}
+				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
+				if (hijo != null){
+					return hijo;
 				}
 			}
 		}
 		return null;
 	}
 	
-	public Struct buscarElementoEnTipoRolesWorkProducts(String id, List<TipoRolesWorkProducts> modeloRolesWP){
+	public Struct buscarElementoEnModelo(String id, DefaultDiagramModel modelo, String buscarPor){
+		if ((modelo != null) && (modelo.getElements() != null)){
+			Iterator<Element> it = modelo.getElements().iterator();
+			while (it.hasNext()){
+				Struct s = (Struct) it.next().getData();
+				String sId = (buscarPor.equals("idTask")) ? s.getIdTask() :
+							 (buscarPor.equals("idWorkProduct")) ? s.getIdWorkProduct() :
+							 (buscarPor.equals("idRole")) ? s.getIdRole() :
+							 s.getElementID();
+				if ((sId != null) && (sId.equals(id))){
+					return s;
+				}
+				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
+				if (hijo != null){
+					return hijo;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Struct buscarElementoEnTipoRolesWorkProducts(String id, List<TipoRolesWorkProducts> modeloRolesWP, String buscarPor){
 		if (modeloRolesWP != null){
 			Iterator<TipoRolesWorkProducts> it = modeloRolesWP.iterator();
 			while (it.hasNext()){
 				TipoRolesWorkProducts trwp = it.next();
 				DefaultDiagramModel dModifica = trwp.getModifica();
-				Struct sModifica = buscarElementoEnModelo(id, dModifica);
+				Struct sModifica = buscarElementoEnModelo(id, dModifica, buscarPor);
 				if (sModifica != null){
 					return sModifica;
 				}
 				DefaultDiagramModel dResponsable = trwp.getResponsableDe();
-				Struct sResponsable = buscarElementoEnModelo(id, dResponsable);
+				Struct sResponsable = buscarElementoEnModelo(id, dResponsable, buscarPor);
 				if (sResponsable != null){
 					return sResponsable;
 				}
@@ -745,26 +928,39 @@ public class ExportarModeloBean {
 		return null;	
 	}
 	
+	public Struct buscarRolEnTipoRolesWorkProducts(String id, List<TipoRolesWorkProducts> modeloRolesWP){
+		if (modeloRolesWP != null){
+			Iterator<TipoRolesWorkProducts> it = modeloRolesWP.iterator();
+			while (it.hasNext()){
+				TipoRolesWorkProducts trwp = it.next();
+				Struct rol = trwp.getRol();
+				if (rol.getIdRole().equals(id)){
+					return rol;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
 	public Struct buscarElementoEnVistaBean(String id){
 		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 		VistaBean vb = (VistaBean) session.getAttribute("VistaBean");
-		List<TipoContentElement> templates = vb.getTemplates();
+		Map<String, TipoContentElement> templates = vb.getTemplates();
 		if (templates != null){
-			Iterator<TipoContentElement> it = templates.iterator();
-			while (it.hasNext()){
-				TipoContentElement tce = it.next();
-				if (tce.getId().equals(id)){
-					Struct s = new Struct();
-					s.setElementID(tce.getId());
-					s.setNombre(tce.getName());
-					s.setType(tce.getTipoElemento());
-					s.setPresentationName(tce.getPresentationName());
-					return s;
-				}
+			TipoContentElement tce = templates.get(id);
+			if (tce != null){
+				Struct s = new Struct();
+				s.setElementID(tce.getId());
+				s.setNombre(tce.getName());
+				s.setType(tce.getTipoElemento());
+				s.setPresentationName(tce.getPresentationName());
+				s.setBriefDescription(tce.getBriefDescription());
+				return s;
 			}
 		}
 		return null;	
 	}
-	
+
 }

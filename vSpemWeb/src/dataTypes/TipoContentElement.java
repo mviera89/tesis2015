@@ -23,10 +23,20 @@ public class TipoContentElement {
 	private String purpose;
 	private String alternatives;
 	private String attachments;
+	private String briefDescription;
+	private String performedBy;
+	private String mandatoryInput;
+	private String optionalInput;
+	private String output;
+	private String additionallyPerformedBy;
+	private String responsibleFor;
+	private TipoContentElement guidance;
+	private TipoContentElement contentDescription;
 
 	public TipoContentElement(TipoElemento tipoElemento, String xmiVersion, String xmi, String uma, String epf, String epfVersion, String id, 
-			String name, String guid, String presentationName, String authors, String changeDate, String version, String mainDescription, 
-			String keyConsiderations, List<TipoSection> sections, String purpose, String alternatives, String attachments) {
+			String name, String guid, String presentationName, String authors, String changeDate, String version,
+			String briefDescription, String performedBy, String mandatoryInput, String optionalInput, String output, String additionallyPerformedBy, String responsibleFor,
+			String mainDescription, String keyConsiderations, List<TipoSection> sections, String purpose, String alternatives, String attachments) {
 		this.tipoElemento = tipoElemento;
 		this.xmiVersion = xmiVersion;
 		this.xmi = xmi;
@@ -46,6 +56,13 @@ public class TipoContentElement {
 		this.purpose = purpose;
 		this.alternatives = alternatives;
 		this.attachments = attachments;
+		this.briefDescription = briefDescription;
+		this.performedBy = performedBy;
+		this.mandatoryInput = mandatoryInput;
+		this.optionalInput = optionalInput;
+		this.output = output;
+		this.additionallyPerformedBy = additionallyPerformedBy;
+		this.responsibleFor = responsibleFor;
 	}
 
 	public TipoElemento getTipoElemento() {
@@ -198,6 +215,97 @@ public class TipoContentElement {
 
 	public void setAttachments(String attachments) {
 		this.attachments = attachments;
+	}
+
+	public String getBriefDescription() {
+		return briefDescription;
+	}
+
+	public void setBriefDescription(String briefDescription) {
+		this.briefDescription = briefDescription;
+	}
+
+	public String getPerformedBy() {
+		return performedBy;
+	}
+
+	public void setPerformedBy(String performedBy) {
+		this.performedBy = performedBy;
+	}
+
+	public String getMandatoryInput() {
+		return mandatoryInput;
+	}
+
+	public void setMandatoryInput(String mandatoryInput) {
+		this.mandatoryInput = mandatoryInput;
+	}
+
+	public String getOptionalInput() {
+		return optionalInput;
+	}
+
+	public void setOptionalInput(String optionalInput) {
+		this.optionalInput = optionalInput;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+	public String getAdditionallyPerformedBy() {
+		return additionallyPerformedBy;
+	}
+
+	public void setAdditionallyPerformedBy(String additionallyPerformedBy) {
+		this.additionallyPerformedBy = additionallyPerformedBy;
+	}
+
+	public String getResponsibleFor() {
+		return responsibleFor;
+	}
+
+	public void setResponsibleFor(String responsibleFor) {
+		this.responsibleFor = responsibleFor;
+	}
+
+	public TipoContentElement getGuidance() {
+		return guidance;
+	}
+
+	public void setGuidance(TipoContentElement guidance) {
+		this.guidance = guidance;
+	}
+
+	public TipoContentElement getContentDescription() {
+		return contentDescription;
+	}
+
+	public void setContentDescription(TipoContentElement contentDescription) {
+		this.contentDescription = contentDescription;
+	}
+
+	@Override
+	public String toString() {
+		return "TipoContentElement [tipoElemento=" + tipoElemento
+				+ ", xmiVersion=" + xmiVersion + ", xmi=" + xmi + ", uma="
+				+ uma + ", epf=" + epf + ", epfVersion=" + epfVersion + ", id="
+				+ id + ", name=" + name + ", guid=" + guid
+				+ ", presentationName=" + presentationName + ", authors="
+				+ authors + ", changeDate=" + changeDate + ", version="
+				+ version + ", mainDescription=" + mainDescription
+				+ ", keyConsiderations=" + keyConsiderations + ", sections="
+				+ sections + ", purpose=" + purpose + ", alternatives="
+				+ alternatives + ", attachments=" + attachments
+				+ ", briefDescription=" + briefDescription + ", performedBy="
+				+ performedBy + ", mandatoryInput=" + mandatoryInput
+				+ ", optionalInput=" + optionalInput + ", output=" + output
+				+ ", additionallyPerformedBy=" + additionallyPerformedBy
+				+ ", guidance=" + guidance + "]";
 	}
 
 }

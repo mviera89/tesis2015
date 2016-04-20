@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,7 @@ import dataTypes.TipoMethodConfiguration;
 import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dataTypes.TipoTag;
+import dataTypes.TipoView;
 
 @ManagedBean
 @ViewScoped
@@ -359,7 +361,7 @@ public class ImportarModeloBean {
 					is.close();
 					fos.close();
 					
-					return XMIParser.getElementsXMIConfigurations(Constantes.destinoDescargas + archivoConfig); // [String, TipoLibrary]
+					return XMIParser.getElementsXMIConfigurations(Constantes.destinoDescargas + archivoConfig);
 				}
 				catch (FileNotFoundException e){
 					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivoConfig + "'.");
@@ -484,36 +486,68 @@ public class ImportarModeloBean {
 				String archivoCC = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirCustomCategories, archivoCC, archivoCC);
 				TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(dirPlugin, dirCustomCategories, archivoCC, archivoPlugin);
-				
 		        vb.setContentCategory(contentCategory);
-				
 				if (contentCategory != null){
-					Map<String, TipoContentCategory> categorizedElements = cargarCategorizedElementsRepositorio(dirPlugin, archivoPlugin, contentCategory.getCategorizedElements());
+					String elements = "";
+					List<TipoView> categories = vb.getMethodConfiguration().getAddedCategory();
+					if (categories != null){
+						Iterator<TipoView> it = categories.iterator();
+						while (it.hasNext()){
+							TipoView category = it.next();
+							String href = category.getHref(); // href="uma://_HtQ6kOMfEd6OoK0l17K4LA#_X38tkOMsEd6OoK0l17K4LA"
+							if ((href != null) && (!href.equals(""))){
+								String[] elems = href.split("#");
+								if (elems.length > 1){
+									elements += elems[1] + " ";
+								}
+							}
+						}
+					}
+					Map<String, TipoContentCategory> categorizedElements = cargarCategorizedElementsRepositorio(dirPlugin, archivoPlugin, elements);
 			        vb.setCategorizedElements(categorizedElements);
 				}
 			}
 			
 			// Parseo las tasks
+			Map<String, TipoContentElement> lstTask = new HashMap<String, TipoContentElement>();
+			List<TipoContentElement> tceTasks = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.TASK.toString(), false);
+			Iterator<TipoContentElement> itTceTasks = tceTasks.iterator();
+			while (itTceTasks.hasNext()){
+				TipoContentElement tce = itTceTasks.next();
+				tce.setTipoElemento(TipoElemento.TASK);
+				lstTask.put(tce.getId(), tce);
+			}
 			List<String> tasksDir = plugin.getTasksDir();
 			Iterator<String> itTasks = tasksDir.iterator();
-			Map<String, TipoContentElement> lstTask = new HashMap<String, TipoContentElement>();
 			while (itTasks.hasNext()){
 				String taskDir = itTasks.next();
 				String[] dirRes = separarDireccion(taskDir);
 				String dirTask = dirRes[0];
 				String archivoTask = dirRes[1];
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, "task_" + archivoTask);
-				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirRes,"task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
+				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirTask,"task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
 				if (task != null){
-					lstTask.put(task.getId(), task);
+					String taskName = task.getName();
+					String[] res = taskName.split(",");
+					String taskId = res.length > 1 ? res[1] : "";
+					if (!taskId.equals("")){
+						TipoContentElement wp = lstTask.get(taskId);
+						wp.setContentDescription(task);
+					}
 				}
 			}
-			vb.setTasks(lstTask);
 			
 			// Parseo los workproducts
+			Map<String, TipoContentElement> lstWorkproduct = new HashMap<String, TipoContentElement>();
+			List<TipoContentElement> lstWP = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.ARTIFACT.toString(), false);
+			Iterator<TipoContentElement> itWP = lstWP.iterator();
+			while (itWP.hasNext()){
+				TipoContentElement wp = itWP.next();
+				wp.setTipoElemento(TipoElemento.WORK_PRODUCT);
+				lstWorkproduct.put(wp.getId(), wp);
+			}
 			List<String> workproductsDir = plugin.getWorkproductsDir();
 			Iterator<String> itWorkproducts = workproductsDir.iterator();
-			Map<String, TipoContentElement> lstWorkproducts = new HashMap<String, TipoContentElement>();
 			while (itWorkproducts.hasNext()){
 				String workproductDir = itWorkproducts.next();
 				String[] dirRes = separarDireccion(workproductDir);
@@ -522,10 +556,15 @@ public class ImportarModeloBean {
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, "workproduct_" + archivoWorkproduct);
 				TipoContentElement workproduct = cargarContentElementsRepositorio(dirPlugin + dirWorkproduct, "workproduct_" + archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
 				if (workproduct != null){
-					lstWorkproducts.put(workproduct.getId(), workproduct);
+					String workproductName = workproduct.getName();
+					String[] res = workproductName.split(",");
+					String workproductId = res.length > 1 ? res[1] : "";
+					if (!workproductId.equals("")){
+						TipoContentElement wp = lstWorkproduct.get(workproductId);
+						wp.setContentDescription(workproduct);
+					}
 				}
 			}
-			vb.setWorkproducts(lstWorkproducts);
 			
 			// Parseo las guidances
 			List<String> guidancesDir = plugin.getGuidancesDir();
@@ -539,66 +578,101 @@ public class ImportarModeloBean {
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, "guidance_" + archivoGuidance);
 				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, "guidance_" + archivoGuidance, TipoTag.GUIDANCE_DESCRIPTION.toString());
 				if (guidance != null){
-					lstGuidances.put(guidance.getId(), guidance);
+					String guidanceName = guidance.getName();
+					String[] res = guidanceName.split(",");
+					String guidanceId = res.length > 1 ? res[1] : "";
+					lstGuidances.put(guidanceId, guidance);
 				}
 			}
 			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(archivoPlugin, TipoTag.GUIDANCE.toString(), false);
-			vb.setTemplates(lstTemplates);
-			vb.setGuidances(lstGuidances);
+			Map<String, TipoContentElement> mapTemplates = new HashMap<String, TipoContentElement>();
+			Iterator<TipoContentElement> itTceTemplates = lstTemplates.iterator();
+			while (itTceTemplates.hasNext()){
+				TipoContentElement tce = itTceTemplates.next();
+				String idTce = tce.getId();
+				TipoContentElement guidance = lstGuidances.get(idTce);
+				tce.setGuidance(guidance);
+				mapTemplates.put(idTce, tce);
+			}
+			vb.setTemplates(mapTemplates);
 			
 			// Cargo en el contentPackage
+			Map<String, TipoContentElement> mapRoles = new HashMap<String, TipoContentElement>();
+			List<TipoContentElement> lstRoles = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.ROLE.toString(), false);
+			Iterator<TipoContentElement> itRoles = lstRoles.iterator();
+			while (itRoles.hasNext()){
+				TipoContentElement rol = itRoles.next();
+				rol.setTipoElemento(TipoElemento.ROLE);
+				mapRoles.put(rol.getId(), rol);
+			}
+			Map<String, List<TipoContentElement>> mapCCRol = new HashMap<String, List<TipoContentElement>>();
 			List<TipoContentPackage> contentPackages = new ArrayList<TipoContentPackage>();
 			Map<String, TipoContentElement> lstCE = new HashMap<String, TipoContentElement>();
-			lstCE.putAll(lstWorkproducts);
 			lstCE.putAll(lstTask);
-			lstCE.putAll(lstGuidances);
+			lstCE.putAll(lstWorkproduct);
+			lstCE.putAll(mapTemplates);
+			lstCE.putAll(mapRoles);
 			List<String> cpAgregados = new ArrayList<String>();
 			Iterator<Entry<String, TipoContentElement>> itCE = lstCE.entrySet().iterator();
 			while (itCE.hasNext()){
-				TipoContentElement tce = itCE.next().getValue();
-				String idTce = tce.getId();
-				TipoContentCategory contentElement = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce);
+				Entry<String, TipoContentElement> entry = itCE.next();
+				TipoContentElement tce = entry.getValue();
+				String idTce = entry.getKey();
+				TipoContentCategory contentElement = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce, false);
 				if (contentElement != null){
-					TipoContentCategory childPackage = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId());
-					if ((childPackage != null) && (!cpAgregados.contains(childPackage.getId()))){
-						cpAgregados.add(childPackage.getId());
-						TipoContentPackage tcp = new TipoContentPackage();
-						tcp.setContentPackages(childPackage);
-						if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
-							tcp.getWorkproductsCP().add(tce);
-						}
-						else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
-							tcp.getGuidancesCP().add(tce);
-						}
-						else if (tce.getTipoElemento() == TipoElemento.TASK){
-							tcp.getTasksCP().add(tce);
-						}
-						contentPackages.add(tcp);
-					}
-					else{
-						int i = 0;
-						int n = contentPackages.size();
-						boolean fin = false;
-						while ((i < n) && (!fin)){
-							TipoContentPackage tcp = contentPackages.get(i);
-							if (tcp.getContentPackages().getId().equals(childPackage.getId())){
-								if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
-									tcp.getWorkproductsCP().add(tce);
-								}
-								else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
-									tcp.getGuidancesCP().add(tce);
-								}
-								else if (tce.getTipoElemento() == TipoElemento.TASK){
-									tcp.getTasksCP().add(tce);
-								}
-								fin = true;
+					TipoContentCategory childPackage = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId(), true);
+					if (childPackage != null){
+						if (!cpAgregados.contains(childPackage.getId())){
+							cpAgregados.add(childPackage.getId());
+							TipoContentPackage tcp = new TipoContentPackage();
+							tcp.setContentPackages(childPackage);
+							
+							if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
+								tcp.getWorkproductsCP().add(tce);
 							}
-							i++;
+							else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+								tcp.getGuidancesCP().add(tce);
+							}
+							else if (tce.getTipoElemento() == TipoElemento.TASK){
+								tcp.getTasksCP().add(tce);
+							}
+							contentPackages.add(tcp);
+						}
+						else{
+							int i = 0;
+							int n = contentPackages.size();
+							boolean fin = false;
+							while ((i < n) && (!fin)){
+								TipoContentPackage tcp = contentPackages.get(i);
+								if (tcp.getContentPackages().getId().equals(childPackage.getId())){
+									if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
+										tcp.getWorkproductsCP().add(tce);
+									}
+									else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+										tcp.getGuidancesCP().add(tce);
+									}
+									else if (tce.getTipoElemento() == TipoElemento.TASK){
+										tcp.getTasksCP().add(tce);
+									}
+									fin = true;
+								}
+								i++;
+							}
+						}
+						
+						if (tce.getTipoElemento() == TipoElemento.ROLE){
+							List<TipoContentElement> lstTCE = mapCCRol.get(childPackage.getId());
+							if (lstTCE == null){
+								lstTCE = new ArrayList<TipoContentElement>();
+							}
+							lstTCE.add(tce);
+							mapCCRol.put(childPackage.getId(), lstTCE);
 						}
 					}
 				}
 			}
 			vb.setContentPackages(contentPackages);
+			vb.setRoles(mapCCRol);
 		}
 		else{
 			/*****************/
@@ -624,7 +698,7 @@ public class ImportarModeloBean {
 
 	public TipoContentCategory cargarCustomCategoriesRepositorio(String dirPlugin, String dirCustomCategory, String archivoCC, String archivoPlugin){
 		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, Constantes.destinoDescargas + archivoCC);
-		TipoContentCategory contentCategory = XMIParser.getElementsXMIPadreTipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", contentDescription.getId());
+		TipoContentCategory contentCategory = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", contentDescription.getId(), true);
 		if (contentCategory != null){
 			contentCategory.setContentDescription(contentDescription);
 		}

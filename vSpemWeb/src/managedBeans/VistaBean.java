@@ -29,16 +29,13 @@ public class VistaBean {
 	private String repositorio = "";
 	private TipoLibrary library = null;
 	private TipoPlugin plugin = null;
-	private TipoContentDescription contentDescription = null;
 	private TipoContentCategory contentCategory = null;
 	private TipoMethodConfiguration methodConfiguration = null;
 	private Map<String, TipoContentCategory> categorizedElements = null;
 	private List<TipoMethodPackage> processPackages = null;
-	private Map<String, TipoContentElement> tasks = null;
 	private List<TipoContentPackage> contentPackages = null;
-	private Map<String, TipoContentElement> workproducts = null;
-	private List<TipoContentElement> templates = null;
-	private Map<String, TipoContentElement> guidances = null;
+	private Map<String, TipoContentElement> templates = null;
+	private Map<String, List<TipoContentElement>> roles = null;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -96,14 +93,6 @@ public class VistaBean {
 		this.plugin = plugin;
 	}
 
-	public TipoContentDescription getContentDescription() {
-		return contentDescription;
-	}
-
-	public void setContentDescription(TipoContentDescription contentDescription) {
-		this.contentDescription = contentDescription;
-	}
-
 	public TipoContentCategory getContentCategory() {
 		return contentCategory;
 	}
@@ -137,14 +126,6 @@ public class VistaBean {
 		this.processPackages = processPackages;
 	}
 
-	public Map<String, TipoContentElement> getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(Map<String, TipoContentElement> tasks) {
-		this.tasks = tasks;
-	}
-
 	public List<TipoContentPackage> getContentPackages() {
 		return contentPackages;
 	}
@@ -153,28 +134,20 @@ public class VistaBean {
 		this.contentPackages = contentPackages;
 	}
 
-	public Map<String, TipoContentElement> getWorkproducts() {
-		return workproducts;
-	}
-
-	public void setWorkproducts(Map<String, TipoContentElement> workproducts) {
-		this.workproducts = workproducts;
-	}
-
-	public List<TipoContentElement> getTemplates() {
+	public Map<String, TipoContentElement> getTemplates() {
 		return templates;
 	}
 
-	public void setTemplates(List<TipoContentElement> templates) {
+	public void setTemplates(Map<String, TipoContentElement> templates) {
 		this.templates = templates;
 	}
 
-	public Map<String, TipoContentElement> getGuidances() {
-		return guidances;
+	public Map<String, List<TipoContentElement>> getRoles() {
+		return roles;
 	}
 
-	public void setGuidances(Map<String, TipoContentElement> guidances) {
-		this.guidances = guidances;
+	public void setRoles(Map<String, List<TipoContentElement>> roles) {
+		this.roles = roles;
 	}
 
 	public void actualizarIndiceActivo(int indice){

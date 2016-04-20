@@ -307,8 +307,19 @@ public class AdaptarModeloBean {
 	        r.setDescription(raiz.getDescription());
 	        r.setBriefDescription(raiz.getBriefDescription());
 	        r.setPresentationName(raiz.getPresentationName());
+	        r.setProcessComponentPresentationName(raiz.getProcessComponentPresentationName());
+  		    r.setGuid(raiz.getGuid());
+  		    r.setIsPlanned(raiz.getIsPlanned());
+  		    r.setSuperActivities(raiz.getSuperActivities());
+  		    r.setIsOptional(raiz.getIsOptional());
+			r.setVariabilityType(raiz.getVariabilityType());
+			r.setIsSynchronizedWithSource(raiz.getIsSynchronizedWithSource());
 	        r.setIdTask(raiz.getIdTask());
+			r.setIdRole(raiz.getIdRole());
+			r.setIdWorkProduct(raiz.getIdWorkProduct());
 	        r.setHijos(raiz.getHijos());
+	        r.setSteps(raiz.getSteps());
+	        r.setMethodElementProperties(raiz.getMethodElementProperties());
 	        Element root = new Element(r);
 	        
 	        root.setY(this.y + "em");
@@ -587,9 +598,20 @@ public class AdaptarModeloBean {
 				Struct s = (Struct) hijo.getData();
 				s.setHijos(hijos);
 				s.setPresentationName(presentationName);
+		        s.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
+	  		    s.setGuid(v.getGuid());
+	  		    s.setIsPlanned(v.getIsPlanned());
+	  		    s.setSuperActivities(v.getSuperActivities());
+	  		    s.setIsOptional(v.getIsOptional());
+				s.setVariabilityType(v.getVariabilityType());
+				s.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
 				s.setDescription(v.getDescription());
 				s.setBriefDescription(v.getBriefDescription());
 				s.setIdTask(v.getIdTask());
+				s.setIdRole(v.getIdRole());
+				s.setIdWorkProduct(v.getIdWorkProduct());
+		        s.setSteps(v.getSteps());
+		        s.setMethodElementProperties(v.getMethodElementProperties());
 				
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
@@ -860,6 +882,8 @@ public class AdaptarModeloBean {
 			    	        	st.setDescription(var.getDescription());
 			    	        	st.setBriefDescription(var.getBriefDescription());
 			    	        	st.setIdTask(var.getIdTask());
+								st.setIdRole(var.getIdRole());
+								st.setIdWorkProduct(var.getIdWorkProduct());
 			        			mostrarHijos(e, modelo, esVistaPrevia);
 		        			}
 		        			
@@ -1187,6 +1211,8 @@ public class AdaptarModeloBean {
 				        s.setDescription(v.getDescription());
 				        s.setBriefDescription(v.getBriefDescription());
 				        s.setIdTask(v.getIdTask());
+						s.setIdRole(v.getIdRole());
+						s.setIdWorkProduct(v.getIdWorkProduct());
 				        
 				        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
 			    	}
@@ -1428,6 +1454,8 @@ public class AdaptarModeloBean {
 					s.setDescription(v.getDescription());
 					s.setBriefDescription(v.getBriefDescription());
 					s.setIdTask(v.getIdTask());
+					s.setIdRole(v.getIdRole());
+					s.setIdWorkProduct(v.getIdWorkProduct());
 					
 		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 		    		hijo.addEndPoint(endPointH1);
@@ -1661,8 +1689,19 @@ public class AdaptarModeloBean {
 					newS.setDescription(s.getDescription());
 					newS.setBriefDescription(s.getBriefDescription());
 					newS.setPresentationName(s.getPresentationName());
+			        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
+		  		    newS.setGuid(s.getGuid());
+		  		    newS.setIsPlanned(s.getIsPlanned());
+		  		    newS.setSuperActivities(s.getSuperActivities());
+		  		    newS.setIsOptional(s.getIsOptional());
+					newS.setVariabilityType(s.getVariabilityType());
+					newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
 					newS.setIdTask(s.getIdTask());
+					newS.setIdRole(s.getIdRole());
+					newS.setIdWorkProduct(s.getIdWorkProduct());
 					newS.setHijos(s.getHijos());
+			        newS.setSteps(s.getSteps());
+			        newS.setMethodElementProperties(s.getMethodElementProperties());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					
@@ -1688,7 +1727,18 @@ public class AdaptarModeloBean {
 								newS.setDescription(v.getDescription());
 								newS.setBriefDescription(v.getBriefDescription());
 								newS.setPresentationName(v.getPresentationName());
+						        newS.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
+					  		    newS.setGuid(v.getGuid());
+					  		    newS.setIsPlanned(v.getIsPlanned());
+					  		    newS.setSuperActivities(v.getSuperActivities());
+					  		    newS.setIsOptional(v.getIsOptional());
+								newS.setVariabilityType(v.getVariabilityType());
+								newS.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
 								newS.setIdTask(v.getIdTask());
+								newS.setIdRole(v.getIdRole());
+								newS.setIdWorkProduct(v.getIdWorkProduct());
+						        newS.setSteps(v.getSteps());
+						        newS.setMethodElementProperties(v.getMethodElementProperties());
 								///
 								// Seteo las variantes
 								List<Variant> lstVariantes = s.getVariantes();
@@ -1769,7 +1819,18 @@ public class AdaptarModeloBean {
 		newS.setDescription(s.getDescription());
 		newS.setBriefDescription(s.getBriefDescription());
 		newS.setPresentationName(s.getPresentationName());
+        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
+	    newS.setGuid(s.getGuid());
+	    newS.setIsPlanned(s.getIsPlanned());
+	    newS.setSuperActivities(s.getSuperActivities());
+		newS.setIsOptional(s.getIsOptional());
+		newS.setVariabilityType(s.getVariabilityType());
+		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
 		newS.setIdTask(s.getIdTask());
+		newS.setIdRole(s.getIdRole());
+		newS.setIdWorkProduct(s.getIdWorkProduct());
+        newS.setSteps(s.getSteps());
+        newS.setMethodElementProperties(s.getMethodElementProperties());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
@@ -1816,6 +1877,8 @@ public class AdaptarModeloBean {
 		newV.setDescription(v.getDescription());
 		newV.setBriefDescription(v.getBriefDescription());
 		newV.setIdTask(v.getIdTask());
+		newV.setIdRole(v.getIdRole());
+		newV.setIdWorkProduct(v.getIdWorkProduct());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();
