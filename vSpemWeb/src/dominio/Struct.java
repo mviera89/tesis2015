@@ -2,6 +2,7 @@ package dominio;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import config.Constantes;
 import dataTypes.TipoElemento;
@@ -43,7 +44,7 @@ public class Struct {
     private List<String> responsableDe;
     private List<String> modifica;
     private List<String> linkToPredecessor;
-    private List<String> sucesores;
+    private Map<String,String> predecesores;
     private String processComponentId;
 	private String processComponentName;
 	private String processComponentPresentationName;
@@ -91,7 +92,7 @@ public class Struct {
 		this.responsableDe = null;
 		this.modifica = null;
 		this.linkToPredecessor = null;
-		this.sucesores = null;
+		this.predecesores = null;
 		this.processComponentId = processComponentId;
 		this.processComponentName = processComponentName;
 		this.presentationId = presentationId;
@@ -385,12 +386,12 @@ public class Struct {
 		this.elementIDExtends = elementIDExtends;
 	}
 
-	public List<String> getSucesores() {
-		return sucesores;
+	public Map<String,String> getPredecesores() {
+		return predecesores;
 	}
 
-	public void setSucesores(List<String> sucesores) {
-		this.sucesores = sucesores;
+	public void setPredecesores(Map<String,String> predecesores) {
+		this.predecesores = predecesores;
 	}
 
 	public String getIdTask() {
@@ -453,7 +454,7 @@ public class Struct {
 				+ optionalInputs + ", externalInputs=" + externalInputs
 				+ ", outputs=" + outputs + ", responsableDe=" + responsableDe
 				+ ", modifica=" + modifica + ", linkToPredecessor="
-				+ linkToPredecessor + ", sucesores=" + sucesores
+				+ linkToPredecessor + ", precesesores=" + predecesores
 				+ ", processComponentId=" + processComponentId
 				+ ", processComponentName=" + processComponentName
 				+ ", presentationId=" + presentationId + ", elementIDExtends="
