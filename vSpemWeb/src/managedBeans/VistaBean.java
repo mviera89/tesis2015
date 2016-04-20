@@ -36,7 +36,9 @@ public class VistaBean {
 	private List<TipoMethodPackage> processPackages = null;
 	private Map<String, TipoContentElement> tasks = null;
 	private List<TipoContentPackage> contentPackages = null;
-	private Map<String, TipoContentElement> workproducts = null; 
+	private Map<String, TipoContentElement> workproducts = null;
+	private List<TipoContentElement> templates = null;
+	private Map<String, TipoContentElement> guidances = null;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -157,6 +159,22 @@ public class VistaBean {
 
 	public void setWorkproducts(Map<String, TipoContentElement> workproducts) {
 		this.workproducts = workproducts;
+	}
+
+	public List<TipoContentElement> getTemplates() {
+		return templates;
+	}
+
+	public void setTemplates(List<TipoContentElement> templates) {
+		this.templates = templates;
+	}
+
+	public Map<String, TipoContentElement> getGuidances() {
+		return guidances;
+	}
+
+	public void setGuidances(Map<String, TipoContentElement> guidances) {
+		this.guidances = guidances;
 	}
 
 	public void actualizarIndiceActivo(int indice){
