@@ -44,7 +44,7 @@ public class Struct {
     private List<String> responsableDe;
     private List<String> modifica;
     private List<String> linkToPredecessor;
-    private Map<String,String> predecesores;
+    private Map<String,String[]> predecesores;
     private String processComponentId;
 	private String processComponentName;
 	private String processComponentPresentationName;
@@ -386,11 +386,11 @@ public class Struct {
 		this.elementIDExtends = elementIDExtends;
 	}
 
-	public Map<String,String> getPredecesores() {
+	public Map<String,String[]> getPredecesores() {
 		return predecesores;
 	}
 
-	public void setPredecesores(Map<String,String> predecesores) {
+	public void setPredecesores(Map<String,String[]> predecesores) {
 		this.predecesores = predecesores;
 	}
 

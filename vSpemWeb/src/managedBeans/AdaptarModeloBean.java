@@ -320,6 +320,7 @@ public class AdaptarModeloBean {
 	        r.setHijos(raiz.getHijos());
 	        r.setSteps(raiz.getSteps());
 	        r.setMethodElementProperties(raiz.getMethodElementProperties());
+	        r.setPredecesores(raiz.getPredecesores());
 	        Element root = new Element(r);
 	        
 	        root.setY(this.y + "em");
@@ -1702,6 +1703,7 @@ public class AdaptarModeloBean {
 					newS.setHijos(s.getHijos());
 			        newS.setSteps(s.getSteps());
 			        newS.setMethodElementProperties(s.getMethodElementProperties());
+			        newS.setPredecesores(s.getPredecesores());
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					
@@ -1739,7 +1741,6 @@ public class AdaptarModeloBean {
 								newS.setIdWorkProduct(v.getIdWorkProduct());
 						        newS.setSteps(v.getSteps());
 						        newS.setMethodElementProperties(v.getMethodElementProperties());
-								///
 								// Seteo las variantes
 								List<Variant> lstVariantes = s.getVariantes();
 								if (lstVariantes.size() > 0){
@@ -1831,6 +1832,7 @@ public class AdaptarModeloBean {
 		newS.setIdWorkProduct(s.getIdWorkProduct());
         newS.setSteps(s.getSteps());
         newS.setMethodElementProperties(s.getMethodElementProperties());
+        newS.setPredecesores(s.getPredecesores());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
