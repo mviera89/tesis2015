@@ -940,6 +940,7 @@ public class ExportarModeloBean {
 		//recorro modelo, para cada variante busco si el id esta en modelo adapatado
 		//(fue seleccionada), si esta busco el id del var point
 		//con este id busco en los predecesores, si alguien lo tiene se lo quito y se agrega la variante como predecesor
+		//para cada varPoint veo sus predecesores, luego a cada variante elegida se le setean los mismos
 		Iterator<Element> itModelo = modelo.getElements().iterator();
 		while (itModelo.hasNext()){
 			Element e = itModelo.next();
@@ -954,6 +955,7 @@ public class ExportarModeloBean {
 	        		tipo == TipoElemento.VP_WORK_PRODUCT){
 					//tomo las variantes
 					List<Variant> variants = s.getVariantes();
+					Map<String, String> predecesores = s.getPredecesores();
 					String idVarPoint = s.getElementID();
 					Iterator<Variant> itV = variants.iterator();
 					int num = 0;
@@ -969,9 +971,10 @@ public class ExportarModeloBean {
 							Struct st = (Struct) el.getData();
 							if (st.getElementID().equals(idV)){
 								pertenece = true;
+								st.setPredecesores(predecesores);
 							}
 							else{
-								pertenece = elementoPerteneceAModelo(idV, s.getHijos());
+								pertenece = elementoPerteneceAModelo(idV, s.getHijos(),predecesores);
 								
 							}
 						}
@@ -1033,7 +1036,8 @@ public class ExportarModeloBean {
 					  			quitarPredecessor(idVarPoint, str.getHijos());
 					  	}
 					}
-					
+				
+				
 					
 			}
 			
@@ -1045,15 +1049,16 @@ public class ExportarModeloBean {
 	
 	}
 	
-	public boolean elementoPerteneceAModelo(String id, List<Struct> lista){
+	public boolean elementoPerteneceAModelo(String id, List<Struct> lista, Map<String, String> predecesores){
 		Iterator<Struct> it = lista.iterator();
 		while (it.hasNext()){
 			Struct s =it.next();
 			if (s.getElementID().equals(id)){
+				s.setPredecesores(predecesores);
 				return true;
 			}
 			else{
-				return elementoPerteneceAModelo(id, s.getHijos());
+				return elementoPerteneceAModelo(id, s.getHijos(),predecesores);
 			}
 		}
 		return false;
