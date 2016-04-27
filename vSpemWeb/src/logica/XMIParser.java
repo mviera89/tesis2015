@@ -1150,7 +1150,7 @@ public class XMIParser {
 	        Map<Struct,String> performedPrimaryBy = new HashMap<Struct, String>();
 	        Map<Struct,List<String>> performedAdditionallyBy = new HashMap<Struct, List<String>>();
 	        Map<Struct,List<WorkProduct>> workProducts = new HashMap<Struct,List<WorkProduct>>();
-	        Map<String, String> predecesores = new HashMap<String,String>();
+	        Map<String, String[]> predecesores = new HashMap<String,String[]>();
 			Map<String, String> dataProcess = new HashMap<String, String>();
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("org.eclipse.epf.uma:ProcessComponent");
@@ -1285,7 +1285,7 @@ public class XMIParser {
 		return result;
     }
 
-	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts, Map<String,String> predecesores, Map<String, String> dataProcess){
+	public static void getNodos(String nomFile, NodeList nodos, List<Struct> result,List<Variant> registroVar, Map<String,List<String>> vpToVar, Map<String,List<Struct>> registroHijos, Map<Struct,String> performedPrimaryBy, Map<Struct,List<String>> performedAditionallyBy, Map<Struct,List<WorkProduct>> workProducts, Map<String,String[]> predecesores, Map<String, String> dataProcess){
 		for (int temp = 0; temp < nodos.getLength(); temp++){
 			Node nodo = nodos.item(temp);
 			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
@@ -1384,7 +1384,7 @@ public class XMIParser {
 					String outputs = "";
 					String responsableDe = "";
 					String modifica = "";
-					String predecesoresList = "";
+					String[] predecesoresList = {"", ""};
 					List<WorkProduct> lwp = new ArrayList<WorkProduct>();
 					String pred = "";
 					String guid = "";
@@ -1834,14 +1834,46 @@ public class XMIParser {
 		      		    }
 		      		    else if(type.equals("WorkOrder")){
 		      		    	if (eHijo.hasAttribute("pred")){
-								predecesoresList = eHijo.getAttribute("pred");
-								//if (!predecesores.containsKey(id)){
-									predecesores.put(id, predecesoresList);
-			      		    	//}
+								predecesoresList[0] = eHijo.getAttribute("pred");
+								predecesores.put(id, predecesoresList);
 							}
-		      		    	
+	      		    		/*******************************/
+		      		    	else{
+			      		    	NodeList nHijosVar = nodo.getChildNodes();
+		                    	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {
+		                    		Node nHijoVar = nHijosVar.item(temp3);
+		                    		
+		                    		if (nHijoVar.getNodeType() == Node.ELEMENT_NODE){
+		                    			Element eHijoVar = (Element) nHijoVar;
+	                    				predecesoresList = predecesores.get(id);
+	                    				if (predecesoresList == null){
+	                    					predecesoresList = new String[]{"", ""};
+	                    				}
+		                    			if (nHijoVar.getNodeName().equals("pred")){
+											if (eHijoVar.hasAttribute("href")){
+												String href = eHijoVar.getAttribute("href");
+			                    				String[] res = href.split("#");
+			                    				predecesoresList[0] = (res.length > 0) ? res[1] : "";
+												predecesores.put(id, predecesoresList);
+											}
+		                    			}
+		                    			if (nHijoVar.getNodeName().equals("methodElementProperty")){
+		        							String eName = "";
+		        							String eValue = "";
+		        							if (eHijoVar.hasAttribute("name")){
+		        								eName = eHijoVar.getAttribute("name");							
+		        							}
+		        							if (eHijoVar.hasAttribute("value")){
+		        								eValue = eHijoVar.getAttribute("value");
+		        							}
+		        							predecesoresList[1] = "name=" + eName + "&#xA;value=" + eValue + "&#xA;";
+		        							predecesores.put(id, predecesoresList);
+		                    			}
+		                    		}
+		                    	}
+		      		    	}
+	      		    		/*******************************/
 		      		    }
-		      		    
 		      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
 		      		    	if (hijosS != null ){
 		      		    		h.getHijos().addAll(hijosS);
@@ -2036,29 +2068,29 @@ public class XMIParser {
   		return result;
     }
     
-    public static List<Struct> ordenoNodos(List<Struct> list, Map<String,String> predecesores){
+    public static List<Struct> ordenoNodos(List<Struct> list, Map<String,String[]> predecesores){
     	List<Struct> result = new ArrayList<Struct>();
     	Iterator<Struct> it = list.iterator();
+    	
     	while (it.hasNext()){
     		Struct s = it.next();
-    		
     		if (s.getLinkToPredecessor() != null){
     			Iterator<String> itLinks = s.getLinkToPredecessor().iterator();
     			while (itLinks.hasNext()){
     				String idLink = itLinks.next();
     				if(predecesores.containsKey(idLink)){
-    					String pred = predecesores.get(idLink);
+    					String[] pred = predecesores.get(idLink);
     					// Busco pred
-    					Struct predS = buscoPadre(pred,list);
+    					Struct predS = buscoPadre(pred[0],list);
     					if(predS != null){
     						if (s.getPredecesores() != null){
-    						s.getPredecesores().put(idLink, predS.getElementID());
-    						//predS.getPredecesores().put(idLink, s.getElementID());
+    							String[] array = {predS.getElementID(), pred[1]};
+    							s.getPredecesores().put(idLink, array);
     						}
     						else {
-    							Map<String,String> lista = new HashMap<String,String>();
-    							lista.put(idLink, s.getElementID());
-    							//predS.setPredecesores(lista);
+    							Map<String,String[]> lista = new HashMap<String,String[]>();
+    							String[] array = {s.getElementID(), pred[1]};
+    							lista.put(idLink, array);
     							s.setPredecesores(lista);
     						}
     						if (!result.contains(predS)){
@@ -2067,20 +2099,35 @@ public class XMIParser {
     							}
     							else{
     								result.add(result.indexOf(s),predS);
-    								}
-    							}
-    						
-    						}
-    					}
-    					
-    				}
-
+								}
+							}
+						}
+					}
+				}
+    			
     			if(!result.contains(s)){
     				result.add(s);
     			}
 			}
     		else if (!result.contains(s)){
     			result.add(s);
+    			/***********************************************************************/
+    			Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
+    			while (itPred.hasNext()){
+    				Entry<String, String[]> entry = itPred.next();
+    				String idLink = entry.getKey();
+    				String[] pred = entry.getValue();
+    				if (pred[0].equals(s.getElementID()) && (!pred[1].equals(""))){
+    					Map<String, String[]> mapPred = s.getPredecesores();
+    					if (mapPred == null){
+    						mapPred = new HashMap<String, String[]>();
+    					}
+    					String[] array = {s.getElementID(), pred[1]};
+    					mapPred.put(idLink, array);
+    					s.setPredecesores(mapPred);
+    				}
+    			}
+    			/***********************************************************************/
     		}
     		List<Struct> resHijos = ordenoNodos(s.getHijos(), predecesores);
     		s.setHijos(resHijos);
