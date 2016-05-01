@@ -1718,6 +1718,30 @@ public class AdaptarModeloBean {
 					// Si es un punto de variación, recorro las variantes y agrego las que están en el modelo
 					// Lo hago así porque sino se incluyen al final
 					if (esPuntoDeVariacion(type)){
+						//busco padre del varpoint
+						Struct padre = null;
+						Iterator<Element> iter = modelo.getElements().iterator();
+						while (iter.hasNext() && (padre == null)){
+							Element el = iter.next();
+							Struct st = (Struct) el.getData();
+							List<Struct> hijos = st.getHijos();
+							if (hijos != null){
+								Iterator<Struct> itera = hijos.iterator();
+								while (itera.hasNext() && (padre == null)){
+									Struct h = itera.next();
+									if (h.getElementID().equals(s.getElementID())){
+										padre = st;
+									}
+									else {
+										padre = buscarPadre (s.getElementID(), h.getHijos());
+									}
+								}
+							}
+						}
+						if (padre != null){
+							//padre.getHijos().remove(s);
+						}
+						
 						// Esto lo agrego para evitar que las variantes que van en niveles inferiores no se incluyan en los superiores
 						Iterator<Variant> itVar = s.getVariantes().iterator();
 						while (itVar.hasNext()){
@@ -1752,6 +1776,9 @@ public class AdaptarModeloBean {
 										variantesNewS.add(newVariant);
 									}
 									newS.setVariantes(variantesNewS);
+								}
+								if (padre != null){
+									padre.getHijos().add(newS);
 								}
 								//
 								Element newE = new Element(newS, xElement + "em", yElement + "em");
@@ -2253,6 +2280,23 @@ public class AdaptarModeloBean {
 		}
 		
 		return res;
+	}
+	
+	public Struct buscarPadre (String idHijo, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if((s.getElementID().equals(idHijo))){
+        		res = s;
+        	}
+        	else if (s.getHijos().size() > 0){
+        		res = buscarPadre(idHijo, s.getHijos());
+        	}
+        }
+        
+        return res;
 	}
 
 }

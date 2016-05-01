@@ -1011,7 +1011,9 @@ public class ExportarModeloBean {
 						        	}
 						  		}
 						  		String[] array = {idV, properties};
-						  		str.getPredecesores().put(link + num, array);
+						  		if (!link.equals("")){
+						  			str.getPredecesores().put(link + num, array);
+						  		}
 							}
 						  	if (!encontre){
 						  		actualizarPredecesor(idVarPoint, idV, str.getHijos(), num);
@@ -1089,7 +1091,7 @@ public class ExportarModeloBean {
 			        		properties = e.getValue()[1];
 			        	}
 			  		}
-			  		if (encontre){
+			  		if (encontre && !link.equals("")){
 			  			String[] array = {idVariant, properties};
 			  			s.getPredecesores().put(link + num, array);
 			  		}
