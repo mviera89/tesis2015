@@ -4,7 +4,7 @@ public enum TipoElemento {
 	PROCESS_PACKAGE, ACTIVITY, VP_ACTIVITY, VAR_ACTIVITY, TASK, VP_TASK, 
 	VAR_TASK, ITERATION, VP_ITERATION, VAR_ITERATION, PHASE, VP_PHASE, 
 	VAR_PHASE, CAPABILITY_PATTERN, DELIVERY_PROCESS, MILESTONE, VP_MILESTONE, VAR_MILESTONE, 
-	ROLE, VP_ROLE, VAR_ROLE, WORK_PRODUCT, VP_WORK_PRODUCT, VAR_WORK_PRODUCT, GUIDANCE;
+	ROLE, VP_ROLE, VAR_ROLE, WORK_PRODUCT, VP_WORK_PRODUCT, VAR_WORK_PRODUCT, GUIDANCE, SUPPORTING_MATERIAL;
 
 	public String getImagen() {
         String imagen = "";
@@ -82,6 +82,9 @@ public enum TipoElemento {
 	        	imagen = "varWorkproduct.png";
 	            break;
 	        case 24: // GUIDANCE
+	        	imagen = "";
+	        	break;
+	        case 25: // SUPPORTING_MATERIAL
 	        	imagen = "";
 	        	break;
 	        default:
@@ -169,6 +172,9 @@ public enum TipoElemento {
 	            break;
 	        case 24: // GUIDANCE
 	        	valor = "Guidance";
+	        	break;
+	        case 25: // SUPPORTING_MATERIAL
+	        	valor = "SupportingMaterial";
 	        	break;
 	        default:
 	        	valor = "";

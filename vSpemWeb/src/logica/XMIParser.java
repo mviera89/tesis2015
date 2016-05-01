@@ -107,7 +107,6 @@ public class XMIParser {
 			e.printStackTrace();
 		}
 		Object[] res = {uriPlugin, library};
-		inputFile.delete();
 		return res;
 		 
 	}
@@ -220,7 +219,6 @@ public class XMIParser {
 						}
 						j++;
 					}
-					inputFile.delete();
 					return new TipoMethodConfiguration(xmiVersion, xmlnsXmi, xmlnsXsi, uma, epf, epfVersion, id, name, guid, briefDescription, 
 													   methodElementProperty, processViews, defaultView, addedCategory);
 				}
@@ -229,7 +227,6 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		inputFile.delete();
 		return null;
 	}
 	
@@ -373,6 +370,7 @@ public class XMIParser {
 					String shapeiconCC = "";
 					String nodeiconCC = "";
 					String tasksCC = "";
+					String workProductsCC = "";
 					TipoMethodElementProperty methodElementProperty = null;
 					
 					if (e.hasAttribute("xsi:type")){
@@ -406,6 +404,9 @@ public class XMIParser {
 					if (e.hasAttribute("tasks")){
 						tasksCC = e.getAttribute("tasks");
 					}
+					if (e.hasAttribute("workProducts")){
+						workProductsCC = e.getAttribute("workProducts");
+					}
 					
 					NodeList childNodes = resNode.getChildNodes();
 					int j = 0;
@@ -430,7 +431,7 @@ public class XMIParser {
 						j++;
 					}
 					
-					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC, tasksCC, methodElementProperty);
+					return new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC, tasksCC, workProductsCC, methodElementProperty);
 				}
         	}
 		}
@@ -633,7 +634,6 @@ public class XMIParser {
 						i++;
 					}
 					
-					inputFile.delete();
 					return new TipoContentDescription(xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, authors, changeDate, changeDescription, version, mainDescription, keyConsiderations);
 				}
         	}
@@ -641,7 +641,6 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		inputFile.delete();
 		return null;
 	}
 	
@@ -670,7 +669,9 @@ public class XMIParser {
 						if (e.hasAttribute("xsi:type")){
 							typeCC = e.getAttribute("xsi:type");
 						}
-						if ((typeCC.equals("org.eclipse.epf.uma:CustomCategory")) || (typeCC.equals("org.eclipse.epf.uma:Discipline"))){
+						if ((typeCC.equals("org.eclipse.epf.uma:CustomCategory")) ||
+								(typeCC.equals("org.eclipse.epf.uma:Discipline")) ||
+								(typeCC.equals("org.eclipse.epf.uma:SupportingMaterial"))){
 							String idCC = "";
 							String nameCC = "";
 							String guidCC = "";
@@ -680,6 +681,7 @@ public class XMIParser {
 							String shapeiconCC = "";
 							String nodeiconCC = "";
 							String tasksCC = "";
+							String workProductsCC = "";
 							TipoMethodElementProperty methodElementProperty = null;
 							
 							if (e.hasAttribute("xmi:id")){
@@ -710,6 +712,9 @@ public class XMIParser {
 							if (e.hasAttribute("tasks")){
 								tasksCC = e.getAttribute("tasks");
 							}
+							if (e.hasAttribute("workProducts")){
+								workProductsCC = e.getAttribute("workProducts");
+							}
 							
 							NodeList childNodes = resNode.getChildNodes();
 							int j = 0;
@@ -733,7 +738,7 @@ public class XMIParser {
 								}
 								j++;
 							}
-							res.put(id, new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC, tasksCC, methodElementProperty));
+							res.put(id, new TipoContentCategory(typeCC, idCC, nameCC, guidCC, presentationNameCC, briefDescriptionCC, categorizedElementsCC, shapeiconCC, nodeiconCC, tasksCC, workProductsCC, methodElementProperty));
 						}
 					}
 				}
@@ -742,7 +747,6 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		//inputFile.delete();
 		return res;
 	}
 	
@@ -855,6 +859,7 @@ public class XMIParser {
 						Node child = childNodes.item(i);
 						if (child.getNodeName().equals("mainDescription")){
 							mainDescription = child.getFirstChild().getNodeValue();
+							mainDescription = mainDescription.replace("src=\"./", "src=\"");
 							mainDescription = mainDescription.replace("src=\"", "src=\"" + dirPrevia);
 						}
 						else if (child.getNodeName().equals("keyConsiderations")){
@@ -890,11 +895,10 @@ public class XMIParser {
 						i++;
 					}
 					
-					inputFile.delete();
-					
 					TipoElemento tipoElemento = tag.equals(TipoTag.TASK_DESCRIPTION.toString()) ? TipoElemento.TASK :
 												tag.equals(TipoTag.ARTIFACT_DESCRIPTION.toString()) ? TipoElemento.WORK_PRODUCT : 
-												tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) ? TipoElemento.GUIDANCE : null;
+												tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) ? TipoElemento.GUIDANCE : 
+												tag.equals(TipoTag.SUPPORTING_MATERIAL_DESCRIPTION.toString()) ? TipoElemento.SUPPORTING_MATERIAL : null;
 					
 					return new TipoContentElement(tipoElemento, xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, presentationName, authors, changeDate, version, 
 												  briefDescription, performedBy, mandatoryInput, optionalInput, output, additionallyPerformedBy, responsibleFor,
@@ -905,12 +909,11 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		inputFile.delete();
 		return null;
 	}
 	
 	// Retorna todos los elementos del archivo plugin que tengan el tag pasado como parámetro
-	public static List<TipoContentElement> getElementsXMIPlugin(String nomFile, String tag, boolean deleteFile){
+	public static List<TipoContentElement> getElementsXMIPlugin(String nomFile, String tag){
 		List<TipoContentElement> res = new ArrayList<TipoContentElement>();
 		try{
 			File inputFile = new File(nomFile);
@@ -1058,13 +1061,13 @@ public class XMIParser {
 							i++;
 						}
 						
-						if (deleteFile){
-							inputFile.delete();
-						}
-						
 						TipoElemento tipoElemento = tag.equals(TipoTag.TASK_DESCRIPTION.toString()) ? TipoElemento.TASK :
 													tag.equals(TipoTag.ARTIFACT_DESCRIPTION.toString()) ? TipoElemento.WORK_PRODUCT : 
-													(tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) || tag.equals(TipoTag.GUIDANCE.toString())) ? TipoElemento.GUIDANCE : null;
+													(tag.equals(TipoTag.GUIDANCE_DESCRIPTION.toString()) || 
+														tag.equals(TipoTag.GUIDANCE.toString())) ? TipoElemento.GUIDANCE : 
+													(tag.equals(TipoTag.SUPPORTING_MATERIAL_DESCRIPTION.toString()) || 
+														tag.equals(TipoTag.SUPPORTING_MATERIAL.toString())) ? TipoElemento.SUPPORTING_MATERIAL : 
+													null;
 						
 						TipoContentElement tce = new TipoContentElement(tipoElemento, xmiVersion, xmi, uma, epf, epfVersion, id, name, guid, presentationName, authors, changeDate, version,
 													briefDescription, performedBy, mandatoryInput, optionalInput, output, additionallyPerformedBy, responsibleFor,
@@ -1310,7 +1313,6 @@ public class XMIParser {
 					
 					if (eHijo.hasAttribute("name")){
 						nameHijo = eHijo.getAttribute("name");
-						System.out.println("Nombre del proceso: " + nameHijo);
 					}
 					if (eHijo.hasAttribute("xsi:type")){
 						type = eHijo.getAttribute("xsi:type").substring(20);
@@ -1434,7 +1436,32 @@ public class XMIParser {
 	      		    
 	      		    TipoElemento tipo = obtenerTipoElemento(type);
 	      		    Struct h = null;
-      		    	String nombreArchivoCapabilityPattern = nomFile.substring(0, nomFile.length() - 4) + "_" + nameHijo.replace(" ", "_") + ".xmi";
+	      		    
+		      		FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		  			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		  			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+		  			Iterator<String> itCapabilityPatterns = vb.getPlugin().getCapabilityPatternsDir().iterator();
+		  			boolean fin = false;
+	  				String dirArchivo = "";
+	  				String nomArchivo = "";
+		  			while ((itCapabilityPatterns.hasNext()) && (!fin)){
+		  				String directorioCapabilityPattern = itCapabilityPatterns.next();
+		  				int indexDiv = directorioCapabilityPattern.indexOf("/");
+		  				dirArchivo = "";
+		  				while (indexDiv != -1){
+		  					String dir = directorioCapabilityPattern.substring(0, indexDiv);
+		  					dir = dir.replace("%20", " ");
+		  					directorioCapabilityPattern = directorioCapabilityPattern.substring(indexDiv + 1, directorioCapabilityPattern.length());
+		  					dirArchivo += dir + "/";
+		  					nomArchivo = directorioCapabilityPattern;
+		  					indexDiv = directorioCapabilityPattern.indexOf("/");
+		  					fin = dir.equals(nameHijo);
+		  				}
+		  			}
+		  			String nombreArchivoCapabilityPattern = "";
+		  			if (fin){
+		  				nombreArchivoCapabilityPattern = Constantes.destinoDescargas + vb.getDirectorioArchivo() + dirArchivo + nomArchivo;
+		  			}
       		    	File inputFile = new File(nombreArchivoCapabilityPattern);
       		    	// Si es un capability pattern y está el archivo descargado => Lo parseo
 	      		    if ((tipo == TipoElemento.CAPABILITY_PATTERN) && (inputFile.isFile())){
@@ -1570,13 +1597,10 @@ public class XMIParser {
 										}
 										h.setIdTask(href);
 										
-										FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-										HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-										VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 										List<TipoContentPackage> contentPackages = vb.getContentPackages();
 										if (contentPackages != null){
 											Iterator<TipoContentPackage> iter = contentPackages.iterator();
-											boolean fin = false; 
+											fin = false; 
 											while (iter.hasNext() && (!fin)){
 												TipoContentPackage tcp = iter.next();
 												Iterator<TipoContentElement> iterTcp = tcp.getTasksCP().iterator();
@@ -1679,7 +1703,6 @@ public class XMIParser {
 							}
 						}
 					}
-	      		    inputFile.delete();
 					
 	      		    if (h != null){
 						boolean tienePadre = false;
@@ -1837,7 +1860,6 @@ public class XMIParser {
 								predecesoresList[0] = eHijo.getAttribute("pred");
 								predecesores.put(id, predecesoresList);
 							}
-	      		    		/*******************************/
 		      		    	else{
 			      		    	NodeList nHijosVar = nodo.getChildNodes();
 		                    	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {
@@ -1872,7 +1894,6 @@ public class XMIParser {
 		                    		}
 		                    	}
 		      		    	}
-	      		    		/*******************************/
 		      		    }
 		      		    else if(id != null && nameHijo != null && type != null && !tienePadre){
 		      		    	if (hijosS != null ){
@@ -2109,8 +2130,10 @@ public class XMIParser {
     				result.add(s);
     			}
 			}
-    		else if (!result.contains(s)){
-    			result.add(s);
+    		else{
+    			if (!result.contains(s)){
+    				result.add(s);
+    			}
     			/***********************************************************************/
     			Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
     			while (itPred.hasNext()){

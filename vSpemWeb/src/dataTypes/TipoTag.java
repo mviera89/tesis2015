@@ -1,7 +1,7 @@
 package dataTypes;
 
 public enum TipoTag {
-	TASK, TASK_DESCRIPTION, ARTIFACT, ARTIFACT_DESCRIPTION, GUIDANCE, GUIDANCE_DESCRIPTION, ROLE;
+	TASK, TASK_DESCRIPTION, ARTIFACT, ARTIFACT_DESCRIPTION, GUIDANCE, GUIDANCE_DESCRIPTION, ROLE, SUPPORTING_MATERIAL, SUPPORTING_MATERIAL_DESCRIPTION;
 
 	@Override
     public String toString() {
@@ -27,6 +27,12 @@ public enum TipoTag {
 	        	break;
 	        case 6: // ROLE
 	        	valor = "org.eclipse.epf.uma:Role";
+	        	break;
+	        case 7: // SUPPORTING_MATERIAL
+	        	valor = "org.eclipse.epf.uma:SupportingMaterial";
+	        	break;
+	        case 8: // SUPPORTING_MATERIAL_DESCRIPTION
+	        	valor = "org.eclipse.epf.uma:ContentDescription";
 	        	break;
 	        default:
 	        	valor = "";
