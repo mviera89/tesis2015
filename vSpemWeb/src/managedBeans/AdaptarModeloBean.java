@@ -259,13 +259,9 @@ public class AdaptarModeloBean {
 		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		
 		if ((vb != null) && (!vb.getNombreArchivo().isEmpty())){
-			String nomArchivo = Constantes.destinoDescargas + vb.getNombreArchivo();
+			String nomArchivo = Constantes.destinoDescargas + vb.getDirectorioArchivo() + vb.getPlugin().getDeliveryProcessDir();// + vb.getNombreArchivo();
 		   	this.nodos = XMIParser.getElementXMI(nomArchivo);
-		   	// Luego de parsear el proceso elimino el archivo
-		   	File f = new File(nomArchivo);
-		   	if (f.isFile()){
-		   		f.delete();
-		   	}
+		   	
 		   	/*** Creo el modelo con los nodos obtenidos del archivo ***/
 		   	
 	    	FlowChartConnector conector = new FlowChartConnector();

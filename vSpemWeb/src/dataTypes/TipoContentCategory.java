@@ -13,10 +13,11 @@ public class TipoContentCategory {
 	private String shapeicon;
 	private String nodeicon;
 	private String tasks;
+	private String workProducts;
 	private TipoMethodElementProperty methodElementProperty;
 
 	public TipoContentCategory(String type, String id, String name,	String guid, String presentationName, String briefDescription, String categorizedElements,
-							   String shapeicon, String nodeicon, String tasks, TipoMethodElementProperty methodElementProperty) {
+							   String shapeicon, String nodeicon, String tasks, String workProducts, TipoMethodElementProperty methodElementProperty) {
 		this.type = type;
 		this.id = id;
 		this.name = name;
@@ -27,6 +28,7 @@ public class TipoContentCategory {
 		this.shapeicon = shapeicon;
 		this.nodeicon = nodeicon;
 		this.tasks = tasks;
+		this.workProducts = workProducts;
 		this.methodElementProperty = methodElementProperty;
 	}
 
@@ -116,6 +118,14 @@ public class TipoContentCategory {
 
 	public void setTasks(String tasks) {
 		this.tasks = tasks;
+	}
+
+	public String getWorkProducts() {
+		return workProducts;
+	}
+
+	public void setWorkProducts(String workProducts) {
+		this.workProducts = workProducts;
 	}
 
 	public TipoMethodElementProperty getMethodElementProperty() {

@@ -31,6 +31,7 @@ import dataTypes.TipoMethodPackage;
 import dataTypes.TipoPlugin;
 import dataTypes.TipoRolesWorkProducts;
 import dataTypes.TipoSection;
+import dataTypes.TipoView;
 import dominio.Struct;
 import dominio.Variant;
  
@@ -150,7 +151,10 @@ public class ExportarModeloBean {
 				String methodConfigurationAuthors = "";
 				String methodConfigurationChangeDescription = "";
 				String methodConfigurationVersion = "";
-				
+				String idDefaultView = methodConfiguration.getDefaultView().getHref();
+				String[] res = idDefaultView.split("#");
+				idDefaultView = (res.length > 0) ? res[1] : idDefaultView;
+				List<TipoView> addedCategories = methodConfiguration.getAddedCategory();
 				
 				/*** Para vEPF ***/
 				String textoContentCategory = "";
@@ -291,35 +295,45 @@ public class ExportarModeloBean {
 						TipoContentCategory element = entry.getValue();
 						if ((element != null) && (!element.getId().equals(idProcessView)) && (!element.getCategorizedElements().contains(idProcessView))){
 							String type = element.getType().equals("org.eclipse.epf.uma:CustomCategory") ? "uma:CustomCategory" :
-										  element.getType().equals("org.eclipse.epf.uma:Discipline") ? "uma:Discipline" : "";
-							String nodeIcon = element.getNodeicon();
-							String shapeIcon = element.getShapeicon();
-							texto +=	"\t\t\t<ContentCategory xsi:type=\"" + type + "\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" presentationName=\"" + element.getPresentationName() + "\" suppressed=\"" + contentCategorySuppressed + (((nodeIcon != null) && (!nodeIcon.equals(""))) ? ("\" nodeicon=\"" + nodeIcon) : "") + (((shapeIcon != null) && (!shapeIcon.equals(""))) ? ("\" shapeicon=\"" + shapeIcon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
-							TipoMethodElementProperty methodElementProperty = element.getMethodElementProperty();
-							if (methodElementProperty != null){
-								texto += 		"\t\t\t\t<MethodElementProperty name=\"" + methodElementProperty.getName() + "\" value=\"" + methodElementProperty.getValue() + "\"/>" + "\n";
-							}
-							String categorizedElementsE = element.getCategorizedElements();
-							if (type.equals("uma:Discipline")){
-								String[] tasks = element.getTasks().split(" ");
-								int nTasks = tasks.length;
-								for (int j = 0; j < nTasks; j++){
-									texto += "\t\t\t\t<Task>" + tasks[j] + "</Task>" + "\n";
+										  element.getType().equals("org.eclipse.epf.uma:Discipline") ? "uma:Discipline" : 
+										  element.getType().equals("org.eclipse.epf.uma:WorkProductType") ? "uma:WorkProductType" : "";
+							if (!type.equals("")){
+								String nodeIcon = element.getNodeicon();
+								String shapeIcon = element.getShapeicon();
+								texto +=	"\t\t\t<ContentCategory xsi:type=\"" + type + "\" name=\"" + element.getName() + "\" briefDescription=\"" + element.getBriefDescription() + "\" id=\"" + element.getId() + "\" orderingGuide=\"" + contentCategoryOrderingGuide + "\" presentationName=\"" + element.getPresentationName() + "\" suppressed=\"" + contentCategorySuppressed + (((nodeIcon != null) && (!nodeIcon.equals(""))) ? ("\" nodeicon=\"" + nodeIcon) : "") + (((shapeIcon != null) && (!shapeIcon.equals(""))) ? ("\" shapeicon=\"" + shapeIcon) : "") + "\" variabilityType=\"" + contentCategoryVariabilityType + "\">" + "\n";
+								TipoMethodElementProperty methodElementProperty = element.getMethodElementProperty();
+								if (methodElementProperty != null){
+									texto += 		"\t\t\t\t<MethodElementProperty name=\"" + methodElementProperty.getName() + "\" value=\"" + methodElementProperty.getValue() + "\"/>" + "\n";
 								}
-							}
-							else{
-								if (categorizedElementsE.equals("")){
-									texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
-								}
-								else{
-									String[] categorizedElementsEA = categorizedElementsE.split(" ");
-									int nEA = categorizedElementsEA.length;
-									for (int j = 0; j < nEA; j++){
-										texto += 	"\t\t\t\t<CategorizedElement>" + categorizedElementsEA[j] + "</CategorizedElement>" + "\n";
+								String categorizedElementsE = element.getCategorizedElements();
+								if (type.equals("uma:Discipline")){
+									String[] tasks = element.getTasks().split(" ");
+									int nTasks = tasks.length;
+									for (int j = 0; j < nTasks; j++){
+										texto += "\t\t\t\t<Task>" + tasks[j] + "</Task>" + "\n";
 									}
 								}
+								else if (type.equals("uma:WorkProductType")){
+									String[] workProducts = element.getWorkProducts().split(" ");
+									int nWorkProducts = workProducts.length;
+									for (int j = 0; j < nWorkProducts; j++){
+										texto += "\t\t\t\t<WorkProduct>" + workProducts[j] + "</WorkProduct>" + "\n";
+									}
+								}
+								else{
+									if (categorizedElementsE.equals("")){
+										texto += 		"\t\t\t\t<CategorizedElement>" + idDeliveryProcess + "</CategorizedElement>" + "\n";
+									}
+									else{
+										String[] categorizedElementsEA = categorizedElementsE.split(" ");
+										int nEA = categorizedElementsEA.length;
+										for (int j = 0; j < nEA; j++){
+											texto += 	"\t\t\t\t<CategorizedElement>" + categorizedElementsEA[j] + "</CategorizedElement>" + "\n";
+										}
+									}
+								}
+								texto +=	"\t\t\t</ContentCategory>" + "\n";
 							}
-							texto +=	"\t\t\t</ContentCategory>" + "\n";
 						}
 					}
 				}
@@ -362,7 +376,8 @@ public class ExportarModeloBean {
 						
 						String type = (typeStruct == TipoElemento.TASK) ? "uma:Task" : 
 									  (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:Artifact" : 
-									  (typeStruct == TipoElemento.GUIDANCE) ? "uma:Template" : "";
+									  (typeStruct == TipoElemento.GUIDANCE) ? "uma:Template" : 
+									  (typeStruct == TipoElemento.SUPPORTING_MATERIAL) ? "uma:SupportingMaterial" : "";
 						
 						String typeDescription = (typeStruct == TipoElemento.TASK) ? "uma:TaskDescription" : 
 							  					 (typeStruct == TipoElemento.WORK_PRODUCT) ? "uma:ArtifactDescription" : 
@@ -377,39 +392,48 @@ public class ExportarModeloBean {
 						String idPresentation = "";
 						if (elementDescription != null){
 							guidance = elementDescription.getGuidance();
-							idPresentation = (typeStruct == TipoElemento.GUIDANCE) ? 
+							idPresentation = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
 												((guidance != null) ? guidance.getId() : "") :
 												elementDescription.getId();
 						}
 						if ((idPresentation != null) && (!idPresentation.equals(""))){
 
-							String namePresentation = (typeStruct == TipoElemento.GUIDANCE) ? 
+							String namePresentation = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
 														((guidance != null) ? guidance.getName() : "") :
 														elementDescription.getName();
-							String briefDescriptionPresentationStruct = elementDescription.getBriefDescription();
-							String mainDescription = (typeStruct == TipoElemento.GUIDANCE) ? 
+							String briefDescriptionPresentationStruct = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ?
+																			((guidance != null) ? guidance.getBriefDescription() : "") :
+																			elementDescription.getBriefDescription();//elementDescription.getBriefDescription();
+							String mainDescription = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
 														(((guidance != null) && (guidance.getMainDescription() != null) && (!guidance.getMainDescription().equals(""))) ? "<![CDATA[" + guidance.getMainDescription() + "]]>" : "") :
 														(((elementDescription.getMainDescription() != null) && (!elementDescription.getMainDescription().equals(""))) ? "<![CDATA[" + elementDescription.getMainDescription() + "]]>" : "");
 							
-							String keyConsiderations = (typeStruct == TipoElemento.GUIDANCE) ?
+							String keyConsiderations = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ?
 														(((guidance != null) && (guidance.getKeyConsiderations() != null) && (!guidance.getKeyConsiderations().equals(""))) ? "<![CDATA[" + guidance.getKeyConsiderations() + "]]>" : "") :
 														(((elementDescription.getKeyConsiderations() != null) && (!elementDescription.getKeyConsiderations().equals(""))) ? "<![CDATA[" + elementDescription.getKeyConsiderations() + "]]>" : "");
 							
-							String autors = elementDescription.getAuthors();
-							String date = elementDescription.getChangeDate();
+							String typeDescriptionStr = (!typeDescription.equals("")) ? ("xsi:type=\"" + typeDescription + "\" ") : "";
+							String autors = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ?
+												((guidance != null) ? guidance.getAuthors() : "") :
+												elementDescription.getAuthors();
+							String date = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
+												((guidance != null) ? guidance.getChangeDate() : "") :
+												elementDescription.getChangeDate();
 							String changeDate = ((date != null) && (!date.equals(""))) ? ("\" changeDate=\"" + date) : "";
-							String version = elementDescription.getVersion();
+							String version = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
+												((guidance != null) ? guidance.getVersion() : "") :
+												elementDescription.getVersion();
 							List<TipoSection> sections = elementDescription.getSections();
 							texto += ">" + "\n" +
-									"\t\t\t\t<Presentation xsi:type=\"" + typeDescription + "\" name=\"" + namePresentation + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + idPresentation + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + autors + changeDate + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + version + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
+									"\t\t\t\t<Presentation " + typeDescriptionStr + "name=\"" + namePresentation + "\" briefDescription=\"" + briefDescriptionPresentationStruct + "\" id=\"" + idPresentation + "\" orderingGuide=\"" + orderingGuideStruct + "\" suppressed=\"" + suppressedStruct + "\" authors=\"" + autors + changeDate + "\" changeDescription=\"" + changeDescriptionStruct + "\" version=\"" + version + "\" externalId=\"" + externalIdStruct + "\">" + "\n" +
 				    					"\t\t\t\t\t<MainDescription>" + mainDescription + "</MainDescription>" + "\n" +
 				    					"\t\t\t\t\t<KeyConsiderations>" + keyConsiderations + "</KeyConsiderations>" + "\n";
 						
-							boolean haySections = (typeStruct == TipoElemento.GUIDANCE) ? 
+							boolean haySections = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
 													((guidance != null) ? (guidance.getSections() != null) : false) : 
 													(elementDescription.getSections() != null);
 							if (haySections){
-								Iterator<TipoSection> itSections = (typeStruct == TipoElemento.GUIDANCE) ? 
+								Iterator<TipoSection> itSections = ((typeStruct == TipoElemento.GUIDANCE) || (typeStruct == TipoElemento.SUPPORTING_MATERIAL)) ? 
 																		guidance.getSections().iterator() : 
 																		sections.iterator();
 								String sectionBriefDescription = "";
@@ -426,14 +450,14 @@ public class ExportarModeloBean {
 								}
 							}
 							
-							if ((typeStruct != TipoElemento.WORK_PRODUCT) && (typeStruct != TipoElemento.GUIDANCE)){
+							if ((typeStruct != TipoElemento.WORK_PRODUCT) && (typeStruct != TipoElemento.GUIDANCE) && (typeStruct != TipoElemento.SUPPORTING_MATERIAL)){
 								String alt = elementDescription.getAlternatives();
 								String alternatives = ((alt != null) && (!alt.equals(""))) ? "<![CDATA[" + alt + "]]>" : "";
 								texto +=
 											"\t\t\t\t\t<Alternatives>" + alternatives + "</Alternatives>" + "\n";
 							}
 							
-							if (typeStruct != TipoElemento.GUIDANCE){
+							if ((typeStruct != TipoElemento.GUIDANCE) && (typeStruct != TipoElemento.SUPPORTING_MATERIAL)){
 								String pur = elementDescription.getPurpose();
 								String purpose = ((pur != null) && (!pur.equals(""))) ? "<![CDATA[" + pur + "]]>" : "";
 								texto +=
@@ -595,11 +619,24 @@ public class ExportarModeloBean {
 					texto +=
 							"\t\t<MethodPackageSelection>" + pId + "</MethodPackageSelection>" + "\n";
 				}
+
+				texto +=
+						"\t\t<DefaultView>" + idDefaultView + "</DefaultView>" + "\n";
 				
 				if (contentCategory != null){
-					texto +=			
+					texto +=
 							"\t\t<ProcessView>" + idProcessView + "</ProcessView>" + "\n";
 				}
+				
+				Iterator<TipoView> itAddCat = addedCategories.iterator();
+				while (itAddCat.hasNext()){
+					String addCat = itAddCat.next().getHref();
+					String[] resCat = addCat.split("#");
+					addCat = (resCat.length > 0) ? resCat[1] : addCat;
+					texto +=
+							"\t\t<AddedCategory>" + addCat + "</AddedCategory>" + "\n";
+				}
+				
 				texto +=
 						"\t</MethodConfiguration>" + "\n" +
 					"</uma:MethodLibrary>";
@@ -737,7 +774,7 @@ public class ExportarModeloBean {
 						Entry<String, String[]> e = iter.next();
 						String idLink = e.getKey();
 				    	String sucesor = e.getValue()[0];
-				    	String properties = e.getValue()[1];
+				    	/*String properties = e.getValue()[1];
 				    	if (!properties.equals("")){
 				    		properties = " properties=\"" + properties;
 				    		Struct sScope = buscarElementoEnModelo(superactivity, modeloAdaptado, "");
@@ -745,8 +782,8 @@ public class ExportarModeloBean {
 				    			properties += "scope=" + sScope.getElementIDExtends();
 				    		}
 				    		properties += "\"";
-				    	}
-				    	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" + properties + ">" + sucesor + "</Predecessor>" + "\n";
+				    	}*/
+				    	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" /*+ properties*/ + ">" + sucesor + "</Predecessor>" + "\n";
 					}
 				}
 
@@ -836,7 +873,7 @@ public class ExportarModeloBean {
 						String suppressedStep = "false";
 						String sectionNameStep = "";
 						String variabilityTypeStep = "na";
-						texto += "\t\t\t\t\t<Step name=\"" + step.getName() + "\" briefDescription=\""+ briefDescriptionStep + "\" id=\"" + step.getXmiId() + "\" orderingGuide=\"" + orderingGuideStep + "\" presentationName=\"" + presentationNameStep + "\" suppressed=\"" + suppressedStep + "\" sectionName=\"" + sectionNameStep + "\" variabilityType=\"" + variabilityTypeStep + "\">" + "\n" +
+						texto += "\t\t\t\t\t<Step name=\"" + step.getName() + "\" briefDescription=\""+ briefDescriptionStep + "\" id=\"" + step.getXmiId() + "\" orderingGuide=\"" + orderingGuideStep + /*"\" presentationName=\"" + presentationNameStep +*/ "\" suppressed=\"" + suppressedStep + "\" sectionName=\"" + sectionNameStep + "\" variabilityType=\"" + variabilityTypeStep + "\">" + "\n" +
 									"\t\t\t\t\t<Description></Description>" + "\n" +
 								 "\t\t\t\t\t</Step>" + "\n";
 					}

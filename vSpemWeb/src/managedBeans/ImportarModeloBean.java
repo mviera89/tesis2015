@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -212,6 +213,7 @@ public class ImportarModeloBean {
 
 	public void cargarArchivo(){
 		try{
+			System.out.println("Comenzando la descarga...");
 			if (!nombreArchivo.equals("")){
 				Object[] res = cargarArchivoInicialRepositorio(); // [String, TipoLibrary]
 				String urlPlugin = (String) res[0];
@@ -224,14 +226,17 @@ public class ImportarModeloBean {
 					// archivoPlugin puede ser de la forma: dir1/dir2/.../nombre
 					int indexDiv = archivoPlugin.indexOf("/");
 					String dirPlugin = "";
+					String dir = "";
 					while (indexDiv != -1){
-						String dir = archivoPlugin.substring(0, indexDiv);
+						dir = archivoPlugin.substring(0, indexDiv);
 						archivoPlugin = archivoPlugin.substring(indexDiv + 1, archivoPlugin.length());
 						indexDiv = archivoPlugin.indexOf("/");
 						dirPlugin += dir + "/";
 					}
+					
+					cargarTodoDeRepositorio(dirPlugin);
 					TipoPlugin plugin = cargarDeRepositorio(dirPlugin, archivoPlugin, archivoPlugin);
-					List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(archivoPlugin);
+					List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(dirPlugin + archivoPlugin);
 					
 					// Cargo los datos del method plugin 
 					FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
@@ -245,15 +250,18 @@ public class ImportarModeloBean {
 			        
 			        FacesMessage mensaje = new FacesMessage("", "El archivo ha sido cargado correctamente.");
 		            FacesContext.getCurrentInstance().addMessage(null, mensaje);
+					System.out.println("Fin de la descarga.");
 				}
 				else{
 					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_INCORRECTO);
 			        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+					System.out.println(Constantes.MENSAJE_ARCHIVO_INCORRECTO);
 				}
 			}
 			else{
 				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_NULL);
 		        FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				System.out.println(Constantes.MENSAJE_ARCHIVO_NULL);
 			}
 		}
 		catch (Exception e) {
@@ -261,13 +269,60 @@ public class ImportarModeloBean {
 		}
 	}
 
+	public void cargarTodoDeRepositorio(String dirPlugin){
+		try {
+			URL url = new URL(Constantes.URL_GITHUB + repositorio + dirPlugin.replace(" ", "%20"));
+			
+			// Listo los directorios
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			String linea;
+			while ((linea = in.readLine()) != null){
+				String dir = repositorio;
+				int index = dir.indexOf("blob");
+				if (index != -1){
+					dir = dir.replace("blob", "tree");
+				}
+				dir = dir + dirPlugin;
+				// <a href="/repositorio/.../nomArchivo"
+				String strBuscado = "<a href=\"/" + dir;
+				int indexIni = linea.indexOf(strBuscado);
+				if (indexIni != -1){
+					String archivo = linea.substring(indexIni + strBuscado.length());
+					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
+					File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
+					f.mkdirs();
+					cargarTodoDeRepositorio(dirPlugin + archivo + "/");
+				}
+			}
+			in.close();
+			
+			// Listo los archivos
+			in = new BufferedReader(new InputStreamReader(url.openStream()));
+			while ((linea = in.readLine()) != null){
+				// <a href="/repositorio/.../nomArchivo"
+				String strBuscado = "<a href=\"/" + repositorio + dirPlugin.replace(" ", "%20");
+				int indexIni = linea.indexOf(strBuscado);
+				if (indexIni != -1){
+					String archivo = linea.substring(indexIni + strBuscado.length());
+					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
+					descargarArchivos(dirPlugin, archivo, archivo);
+				}
+			}
+			
+			in.close();
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public Object[] cargarArchivoInicialRepositorio() {
 		String archivoExport = nombreArchivo;
 		
 		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
 		int index = repositorio.indexOf("blob/");
 		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
+		//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
 		
 		try{
 			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
@@ -344,7 +399,7 @@ public class ImportarModeloBean {
 				// Si lo encontré, lo parseo. Asumo que hay un único achivo dentro de la carpeta 'configurations'.
 				String archivoConfig = archivosXML.get(0);
 				String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-				System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
+				//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
 				
 				try{
 					url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
@@ -382,18 +437,20 @@ public class ImportarModeloBean {
 		return null;
 	}
 
-	public TipoPlugin cargarDeRepositorio(String dir, String archivo, String archivoFinal) throws Exception {
-		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+	public void descargarArchivos(String dir, String archivo, String archivoFinal) throws Exception {
 		int index = repositorio.indexOf("blob/");
 		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir + archivo);
+		//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
 		
 		try{
-			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir + archivo);
+			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
-			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoFinal);
+			dir = dir.replace("%20", " ");
+			File directorio = new File(Constantes.destinoDescargas + dir);
+			directorio.mkdirs();
+			FileOutputStream fos = new FileOutputStream(directorio + "/" + archivoFinal);
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
@@ -402,8 +459,6 @@ public class ImportarModeloBean {
 			}
 			is.close();
 			fos.close();
-			
-			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoFinal);
 		}
 		catch (FileNotFoundException e){
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "No se encontró el archivo '" + archivo + "'.");
@@ -412,6 +467,21 @@ public class ImportarModeloBean {
 		catch (IOException e){
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al establecer la conexión con el repositorio.");
         	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public TipoPlugin cargarDeRepositorio(String dir, String archivo, String archivoFinal){
+		try{
+			File f = new File(Constantes.destinoDescargas + dir.replace("%20", " ") + "/" + archivoFinal);
+			if (!f.isFile()){
+				descargarArchivos(dir, archivo, archivoFinal);
+			}
+			dir = dir.replace("%20", " ");
+			File directorio = new File(Constantes.destinoDescargas + dir);
+			return XMIParser.getElementsXMIPlugin(directorio + "/" + archivoFinal);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -453,9 +523,10 @@ public class ImportarModeloBean {
 				String archivoDP = dirRes[1];
 				nombreArchivo = archivoDP;
 		        vb.setNombreArchivo(archivoDP);
+		        vb.setDirectorioArchivo(dirPlugin);
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirDeliveryProcess, archivoDP, archivoDP);// Cargo los Capability Patterns
 				// Para que se seteen todos los hijos
-				XMIParser.getElementXMI(Constantes.destinoDescargas + archivoDP);
+				XMIParser.getElementXMI(Constantes.destinoDescargas + dirPlugin + dirLineProcess + dirDeliveryProcess + archivoDP);
 		        vb.setRepositorio(repositorio);
 			}
 			
@@ -474,8 +545,7 @@ public class ImportarModeloBean {
 					indexDiv = archivoCP.indexOf("/");
 					dirCapabilityPattern += nameCapabilityPattern + "/";
 				}
-				String archivoCPFinal = archivoCP.substring(0, nombreArchivo.length() - 4)  + "_" + nameCapabilityPattern.replace("%20", "_") + ".xmi";
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirCapabilityPattern, archivoCP, archivoCPFinal);
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirCapabilityPattern, archivoCP, archivoCP);
 			}
 			
 			// Parseo las customCategories
@@ -503,6 +573,16 @@ public class ImportarModeloBean {
 							}
 						}
 					}
+					
+					String[] categorizedElems = contentCategory.getCategorizedElements().split(" ");
+					int n = categorizedElems.length;
+					for (int i = 0; i < n; i++){
+						String elem = categorizedElems[i];
+						if (!elements.contains(elem)){
+							elements += elem + " ";
+						}
+					}
+					
 					Map<String, TipoContentCategory> categorizedElements = cargarCategorizedElementsRepositorio(dirPlugin, archivoPlugin, elements);
 			        vb.setCategorizedElements(categorizedElements);
 				}
@@ -510,7 +590,7 @@ public class ImportarModeloBean {
 			
 			// Parseo las tasks
 			Map<String, TipoContentElement> lstTask = new HashMap<String, TipoContentElement>();
-			List<TipoContentElement> tceTasks = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.TASK.toString(), false);
+			List<TipoContentElement> tceTasks = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.TASK.toString());
 			Iterator<TipoContentElement> itTceTasks = tceTasks.iterator();
 			while (itTceTasks.hasNext()){
 				TipoContentElement tce = itTceTasks.next();
@@ -524,8 +604,8 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(taskDir);
 				String dirTask = dirRes[0];
 				String archivoTask = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, "task_" + archivoTask);
-				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirTask,"task_" + archivoTask, TipoTag.TASK_DESCRIPTION.toString());
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, archivoTask);
+				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirTask, archivoTask, TipoTag.TASK_DESCRIPTION.toString());
 				if (task != null){
 					String taskName = task.getName();
 					String[] res = taskName.split(",");
@@ -539,7 +619,7 @@ public class ImportarModeloBean {
 			
 			// Parseo los workproducts
 			Map<String, TipoContentElement> lstWorkproduct = new HashMap<String, TipoContentElement>();
-			List<TipoContentElement> lstWP = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.ARTIFACT.toString(), false);
+			List<TipoContentElement> lstWP = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.ARTIFACT.toString());
 			Iterator<TipoContentElement> itWP = lstWP.iterator();
 			while (itWP.hasNext()){
 				TipoContentElement wp = itWP.next();
@@ -553,8 +633,8 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(workproductDir);
 				String dirWorkproduct = dirRes[0];
 				String archivoWorkproduct = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, "workproduct_" + archivoWorkproduct);
-				TipoContentElement workproduct = cargarContentElementsRepositorio(dirPlugin + dirWorkproduct, "workproduct_" + archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, archivoWorkproduct);
+				TipoContentElement workproduct = cargarContentElementsRepositorio(dirPlugin + dirWorkproduct, archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
 				if (workproduct != null){
 					String workproductName = workproduct.getName();
 					String[] res = workproductName.split(",");
@@ -575,8 +655,9 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(guidanceDir);
 				String dirGuidance = dirRes[0];
 				String archivoGuidance = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, "guidance_" + archivoGuidance);
-				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, "guidance_" + archivoGuidance, TipoTag.GUIDANCE_DESCRIPTION.toString());
+				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, archivoGuidance);
+				String tag = (dirGuidance.contains("supportingmaterials")) ? TipoTag.SUPPORTING_MATERIAL_DESCRIPTION.toString() : TipoTag.GUIDANCE_DESCRIPTION.toString();
+				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, archivoGuidance, tag);
 				if (guidance != null){
 					String guidanceName = guidance.getName();
 					String[] res = guidanceName.split(",");
@@ -584,7 +665,9 @@ public class ImportarModeloBean {
 					lstGuidances.put(guidanceId, guidance);
 				}
 			}
-			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(archivoPlugin, TipoTag.GUIDANCE.toString(), false);
+			List<TipoContentElement> lstTemplates = cargarTemplateRepositorio(dirPlugin + archivoPlugin, TipoTag.GUIDANCE.toString());
+			List<TipoContentElement> lstTemplates2 = cargarTemplateRepositorio(dirPlugin + archivoPlugin, TipoTag.SUPPORTING_MATERIAL.toString());
+			lstTemplates.addAll(lstTemplates2);
 			Map<String, TipoContentElement> mapTemplates = new HashMap<String, TipoContentElement>();
 			Iterator<TipoContentElement> itTceTemplates = lstTemplates.iterator();
 			while (itTceTemplates.hasNext()){
@@ -598,7 +681,7 @@ public class ImportarModeloBean {
 			
 			// Cargo en el contentPackage
 			Map<String, TipoContentElement> mapRoles = new HashMap<String, TipoContentElement>();
-			List<TipoContentElement> lstRoles = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, TipoTag.ROLE.toString(), false);
+			List<TipoContentElement> lstRoles = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.ROLE.toString());
 			Iterator<TipoContentElement> itRoles = lstRoles.iterator();
 			while (itRoles.hasNext()){
 				TipoContentElement rol = itRoles.next();
@@ -618,9 +701,9 @@ public class ImportarModeloBean {
 				Entry<String, TipoContentElement> entry = itCE.next();
 				TipoContentElement tce = entry.getValue();
 				String idTce = entry.getKey();
-				TipoContentCategory contentElement = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", idTce, false);
+				TipoContentCategory contentElement = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "contentElements", idTce, false);
 				if (contentElement != null){
-					TipoContentCategory childPackage = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "childPackages", contentElement.getId(), true);
+					TipoContentCategory childPackage = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "childPackages", contentElement.getId(), true);
 					if (childPackage != null){
 						if (!cpAgregados.contains(childPackage.getId())){
 							cpAgregados.add(childPackage.getId());
@@ -630,7 +713,7 @@ public class ImportarModeloBean {
 							if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
 								tcp.getWorkproductsCP().add(tce);
 							}
-							else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+							else if ((tce.getTipoElemento() == TipoElemento.GUIDANCE) || (tce.getTipoElemento() == TipoElemento.SUPPORTING_MATERIAL)){
 								tcp.getGuidancesCP().add(tce);
 							}
 							else if (tce.getTipoElemento() == TipoElemento.TASK){
@@ -648,7 +731,7 @@ public class ImportarModeloBean {
 									if (tce.getTipoElemento() == TipoElemento.WORK_PRODUCT){
 										tcp.getWorkproductsCP().add(tce);
 									}
-									else if (tce.getTipoElemento() == TipoElemento.GUIDANCE){
+									else if ((tce.getTipoElemento() == TipoElemento.GUIDANCE) || (tce.getTipoElemento() == TipoElemento.SUPPORTING_MATERIAL)){
 										tcp.getGuidancesCP().add(tce);
 									}
 									else if (tce.getTipoElemento() == TipoElemento.TASK){
@@ -697,8 +780,8 @@ public class ImportarModeloBean {
 	}
 
 	public TipoContentCategory cargarCustomCategoriesRepositorio(String dirPlugin, String dirCustomCategory, String archivoCC, String archivoPlugin){
-		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, Constantes.destinoDescargas + archivoCC);
-		TipoContentCategory contentCategory = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + archivoPlugin, "contentElements", contentDescription.getId(), true);
+		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, Constantes.destinoDescargas + dirPlugin + dirCustomCategory + archivoCC);
+		TipoContentCategory contentCategory = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "contentElements", contentDescription.getId(), true);
 		if (contentCategory != null){
 			contentCategory.setContentDescription(contentDescription);
 		}
@@ -706,26 +789,26 @@ public class ImportarModeloBean {
 	}
 	
 	public Map<String, TipoContentCategory> cargarCategorizedElementsRepositorio(String dirPrevia, String archivoPlugin, String categorizedElements){
-		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		File f = new File(Constantes.destinoDescargas + dirPrevia + archivoPlugin);
 		if (f.isFile()){
 			String[] categorizedElementsArray = categorizedElements.split(" ");
-			return XMIParser.getElementsXMICategorizedElements(dirPrevia, Constantes.destinoDescargas + archivoPlugin, categorizedElementsArray);	
+			return XMIParser.getElementsXMICategorizedElements(dirPrevia, Constantes.destinoDescargas + dirPrevia + archivoPlugin, categorizedElementsArray);	
 		}
 		return null;
 	}
 	
 	public TipoContentElement cargarContentElementsRepositorio(String dirPrevia, String archivo, String tag){
-		File f = new File(Constantes.destinoDescargas + archivo);
+		File f = new File(Constantes.destinoDescargas + dirPrevia + archivo);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIContentElement(dirPrevia, Constantes.destinoDescargas + archivo, tag);	
+			return XMIParser.getElementsXMIContentElement(dirPrevia, Constantes.destinoDescargas + dirPrevia + archivo, tag);	
 		}
 		return null;
 	}
 	
-	public List<TipoContentElement> cargarTemplateRepositorio(String archivoPlugin, String tag, boolean deleteFile){
+	public List<TipoContentElement> cargarTemplateRepositorio(String archivoPlugin, String tag){
 		File f = new File(Constantes.destinoDescargas + archivoPlugin);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, tag, deleteFile);	
+			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, tag);	
 		}
 		return null;
 	}
