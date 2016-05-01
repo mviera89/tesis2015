@@ -986,42 +986,45 @@ public class ExportarModeloBean {
 		//recorro modelo, para cada variante busco si el id esta en modelo adapatado
 		//(fue seleccionada), si esta busco el id del var point
 		//con este id busco en los predecesores, si alguien lo tiene se lo quito y se agrega la variante como predecesor
+		//para cada varPoint veo sus predecesores, luego a cada variante elegida se le setean los mismos
 		Iterator<Element> itModelo = modelo.getElements().iterator();
 		while (itModelo.hasNext()){
 			Element e = itModelo.next();
 			Struct s = (Struct) e.getData();
 			TipoElemento tipo = s.getType();
-			if (tipo == TipoElemento.VP_ACTIVITY  ||
-				tipo == TipoElemento.VP_TASK 	  ||
-				tipo == TipoElemento.VP_PHASE 	  ||
-				tipo == TipoElemento.VP_ITERATION ||
-				tipo == TipoElemento.VP_ROLE 	  ||
-				tipo == TipoElemento.VP_MILESTONE ||
-				tipo == TipoElemento.VP_WORK_PRODUCT){
-				
-				//tomo las variantes
-				List<Variant> variants = s.getVariantes();
-				String idVarPoint = s.getElementID();
-				Iterator<Variant> itV = variants.iterator();
-				int num = 0;
-				while (itV.hasNext()){
-					num ++;
-					Variant v = itV.next();
-					//veo si v esta en modelo adaptado
-					String idV = v.getID();
-					boolean pertenece = false;
-					Iterator<Element> it = modeloAdaptado.getElements().iterator();
-					while (it.hasNext() && !pertenece){
-						Element el = it.next();
-						Struct st = (Struct) el.getData();
-						if (st.getElementID().equals(idV)){
-							pertenece = true;
+			if(tipo == TipoElemento.VP_ACTIVITY  ||
+	        		tipo == TipoElemento.VP_TASK 	  ||
+	        		tipo == TipoElemento.VP_PHASE 	  ||
+	        		tipo == TipoElemento.VP_ITERATION ||
+	        		tipo == TipoElemento.VP_ROLE 	  ||
+	        		tipo == TipoElemento.VP_MILESTONE ||
+	        		tipo == TipoElemento.VP_WORK_PRODUCT){
+					//tomo las variantes
+					List<Variant> variants = s.getVariantes();
+					Map<String, String[]> predecesores = s.getPredecesores();
+					String idVarPoint = s.getElementID();
+					Iterator<Variant> itV = variants.iterator();
+					int num = 0;
+					while (itV.hasNext()){
+						num ++;
+						Variant v = itV.next();
+						//veo si v esta en modelo adaptado
+						String idV = v.getID();
+						boolean pertenece = false;
+						Iterator<Element> it = modeloAdaptado.getElements().iterator();
+						while (it.hasNext() && !pertenece){
+							Element el = it.next();
+							Struct st = (Struct) el.getData();
+							if (st.getElementID().equals(idV)){
+								pertenece = true;
+								st.setPredecesores(predecesores);
+							}
+							else{
+								pertenece = elementoPerteneceAModelo(idV, s.getHijos(),predecesores);
+								
+							}
+
 						}
-						else{
-							pertenece = elementoPerteneceAModelo(idV, s.getHijos());
-						}
-					}
-						
 					if (pertenece){
 						//buscar quien tiene este id como predecessor
 						Iterator<Element> itModeloA = modeloAdaptado.getElements().iterator();
@@ -1052,6 +1055,7 @@ public class ExportarModeloBean {
 						  	}
 						}
 					}
+
 				}
 				
 				//sacar el varpoint de quien lo tiene como predecesor
@@ -1083,15 +1087,16 @@ public class ExportarModeloBean {
 		}
 	}
 	
-	public boolean elementoPerteneceAModelo(String id, List<Struct> lista){
+	public boolean elementoPerteneceAModelo(String id, List<Struct> lista, Map<String, String[]> predecesores){
 		Iterator<Struct> it = lista.iterator();
 		while (it.hasNext()){
 			Struct s =it.next();
 			if (s.getElementID().equals(id)){
+				s.setPredecesores(predecesores);
 				return true;
 			}
 			else{
-				return elementoPerteneceAModelo(id, s.getHijos());
+				return elementoPerteneceAModelo(id, s.getHijos(),predecesores);
 			}
 		}
 		return false;
