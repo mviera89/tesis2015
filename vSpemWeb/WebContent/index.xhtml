@@ -25,6 +25,12 @@
 	</div>
 	
 	<div class="container" style="height: 90%; width: 100%;background-color:#eeeeee">
+ 
+		<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+		<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="box-shadow: inherit; background-color: transparent; border: none !important;">
+		    <p:graphicImage value="/iconos/ajax-loader.gif" id="statusDialog"/>
+		</p:dialog>
+		
 		<p:panel id="panel_principal" style="border-width: 0; background-color:transparent">
 	  		<h:form id="form_index">
 				<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">

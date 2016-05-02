@@ -5,9 +5,30 @@
 	<h3 style="margin-top:1%">Exportar modelo</h3>
 
 	<h:form id="exportar_form">
+		<p:panel>
+			<h:panelGrid columns="2" style="margin-bottom: 10px;">
+		        <p:outputLabel for="opciones" value="Exportar a repositorio:" style="width: 200px;"/>
+		        <p:selectOneRadio id="opciones" value="#{exportarModeloBean.exportar}" layout="grid" columns="2" style="margin-left: 10px; width: 100px;">
+		            <f:selectItem itemLabel="Si" itemValue="true"/>
+		            <f:selectItem itemLabel="No" itemValue="false" />
+		            <p:ajax event="change" update=":panel_principal"/>
+		        </p:selectOneRadio>
+		    </h:panelGrid>
+			
+			<h:panelGrid id="repositorioPanel" columns="4" style="margin-bottom: 10px;" rendered="#{exportarModeloBean.exportar}">
+				<p:outputLabel value="Repositorio (https://github.com/):" style="width: 200px;"/>
+				<p:inputText value="#{exportarModeloBean.repositorioExport}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+				<p:graphicImage value="/iconos/info.png" title="#{exportarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
+			</h:panelGrid>
+		</p:panel>
+		
 		<p:panelGrid>
 			<p:messages id="msg" showDetail="true"/>
 		</p:panelGrid>
+		
+		<div style="margin-top: 10px;">
+			<p:commandButton value="Finalizar" action="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado, adaptarModeloBean.rolesWP, adaptarModeloBean.modelo)}" update=":panel_principal" />
+		</div>
 	</h:form>
 
 </html>

@@ -227,11 +227,12 @@
 		    
 	  	</p:tabView>
 	  	
-		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() == 0}" update=":panel_principal"
-					 	 actionListener="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modeloAdaptado, adaptarModeloBean.rolesWP, adaptarModeloBean.modelo)}"
-					 	 action="#{VistaBean.actualizarIndiceActivo(2)}" />
-		<p:commandButton value="Finalizar" rendered="#{adaptarModeloBean.erroresModeloFinal.size() > 0}"
-						 onclick="PF('erroresDialog').show(); return false;" />
+	  	<div style="margin-top: 10px;">
+		  	<p:commandButton value="&#187; Siguiente" rendered="#{adaptarModeloBean.erroresModeloFinal.size() == 0}" update=":panel_principal"
+						 	 action="#{VistaBean.actualizarIndiceActivo(2)}" />
+			<p:commandButton value="&#187; Siguiente" rendered="#{adaptarModeloBean.erroresModeloFinal.size() > 0}"
+							 onclick="PF('erroresDialog').show(); return false;" />
+		</div>
 	</h:form>
 	
 	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true"

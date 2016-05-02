@@ -1,10 +1,24 @@
 package managedBeans;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +28,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+
+import logica.GitControl;
 
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
@@ -38,11 +54,39 @@ import dominio.Variant;
 @ManagedBean
 public class ExportarModeloBean {
 
+	private boolean exportar = false;
+	private String repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+	private String mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
+	
 	private List<String> idCapabilityPatterns = new ArrayList<String>();
 	private List<String> idsAgregados = new ArrayList<String>();
 	private List<String> processIds = new ArrayList<String>();
 	private String textoCapabilityPattern = "";
 	
+	public boolean isExportar() {
+		return exportar;
+	}
+
+	public void setExportar(boolean exportar) {
+		this.exportar = exportar;
+	}
+
+	public String getRepositorioExport() {
+		return repositorioExport;
+	}
+
+	public void setRepositorioExport(String repositorioExport) {
+		this.repositorioExport = repositorioExport;
+	}
+
+	public String getMensajeAyudaRepositorio() {
+		return mensajeAyudaRepositorio;
+	}
+
+	public void setMensajeAyudaRepositorio(String mensajeAyudaRepositorio) {
+		this.mensajeAyudaRepositorio = mensajeAyudaRepositorio;
+	}
+
 	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo){
 		try{
 			if (modeloAdaptado != null){
@@ -647,6 +691,10 @@ public class ExportarModeloBean {
 			    out.flush();
 			    out.close();
 			    
+			    if (exportar){
+			    	exportarModeloARepositorio();
+			    }
+			    
 			    FacesMessage mensaje = new FacesMessage("", "El modelo ha sido exportado correctamente.");
 	            FacesContext.getCurrentInstance().addMessage(null, mensaje);
 	            
@@ -917,7 +965,6 @@ public class ExportarModeloBean {
 		}
 		return texto;
 	}
-	
 	
 	public Struct buscarElemento(String id, List<Struct> elementos, String buscarPor){
 		if (elementos != null){
@@ -1211,4 +1258,47 @@ public class ExportarModeloBean {
 		return null;	
 	}
 
+	public void exportarModeloARepositorio(){
+		try{
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd_MM_yyyy");
+	        String fecha = sdf.format(new Date());
+	        String dir = "Export_" + fecha;
+			String localPath = Constantes.destinoExport + dir;
+	        String remotePath = Constantes.URL_GITHUB + repositorioExport; // "https://github.com/mviera89/modelosXMI.git"; //"https://github.com/GeekyTheory/GitTutorial.git";
+	        GitControl gc = new GitControl(localPath, remotePath);
+	        
+	        // Clonar repositorio a local
+	        gc.cloneRepo();
+	        
+	        // Copiar archivos al localPath
+			FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+	        String nomArchivo = vb.getNombreArchivo();
+	        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
+	        
+	        String nombre = nomArchivo + "_" + Constantes.nomArchivoExport;
+			File origen  = new File(Constantes.destinoExport + nombre);
+	        File destino = new File(Constantes.destinoExport + dir + "/" + fecha + "_" + nombre);
+	        InputStream in = new FileInputStream(origen);
+	        OutputStream out = new FileOutputStream(destino);
+	        byte[] buf = new byte[1024];
+	        int len;
+	        while ((len = in.read(buf)) > 0) {
+	          out.write(buf, 0, len);
+	        }
+	        in.close();
+	        out.close();
+	        
+	        // Hacer el add, commit y push
+	        gc.addToRepo();
+	        gc.commitToRepo("Prueba Export");
+	        gc.pushToRepo();
+	        
+	        // Hacer delete de localPath
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 }
