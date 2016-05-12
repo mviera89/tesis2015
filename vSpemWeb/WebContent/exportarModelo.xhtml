@@ -15,10 +15,18 @@
 		        </p:selectOneRadio>
 		    </h:panelGrid>
 			
-			<h:panelGrid id="repositorioPanel" columns="4" style="margin-bottom: 10px;" rendered="#{exportarModeloBean.exportar}">
+			<h:panelGrid id="repositorioPanel" columns="2" style="margin-bottom: 10px;" rendered="#{exportarModeloBean.exportar}">
 				<p:outputLabel value="Repositorio (https://github.com/):" style="width: 200px;"/>
-				<p:inputText value="#{exportarModeloBean.repositorioExport}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
-				<p:graphicImage value="/iconos/info.png" title="#{exportarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
+				<h:panelGroup>
+					<p:inputText value="#{exportarModeloBean.repositorioExport}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+					<p:graphicImage value="/iconos/info.png" title="#{exportarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
+				</h:panelGroup>
+				
+				<p:outputLabel value="Usuario:" style="width: 200px;"/>
+				<p:inputText value="#{exportarModeloBean.userRepositorioExport}" style="width: 150px; margin: 0px 0px 10px 10px;"/>
+				
+				<p:outputLabel value="Contraseña:" style="width: 200px;"/>
+				<p:password value="#{exportarModeloBean.passRepositorioExport}" style="width: 150px; margin: 0px 0px 0px 10px;"/>
 			</h:panelGrid>
 		</p:panel>
 		

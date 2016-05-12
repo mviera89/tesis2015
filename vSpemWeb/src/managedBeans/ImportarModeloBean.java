@@ -512,7 +512,7 @@ public class ImportarModeloBean {
 				String dirLP = dirRes[0];
 				String archivoLP = dirRes[1];
 				TipoPlugin modelLineProcess = cargarDeRepositorio(dirPlugin + dirLP, archivoLP, archivoLP);
-				parsearDatosPlugin(dirPlugin, dirLP, modelLineProcess, archivoLP);
+				parsearDatosPlugin(dirPlugin, dirLP, modelLineProcess, dirLP + archivoLP);
 			}
 			
 			// Parseo el delieryProcess
@@ -523,7 +523,7 @@ public class ImportarModeloBean {
 				String archivoDP = dirRes[1];
 				nombreArchivo = archivoDP;
 		        vb.setNombreArchivo(archivoDP);
-		        vb.setDirectorioArchivo(dirPlugin);
+		        vb.setDirectorioArchivo(dirPlugin + dirLineProcess);
 				cargarDeRepositorio(dirPlugin + dirLineProcess + dirDeliveryProcess, archivoDP, archivoDP);// Cargo los Capability Patterns
 				// Para que se seteen todos los hijos
 				XMIParser.getElementXMI(Constantes.destinoDescargas + dirPlugin + dirLineProcess + dirDeliveryProcess + archivoDP);
@@ -554,7 +554,7 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(customCategoriesDir);
 				String dirCustomCategories = dirRes[0];
 				String archivoCC = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirCustomCategories, archivoCC, archivoCC);
+				cargarDeRepositorio(dirPlugin + dirCustomCategories, archivoCC, archivoCC);
 				TipoContentCategory contentCategory = cargarCustomCategoriesRepositorio(dirPlugin, dirCustomCategories, archivoCC, archivoPlugin);
 		        vb.setContentCategory(contentCategory);
 				if (contentCategory != null){
@@ -604,7 +604,7 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(taskDir);
 				String dirTask = dirRes[0];
 				String archivoTask = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirTask, archivoTask, archivoTask);
+				cargarDeRepositorio(dirPlugin + dirTask, archivoTask, archivoTask);
 				TipoContentElement task = cargarContentElementsRepositorio(dirPlugin + dirTask, archivoTask, TipoTag.TASK_DESCRIPTION.toString());
 				if (task != null){
 					String taskName = task.getName();
@@ -633,7 +633,7 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(workproductDir);
 				String dirWorkproduct = dirRes[0];
 				String archivoWorkproduct = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirWorkproduct, archivoWorkproduct, archivoWorkproduct);
+				cargarDeRepositorio(dirPlugin + dirWorkproduct, archivoWorkproduct, archivoWorkproduct);
 				TipoContentElement workproduct = cargarContentElementsRepositorio(dirPlugin + dirWorkproduct, archivoWorkproduct, TipoTag.ARTIFACT_DESCRIPTION.toString());
 				if (workproduct != null){
 					String workproductName = workproduct.getName();
@@ -655,7 +655,7 @@ public class ImportarModeloBean {
 				String[] dirRes = separarDireccion(guidanceDir);
 				String dirGuidance = dirRes[0];
 				String archivoGuidance = dirRes[1];
-				cargarDeRepositorio(dirPlugin + dirLineProcess + dirGuidance, archivoGuidance, archivoGuidance);
+				cargarDeRepositorio(dirPlugin + dirGuidance, archivoGuidance, archivoGuidance);
 				String tag = (dirGuidance.contains("supportingmaterials")) ? TipoTag.SUPPORTING_MATERIAL_DESCRIPTION.toString() : TipoTag.GUIDANCE_DESCRIPTION.toString();
 				TipoContentElement guidance = cargarContentElementsRepositorio(dirPlugin + dirGuidance, archivoGuidance, tag);
 				if (guidance != null){

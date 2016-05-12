@@ -177,19 +177,20 @@ public class ExportarModeloBean {
 				String processUsageGuidance = "";
 				
 				// <MethodConfiguration... />
-				String methodConfigurationName = methodConfiguration.getName();
-				String methodConfigurationId = methodConfiguration.getId();
-				String methodConfigurationBriefDescription = methodConfiguration.getBriefDescription();
+				String methodConfigurationName = (methodConfiguration != null) ? methodConfiguration.getName() : "";
+				String methodConfigurationId = (methodConfiguration != null) ? methodConfiguration.getId() : "";
+				String methodConfigurationBriefDescription = (methodConfiguration != null) ? methodConfiguration.getBriefDescription() : "";
 				String methodConfigurationOrderingGuide = "";
 				String methodConfigurationSuppressed = "false";
 				String methodConfigurationAuthors = "";
 				String methodConfigurationChangeDescription = "";
 				String methodConfigurationVersion = "";
-				String idDefaultView = methodConfiguration.getDefaultView().getHref();
-				String[] res = idDefaultView.split("#");
-				idDefaultView = (res.length > 0) ? res[1] : idDefaultView;
-				List<TipoView> addedCategories = methodConfiguration.getAddedCategory();
-				
+				String idDefaultView = ((methodConfiguration != null) && (methodConfiguration.getDefaultView() != null)) ? methodConfiguration.getDefaultView().getHref() : "";
+				if (!idDefaultView.equals("")){
+					String[] res = idDefaultView.split("#");
+					idDefaultView = (res.length > 0) ? res[1] : idDefaultView;
+				}
+				List<TipoView> addedCategories = (methodConfiguration != null) ? methodConfiguration.getAddedCategory() : new ArrayList<TipoView>();
 				/*** Para vEPF ***/
 				String textoContentCategory = "";
 				String textoDeliveryProcess = "";

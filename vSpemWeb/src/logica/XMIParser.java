@@ -334,6 +334,25 @@ public class XMIParser {
 					version = eHijo.getAttribute("version");
 				}
         	}
+        	
+        	
+        	if (lineProcessDir != null){
+        		String[] dirRes = separarDireccion(nomFile);
+        		String dirPlugin = dirRes[0];
+        		
+        		dirRes = separarDireccion(lineProcessDir);
+        		String dirLP = dirRes[0];
+				String archivoPL = dirRes[1];
+        		dirPlugin += dirLP;
+				TipoPlugin pt = getElementsXMIPlugin(dirPlugin + archivoPL);
+				deliveryProcessDir = dirLP + pt.getDeliveryProcessDir();
+				Iterator<String> itCp = pt.getCapabilityPatternsDir().iterator();
+				while (itCp.hasNext()){
+					capabilityPatternsDir.add(dirLP + itCp.next());	
+				}
+        	}
+        	
+        	
         	return new TipoPlugin(id, name, guid, briefDescription, authors, changeDate, changeDescription, version,
         						  lineProcessDir, deliveryProcessDir, capabilityPatternsDir, customCategoriesDir, tasksDir, workproductsDir, guidancesDir);
 		}
@@ -341,6 +360,20 @@ public class XMIParser {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static String[] separarDireccion(String archivo){
+		// archivo puede ser de la forma: dir1/dir2/.../nombre
+		int indexDiv = archivo.indexOf("/");
+		String dirArchivo = "";
+		while (indexDiv != -1){
+			String dir = archivo.substring(0, indexDiv);
+			archivo = archivo.substring(indexDiv + 1, archivo.length());
+			dirArchivo += dir + "/";
+			indexDiv = archivo.indexOf("/");
+		}
+		String[] res = {dirArchivo, archivo};
+		return res;
 	}
 	
 	public static TipoContentCategory getElementsXMITipoId(String dirPrevia, String nomFile, String tipo, String id, boolean buscarPadre){
