@@ -9,14 +9,14 @@
 		<p:tabView>
 	        <p:tab title="Repositorio Github">
 				<h:panelGrid columns="4">
-					<p:outputLabel value="Repositorio (https://github.com/):" style="width: 150px;"/>
+					<p:outputLabel value="Repositorio (https://github.com/):" style="width: 200px;"/>
 					<p:inputText value="#{importarModeloBean.repositorioIngresado}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
 					<p:graphicImage value="/iconos/info.png" title="#{importarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
 					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos(true)}" update=":panel_principal" />
 				</h:panelGrid>
 				
 				<h:panelGrid columns="3">
-					<p:outputLabel value="Archivo: " style="width: 150px;" />
+					<p:outputLabel value="Archivo: " style="width: 200px;" />
 					<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivo}" filter="true" style="margin: 10px 10px 0px 10px;" >
 						<f:selectItems value="#{importarModeloBean.archivosDisponibles}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
 					</p:selectOneListbox>

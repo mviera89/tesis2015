@@ -101,7 +101,7 @@
 			    </p:accordionPanel>
 		    </p:tab>
 		    
-	   		<p:tab id="tab3" title="Roles-WorkProducts">
+	   		<p:tab id="tab3" title="Roles-WorkProducts" rendered="#{adaptarModeloBean.rolesWP.size() > 0}">
 	   				<p:accordionPanel value="#{adaptarModeloBean.rolesWP}" var="rolWP">
 			        <p:tab>
 			        	<!-- Muestro el presentationName del rol en el encabezado -->
@@ -156,7 +156,7 @@
 			    </p:accordionPanel>
 	    	</p:tab>
 	    	
-		    <p:tab id="tab4" title="Tareas-WorkProducts">
+		    <p:tab id="tab4" title="Tareas-WorkProducts" rendered="#{adaptarModeloBean.tareasWP.size() > 0}">
 		    	<p:accordionPanel value="#{adaptarModeloBean.tareasWP}" var="tareaWP">
 			        <p:tab>
 			        	<!-- Muestro el presentationName de la tarea en el encabezado -->

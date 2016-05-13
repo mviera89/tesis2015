@@ -18,20 +18,22 @@
 </h:head>
 
 <h:body style="height: 100%">
-	<div class="page-header" style="height: 5%">
-		<div class="container" style="margin-left: 10px;">
-			<h1>vSPEM</h1>
-		</div>
+	<div class="page-header">
+		<p:toolbar>
+			<f:facet name="left">
+	        	<p:outputLabel value="vSPEM" style="font-size: 25px; margin-left: 15%;"/>
+        	</f:facet>
+	    </p:toolbar>
 	</div>
 	
-	<div class="container" style="height: 90%; width: 100%;background-color:#eeeeee">
+	<div class="container" style="width: 100%; padding: 0px;">
  
 		<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
 		<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="box-shadow: inherit; background-color: transparent; border: none !important;">
 		    <p:graphicImage value="/iconos/ajax-loader.gif" id="statusDialog"/>
 		</p:dialog>
 		
-		<p:panel id="panel_principal" style="border-width: 0; background-color:transparent">
+		<p:panel id="panel_principal" style="border-width: 0; background-color:transparent; padding: 0px;">
 	  		<h:form id="form_index">
 				<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
 				    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update=":panel_principal"/>
