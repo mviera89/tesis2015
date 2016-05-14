@@ -30,12 +30,14 @@ public class GitControl {
     private Repository localRepo;
     private Git git;
     private CredentialsProvider cp;
-    private String name = "mviera89";
-    private String password = "E99619ff";
+    private String name;
+    private String password;
  
-    public GitControl(String localPath, String remotePath) throws IOException {
+    public GitControl(String localPath, String remotePath, String name, String password) throws IOException {
         this.localPath = localPath;
         this.remotePath = remotePath;
+        this.name = name;
+        this.password = password;
         this.localRepo = new FileRepository(localPath + "/.git");
         cp = new UsernamePasswordCredentialsProvider(this.name, this.password);
         git = new Git(localRepo);
