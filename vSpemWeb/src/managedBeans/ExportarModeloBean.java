@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
@@ -42,17 +43,32 @@ import dominio.Struct;
 import dominio.Variant;
  
 @ManagedBean
+@SessionScoped
 public class ExportarModeloBean {
 
-	private boolean exportar = false;
-	private String repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
-	private String mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
+	private boolean exportar;
+	private String repositorioExport;
+	private String userRepositorioExport;
+	private String passRepositorioExport;
+	private String mensajeAyudaRepositorio;
 	
-	private List<String> idCapabilityPatterns = new ArrayList<String>();
-	private List<String> idsAgregados = new ArrayList<String>();
-	private List<String> processIds = new ArrayList<String>();
-	private String textoCapabilityPattern = "";
+	private List<String> idCapabilityPatterns;
+	private List<String> idsAgregados;
+	private List<String> processIds;
+	private String textoCapabilityPattern;
 	
+	public ExportarModeloBean(){
+		exportar = false;
+		repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+		userRepositorioExport = "";
+		passRepositorioExport = "";
+		mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
+		
+		idCapabilityPatterns = new ArrayList<String>();
+		idsAgregados = new ArrayList<String>();
+		processIds = new ArrayList<String>();
+		textoCapabilityPattern = "";
+	}
 	public boolean isExportar() {
 		return exportar;
 	}
@@ -67,6 +83,22 @@ public class ExportarModeloBean {
 
 	public void setRepositorioExport(String repositorioExport) {
 		this.repositorioExport = repositorioExport;
+	}
+
+	public String getUserRepositorioExport() {
+		return userRepositorioExport;
+	}
+
+	public void setUserRepositorioExport(String userRepositorioExport) {
+		this.userRepositorioExport = userRepositorioExport;
+	}
+
+	public String getPassRepositorioExport() {
+		return passRepositorioExport;
+	}
+
+	public void setPassRepositorioExport(String passRepositorioExport) {
+		this.passRepositorioExport = passRepositorioExport;
 	}
 
 	public String getMensajeAyudaRepositorio() {
@@ -1257,8 +1289,8 @@ public class ExportarModeloBean {
 	        String fecha = sdf.format(new Date());
 	        String dir = "Export_" + fecha;
 			String localPath = Constantes.destinoExport + dir;
-	        String remotePath = Constantes.URL_GITHUB + repositorioExport; // "https://github.com/mviera89/modelosXMI.git"; //"https://github.com/GeekyTheory/GitTutorial.git";
-	        GitControl gc = new GitControl(localPath, remotePath);
+	        String remotePath = Constantes.URL_GITHUB + repositorioExport;
+	        GitControl gc = new GitControl(localPath, remotePath, userRepositorioExport, passRepositorioExport);
 	        
 	        // Clonar repositorio a local
 	        gc.cloneRepo();
@@ -1289,9 +1321,23 @@ public class ExportarModeloBean {
 	        gc.pushToRepo();
 	        
 	        // Hacer delete de localPath
+	        File dirLocal  = new File(localPath);
+	        borrarDirectorio(dirLocal);
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}
 	}
+	
+	public void borrarDirectorio (File dir){
+		File[] archivos = dir.listFiles();
+		int n = archivos.length;
+		for (int i = 0; i < n; i++){
+			if (archivos[i].isDirectory()) {
+				borrarDirectorio(archivos[i]);
+			}
+			archivos[i].delete();
+		}
+	}
+	
 }
