@@ -26,6 +26,7 @@ public class Constantes {
 	
 	// Constantes para los mensjaes
 	public static final String mensjaeAyudaRepositorio = "Ingrese la URL correspondiente al repositorio github donde se encuentra el XMI a importar, sin incluir el prefijo 'https://github.com/'.";
+	public static final String mensjaeAyudaRepositorioExport = "Ingrese la URL correspondiente al repositorio github al cual desea exportar el modelo, sin incluir el prefijo 'https://github.com/'.";
 	public static final String MENSAJE_ARCHIVOS_NO_ENCONTRADOS = "No se han encontrado archivos XMI en el repositorio indicado.";
 	public static final String MENSAJE_URL_NULL = "Debe ingresar la URL correspondiente al repositorio github donde se encuentra el XMI a importar.";
 	public static final String MENSAJE_URL_NO_ACCESIBLE = "No se pudo acceder a la URL ";

@@ -32,6 +32,8 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.UploadedFile;
 
+import com.sun.mail.iap.ConnectionException;
+
 import config.Constantes;
 import dataTypes.TipoContentCategory;
 import dataTypes.TipoContentDescription;
@@ -216,8 +218,8 @@ public class ImportarModeloBean {
 			System.out.println("Comenzando la descarga...");
 			if (!nombreArchivo.equals("")){
 				Object[] res = cargarArchivoInicialRepositorio(); // [String, TipoLibrary]
-				String urlPlugin = (String) res[0];
-				TipoLibrary library = (TipoLibrary) res[1];
+				String urlPlugin = ((res != null) && (res.length > 0)) ? (String) res[0] : null;
+				TipoLibrary library = ((res != null) && (res.length > 1)) ? (TipoLibrary) res[1] : null;
 				if (urlPlugin != null){
 					// Cargo la configuración
 					TipoMethodConfiguration methodConfiguration = cargarArchivoConfigurationRepositorio();
@@ -234,23 +236,29 @@ public class ImportarModeloBean {
 						dirPlugin += dir + "/";
 					}
 					
-					cargarTodoDeRepositorio(dirPlugin);
-					TipoPlugin plugin = cargarDeRepositorio(dirPlugin, archivoPlugin, archivoPlugin);
-					List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(dirPlugin + archivoPlugin);
-					
-					// Cargo los datos del method plugin 
-					FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-					HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-					VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
-					vb.setLibrary(library);
-					vb.setPlugin(plugin);
-			        vb.setMethodConfiguration(methodConfiguration);
-			        vb.setProcessPackages(processPackages);
-			        parsearDatosPlugin(dirPlugin, "", plugin, archivoPlugin);
-			        
-			        FacesMessage mensaje = new FacesMessage("", "El archivo ha sido cargado correctamente.");
-		            FacesContext.getCurrentInstance().addMessage(null, mensaje);
-					System.out.println("Fin de la descarga.");
+					try{
+						cargarTodoDeRepositorio(dirPlugin);
+						TipoPlugin plugin = cargarDeRepositorio(dirPlugin, archivoPlugin, archivoPlugin);
+						List<TipoMethodPackage> processPackages = cargarProcessPackageRepositorio(dirPlugin + archivoPlugin);
+						
+						// Cargo los datos del method plugin 
+						FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+						HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+						VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+						vb.setLibrary(library);
+						vb.setPlugin(plugin);
+				        vb.setMethodConfiguration(methodConfiguration);
+				        vb.setProcessPackages(processPackages);
+				        vb.setDirPlugin(dirPlugin);
+				        parsearDatosPlugin(dirPlugin, "", plugin, archivoPlugin);
+				        
+				        FacesMessage mensaje = new FacesMessage("", "El archivo ha sido cargado correctamente.");
+			            FacesContext.getCurrentInstance().addMessage(null, mensaje);
+						System.out.println("Fin de la descarga.");
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				else{
 					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVO_INCORRECTO);
@@ -273,7 +281,7 @@ public class ImportarModeloBean {
 		try {
 			URL url = new URL(Constantes.URL_GITHUB + repositorio + dirPlugin.replace(" ", "%20"));
 			
-			// Listo los directorios
+			// Directorios
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String linea;
 			while ((linea = in.readLine()) != null){
@@ -296,7 +304,7 @@ public class ImportarModeloBean {
 			}
 			in.close();
 			
-			// Listo los archivos
+			// Archivos
 			in = new BufferedReader(new InputStreamReader(url.openStream()));
 			while ((linea = in.readLine()) != null){
 				// <a href="/repositorio/.../nomArchivo"
@@ -311,8 +319,14 @@ public class ImportarModeloBean {
 			
 			in.close();
 		}
+		catch (ConnectionException e) {
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Falló la conexión con el repositorio.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			e.printStackTrace();
+		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
+			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Falló la carga de archivos.");
+        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
 			e.printStackTrace();
 		}
 	}
