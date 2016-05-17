@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import logica.GitControl;
 
+import org.eclipse.jgit.api.errors.TransportException;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
@@ -48,9 +49,10 @@ public class ExportarModeloBean {
 
 	private boolean exportar;
 	private String repositorioExport;
+	private String comentarioRepositorioExport;
 	private String userRepositorioExport;
 	private String passRepositorioExport;
-	private String mensajeAyudaRepositorio;
+	private String mensajeAyudaRepositorioExport;
 	
 	private List<String> idCapabilityPatterns;
 	private List<String> idsAgregados;
@@ -60,9 +62,10 @@ public class ExportarModeloBean {
 	public ExportarModeloBean(){
 		exportar = false;
 		repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+		comentarioRepositorioExport = "";
 		userRepositorioExport = "";
 		passRepositorioExport = "";
-		mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
+		mensajeAyudaRepositorioExport = Constantes.mensjaeAyudaRepositorioExport;
 		
 		idCapabilityPatterns = new ArrayList<String>();
 		idsAgregados = new ArrayList<String>();
@@ -85,6 +88,12 @@ public class ExportarModeloBean {
 		this.repositorioExport = repositorioExport;
 	}
 
+	public String getComentarioRepositorioExport() {
+		return comentarioRepositorioExport;
+	}
+	public void setComentarioRepositorioExport(String comentarioRepositorioExport) {
+		this.comentarioRepositorioExport = comentarioRepositorioExport;
+	}
 	public String getUserRepositorioExport() {
 		return userRepositorioExport;
 	}
@@ -101,12 +110,12 @@ public class ExportarModeloBean {
 		this.passRepositorioExport = passRepositorioExport;
 	}
 
-	public String getMensajeAyudaRepositorio() {
-		return mensajeAyudaRepositorio;
+	public String getMensajeAyudaRepositorioExport() {
+		return mensajeAyudaRepositorioExport;
 	}
 
-	public void setMensajeAyudaRepositorio(String mensajeAyudaRepositorio) {
-		this.mensajeAyudaRepositorio = mensajeAyudaRepositorio;
+	public void setMensajeAyudaRepositorioExport(String mensajeAyudaRepositorioExport) {
+		this.mensajeAyudaRepositorioExport = mensajeAyudaRepositorioExport;
 	}
 
 	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo){
@@ -714,14 +723,21 @@ public class ExportarModeloBean {
 			    out.flush();
 			    out.close();
 			    
+			    boolean ok = true;
 			    if (exportar){
-			    	exportarModeloARepositorio();
+			    	ok = exportarModeloARepositorio();
 			    }
 			    
-			    FacesMessage mensaje = new FacesMessage("", "El modelo ha sido exportado correctamente.");
-	            FacesContext.getCurrentInstance().addMessage(null, mensaje);
-	            
-	            vb.setFinModelado(true);
+			    if (ok){
+			    	FacesMessage mensaje = new FacesMessage("", "El modelo ha sido exportado correctamente.");
+			    	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			    	
+			    	vb.setFinModelado(true);
+			    }
+			    else{
+			    	FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ha fallado la carga al repositorio.");
+			    	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+			    }
 			}
 			else{
 				System.out.println("##### exportarModelo - treeAdaptado: null");
@@ -1283,28 +1299,94 @@ public class ExportarModeloBean {
 		return null;	
 	}
 
-	public void exportarModeloARepositorio(){
+	public boolean exportarModeloARepositorio(){
 		try{
-	        SimpleDateFormat sdf = new SimpleDateFormat("dd_MM_yyyy");
-	        String fecha = sdf.format(new Date());
-	        String dir = "Export_" + fecha;
+			// archivo puede ser de la forma: dir1/dir2/.../nombre
+			String repo = repositorioExport;
+			int indexDiv = repo.indexOf("/");
+			String dirRepo = "";
+			while (indexDiv != -1){
+				dirRepo = repo.substring(0, indexDiv);
+				repo = repo.substring(indexDiv + 1, repo.length());
+				indexDiv = repo.indexOf("/");
+			}
+			
+			
+	        String dir = "gitExport_" + dirRepo;
 			String localPath = Constantes.destinoExport + dir;
 	        String remotePath = Constantes.URL_GITHUB + repositorioExport;
 	        GitControl gc = new GitControl(localPath, remotePath, userRepositorioExport, passRepositorioExport);
 	        
-	        // Clonar repositorio a local
-	        gc.cloneRepo();
-	        
-	        // Copiar archivos al localPath
-			FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+	        // Clonar repositorio a local si no existe; sino, hacer pull
+	        File dirLocal  = new File(localPath);
+        	try{
+		        if (!dirLocal.isDirectory()){
+		        	gc.cloneRepo();
+		        }
+		        else{
+		        	gc.pullFromRepo();
+		        }
+        	}
+        	catch (TransportException e){
+        		FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Verifique que el usuario y contraseña sean correctos.");
+            	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+    			e.printStackTrace();
+    			borrarDirectorio(dirLocal);
+    			return false;
+        	}
+        	catch (Exception e){
+    			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Verifique que la dirección del repositorio ingresado sea correcta.");
+            	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+    			e.printStackTrace();
+    			borrarDirectorio(dirLocal);
+    			return false;
+        	}
+
+			// Copiar archivo model_export al localPath
+	        FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 	        String nomArchivo = vb.getNombreArchivo();
 	        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
+	
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+	        String fecha = sdf.format(new Date());
 	        
 	        String nombre = nomArchivo + "_" + Constantes.nomArchivoExport;
-			File origen  = new File(Constantes.destinoExport + nombre);
-	        File destino = new File(Constantes.destinoExport + dir + "/" + fecha + "_" + nombre);
+	        File origen  = new File(Constantes.destinoExport + nombre);
+			// Creo la ruta destinoExport/dir/fecha/
+	        File destino = new File(Constantes.destinoExport + dir + "/Export" + fecha);
+	        destino.mkdirs();
+	        // Creo en esa ruta el archivo 'nombre'
+	        //destino = new File(Constantes.destinoExport + dir + "/Export" + fecha + "/" + nombre);
+	        copiarArchivos(origen, new File(Constantes.destinoExport + dir + "/Export" + fecha + "/" + nombre));
+	        
+	        // Copiar archivos de imagenes al localPath
+	        String dirPlugin = vb.getDirPlugin();
+	        origen  = new File(Constantes.destinoExport + dirPlugin);
+	        copiarDirectorio(origen, new File(destino + "/" + dirPlugin));
+	        
+	        
+	        // Hacer el add, commit y push
+	        gc.addToRepo();
+	        gc.commitToRepo(comentarioRepositorioExport);
+	        gc.pushToRepo();
+	        
+	        exportar = false;
+			repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+	        comentarioRepositorioExport = "";
+	        userRepositorioExport = "";
+	        passRepositorioExport = "";
+	        return true;
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public void copiarArchivos(File origen, File destino){
+		try{
 	        InputStream in = new FileInputStream(origen);
 	        OutputStream out = new FileOutputStream(destino);
 	        byte[] buf = new byte[1024];
@@ -1314,22 +1396,41 @@ public class ExportarModeloBean {
 	        }
 	        in.close();
 	        out.close();
-	        
-	        // Hacer el add, commit y push
-	        gc.addToRepo();
-	        gc.commitToRepo("Prueba Export");
-	        gc.pushToRepo();
-	        
-	        // Hacer delete de localPath
-	        File dirLocal  = new File(localPath);
-	        borrarDirectorio(dirLocal);
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	public void borrarDirectorio (File dir){
+	public void copiarDirectorio(File origen, File destino){
+		File[] archivos = origen.listFiles();
+		int n = archivos.length;
+		for (int i = 0; i < n; i++){
+			File archivo = archivos[i];
+			if (archivo.isDirectory()) {
+				File newDestino = new File(destino + "/" + archivo.getName());
+				newDestino.mkdirs();
+				copiarDirectorio(archivo, newDestino);
+				// Si el directorio está vacío => Lo borro
+				if (newDestino.listFiles().length == 0){
+					newDestino.delete();
+				}
+			}
+			else{
+				String nombreExt = archivo.getName();
+				int indexExtension = nombreExt.indexOf(".");
+				if (indexExtension != -1){
+					String extArchivo = nombreExt.substring(indexExtension + 1, nombreExt.length());
+					// Solo cargo archivos que no son xmi
+					if (!extArchivo.equals("xmi")){
+						copiarArchivos(archivo, new File(destino + "/" + archivo.getName()));
+					}
+				}
+			}
+		}
+	}
+	
+	public void borrarDirectorio(File dir){
 		File[] archivos = dir.listFiles();
 		int n = archivos.length;
 		for (int i = 0; i < n; i++){
@@ -1338,6 +1439,7 @@ public class ExportarModeloBean {
 			}
 			archivos[i].delete();
 		}
+		dir.delete();
 	}
 	
 }

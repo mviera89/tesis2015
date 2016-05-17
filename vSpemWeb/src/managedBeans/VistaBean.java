@@ -23,6 +23,7 @@ import dataTypes.TipoPlugin;
 public class VistaBean {
 
 	private int indiceActivo = 0;
+	private String dirPlugin = "";
 	private String nombreArchivo = "";
 	private String directorioArchivo = "";
 	private List<String> capabilityPatterns = null;
@@ -44,6 +45,14 @@ public class VistaBean {
 
 	public void setIndiceActivo(int indiceActivo) {
 		this.indiceActivo = indiceActivo;
+	}
+
+	public String getDirPlugin() {
+		return dirPlugin;
+	}
+
+	public void setDirPlugin(String dirPlugin) {
+		this.dirPlugin = dirPlugin;
 	}
 
 	public String getNombreArchivo() {
