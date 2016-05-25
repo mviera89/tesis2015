@@ -10,7 +10,7 @@
 		.ui-datagrid-content{border: 0px;}
 	</style>
 	
-	<h3 style="margin-top:1%">Adaptar modelo</h3>
+	<p:outputLabel value="Adaptar modelo" style="font-size: 20px; margin-top:1%;"/>
 	
 	<h:form id="adaptar_form">
 		<p:tabView id="tabView">
@@ -23,23 +23,25 @@
 				<div style="padding-bottom: 0.3em;">
 					<p:diagram value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
 						<f:facet name="element">
-							<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-										   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
-								<div style="position: relative; display:block; margin:auto; width: 32px;">
-									<h:commandLink disabled="#{elem.hijos.size() == 0}" >
-										<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-										<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;"
-														rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
-										<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;"
-														rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
-										<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
-										<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
-										<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
-									</h:commandLink>
-								</div>
-								<p:ajax update=":panel_principal"/>
-								<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
-							</h:commandLink>
+							<div style="width: 150px; text-align: center;">
+								<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+											   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
+									<div style="position: relative; display:block; margin:auto; width: 32px;">
+										<h:commandLink disabled="#{elem.hijos.size() == 0}" >
+											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+											<p:graphicImage value="/iconos/mas.png" style="position: absolute; top: 20px; left: 20px;"
+															rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and !elem.estaExpandido}" title="Haga click para ver los hijos de este elemento."/>
+											<p:graphicImage value="/iconos/menos.png" style="position: absolute; top: 20px; left: 20px;"
+															rendered="#{adaptarModeloBean.elementoTieneHijos(elem.elementID) and elem.estaExpandido}" title="Haga click para ocultar los hijos de este elemento."/>
+											<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
+											<p:ajax event="click" listener="#{adaptarModeloBean.redibujarHijos}" update=":panel_principal"/>
+											<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+										</h:commandLink>
+									</div>
+									<p:ajax update=":panel_principal"/>
+									<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+								</h:commandLink>
+							</div>
 						</f:facet>
 					</p:diagram>
 				</div>
@@ -249,16 +251,17 @@
 	</p:dialog>
 	
 	<p:dialog header="Vista previa" widgetVar="vistaPreviaDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 50%; ">
-		<div style="height:400px" >
-			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="height:95%" styleClass="ui-widget-content" var="elem">
+		<h:form>
+			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="height:400px" styleClass="ui-widget-content" var="elem">
 				<f:facet name="element">
-					<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
-					<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
-					<p:outputLabel value="#{elem.presentationName}" />
+					<div style="width: 150px; text-align: center;">
+						<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
+						<p:outputLabel value="#{elem.etiqueta}" style="position: absolute; top: -5px; left: 20px;"/>
+						<p:outputLabel value="#{elem.presentationName}" />
+					</div>
 				</f:facet>
 			</p:diagram>
-			<br/>
-		 </div>
+		</h:form>
 	</p:dialog>
 	
 	<p:dialog header="Adaptar modelo" widgetVar="erroresDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 25%; ">

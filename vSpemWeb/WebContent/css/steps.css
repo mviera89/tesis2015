@@ -28,3 +28,20 @@
 .ui-widget-overlay {
     background: lightslategrey !important;
 }
+
+/****************/
+
+.ui-widget-header .ui-state-default{
+	border: 1px solid #424548;
+	background: #424548;
+}
+
+.ui-widget-header .ui-tabs-selected{
+	border: 1px solid #68727B;
+	background: #68727B;
+}
+
+
+.ui-accordion .ui-state-active{
+	background: #6580A1;
+}

@@ -382,7 +382,7 @@ public class AdaptarModeloBean {
 			        modelo.connect(crearConexion(endPointRoot, endPointP1_T));
 			        String etiqueta = obtenerEtiquetaParaModelo(r, s);
 			        s.setEtiqueta(etiqueta);
-		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		        	x += Constantes.distanciaEntreElemsMismoNivel;
 		        	if ((tipo == TipoElemento.TASK) || (tipo == TipoElemento.VP_TASK)){
 		        		if (!s.getPerformedPrimaryBy().equals("")){
 		        			if (rolesTareasPrimary.containsKey(s.getPerformedPrimaryBy())){
@@ -505,7 +505,7 @@ public class AdaptarModeloBean {
 		        	buscoVPRolesEnHijos(s.getHijos());
 				}
 	        }
-	        root.setX(x/2 + "em");
+	        root.setX((x - Constantes.distanciaEntreElemsMismoNivel)/2 + "em");
 	        this.y += Constantes.distanciaEntreNiveles;
 		}
 		
@@ -623,7 +623,7 @@ public class AdaptarModeloBean {
 		        modelo.connect(crearConexion(endPointPV_B, endPointH1));
 		        s.setEtiqueta(((Struct) this.puntoVariacionAdaptado.getData()).getEtiqueta());
 		        
-		        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		        x +=  Constantes.distanciaEntreElemsMismoNivel;
 	    	}
 	    	
 	    	if (cantVariantes > 0){
@@ -874,7 +874,7 @@ public class AdaptarModeloBean {
 			    		        
 			    		        modelo.connect(crearConexion(endPointHijoB, endPointVar));
 			    		        st.setEtiqueta(etiqueta); // La variante tiene la misma etiqueta que el punto de variación
-			    	        	x += st.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			    	        	x += Constantes.distanciaEntreElemsMismoNivel;
 			    	        	
 			    	        	st.setDescription(var.getDescription());
 			    	        	st.setBriefDescription(var.getBriefDescription());
@@ -892,7 +892,7 @@ public class AdaptarModeloBean {
 		        		x = xAnt;
 		        	}
 		        	
-		        	x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+		        	x += Constantes.distanciaEntreElemsMismoNivel;
 		        	
 		        	if (esVistaPrevia && (hijo != null)){
 		        		mostrarHijos(hijo, modelo, esVistaPrevia);
@@ -1211,7 +1211,7 @@ public class AdaptarModeloBean {
 						s.setIdRole(v.getIdRole());
 						s.setIdWorkProduct(v.getIdWorkProduct());
 				        
-				        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+				        x +=  Constantes.distanciaEntreElemsMismoNivel;
 			    	}
 		    	}
 			}
@@ -1467,7 +1467,7 @@ public class AdaptarModeloBean {
 			        // Conecto el punto de variación con la variante
 			        modeloRolesWPS.connect(crearConexion(endPointPV_B, endPointH1));
 			        
-			        x +=  nombreVariante.length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			        x +=  Constantes.distanciaEntreElemsMismoNivel;
 		    	}
 			}
 		}
@@ -1821,7 +1821,7 @@ public class AdaptarModeloBean {
 			modeloAdaptado.connect(AdaptarModeloBean.crearConexion(superior, endPointP1_T));
 			
 			Struct s = (Struct) e.getData();
-			x += s.getNombre().length() / 2.0 + Constantes.distanciaEntreElemsMismoNivel;
+			x += Constantes.distanciaEntreElemsMismoNivel;
 			s.setEtiqueta(etiqueta);
 			
 			// Dibujo los hijos en el modelo final
