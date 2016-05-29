@@ -2073,8 +2073,18 @@ public class XMIParser {
      			if (vpToVar.get(s.getElementID()).contains(v.getID())){
      				v.setIDVarPoint(s.getElementID());
  					s.getVariantes().add(v);
+ 					//si las variantes tienen hijos vp
+ 					if (v.getHijos()!= null){
+ 						Iterator<Struct> itv = v.getHijos().iterator();
+ 			        	while (itv.hasNext()){
+ 			        		Struct hijo = itv.next();
+ 			        		seteoVariantes(hijo,registroVar,vpToVar);
+ 			        	}
+ 						
+ 					}
      			}
          	}
+         	
     	}
         if (s.getHijos() != null){
         	Iterator<Struct> it = s.getHijos().iterator();
