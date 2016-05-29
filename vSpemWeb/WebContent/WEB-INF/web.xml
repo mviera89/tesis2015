@@ -5,8 +5,8 @@
  <display-name>vSpemWeb</display-name>
  <context-param>
   <param-name>primefaces.THEME</param-name>
-  <!-- <param-value>home</param-value> -->
-  <param-value>glass-x</param-value>
+  <param-value>home</param-value>
+  <!-- <param-value>glass-x</param-value> -->
   <!-- <param-value>bluesky</param-value> -->
   <!-- <param-value>bootstrap</param-value> -->
   <!-- <param-value>cupertino</param-value> -->

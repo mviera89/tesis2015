@@ -21,7 +21,7 @@ public class Constantes {
 	public static final int distanciaEntreNiveles = 10;
 	public static final int distanciaEntreNivelesMismoRol = 5;
 	public static final int yInicial = 0;
-	public static final float distanciaEntreElemsMismoNivel = (float) 2.0;
+	public static final float distanciaEntreElemsMismoNivel = (float) 12.0;
 	public static final String colorVarPoint = "mediumblue";
 	
 	// Constantes para los mensjaes

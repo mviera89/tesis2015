@@ -12,7 +12,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +56,10 @@ public class ImportarModeloBean {
 	private Boolean desdeRepositorio = true;
 	private String repositorio = "";
 	private String nombreArchivo = "";
+	private String nombreArchivoRepo = "";
+	private String nombreArchivoLocal = "";
 	private List<String> archivosDisponibles = new ArrayList<String>();
+	private List<String> archivosDisponiblesLocal = new ArrayList<String>();
 
 	@PostConstruct
 	public void init(){
@@ -103,6 +105,30 @@ public class ImportarModeloBean {
 		this.nombreArchivo = nombreArchivo;
 	}
 
+	public String getNombreArchivoRepo() {
+		return nombreArchivoRepo;
+	}
+
+	public void setNombreArchivoRepo(String nombreArchivoRepo) {
+		this.nombreArchivoRepo = nombreArchivoRepo;
+	}
+
+	public List<String> getArchivosDisponiblesLocal() {
+		return archivosDisponiblesLocal;
+	}
+
+	public void setArchivosDisponiblesLocal(List<String> archivosDisponiblesLocal) {
+		this.archivosDisponiblesLocal = archivosDisponiblesLocal;
+	}
+
+	public String getNombreArchivoLocal() {
+		return nombreArchivoLocal;
+	}
+
+	public void setNombreArchivoLocal(String nombreArchivoLocal) {
+		this.nombreArchivoLocal = nombreArchivoLocal;
+	}
+
 	public List<String> getArchivosDisponibles() {
 		return archivosDisponibles;
 	}
@@ -116,9 +142,9 @@ public class ImportarModeloBean {
 	public void leerArchivos(boolean esDesdeRepositorio) throws Exception {
 		try{
 			init();
-			if (!repositorioIngresado.equals("")){
-				desdeRepositorio = esDesdeRepositorio;
-				repositorio = (esDesdeRepositorio) ? repositorioIngresado : directorioLocalIngresado;
+			desdeRepositorio = esDesdeRepositorio;
+			repositorio = (esDesdeRepositorio) ? repositorioIngresado : directorioLocalIngresado;
+			if (!repositorio.equals("")){
 				// Si no termina con '/' se la agrego
 				int n = repositorio.length();
 				String s = repositorio.substring(n - 1, n);
@@ -126,6 +152,7 @@ public class ImportarModeloBean {
 					repositorio = repositorio + "/";
 				}
 				archivosDisponibles.clear();
+				archivosDisponiblesLocal.clear();
 				
 				// Carga desde el repositorio
 				if (desdeRepositorio){
@@ -183,14 +210,14 @@ public class ImportarModeloBean {
 								String extArchivo = archivo.substring(indexExtension + 1, archivo.length());
 								// Solo cargo archivos xmi
 								if (extArchivo.equals("xmi")){
-									archivosDisponibles.add(nomArchivo + "." + extArchivo);
+									archivosDisponiblesLocal.add(nomArchivo + "." + extArchivo);
 								}
 							}
 						}
 					}
 				}
 				
-				if (archivosDisponibles.size() == 0){
+				if ((desdeRepositorio && (archivosDisponibles.size() == 0)) || (!desdeRepositorio && (archivosDisponiblesLocal.size() == 0))){
 					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", Constantes.MENSAJE_ARCHIVOS_NO_ENCONTRADOS);
 		        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
 				}
@@ -216,8 +243,9 @@ public class ImportarModeloBean {
 	public void cargarArchivo(){
 		try{
 			System.out.println("Comenzando la descarga...");
+			nombreArchivo = (desdeRepositorio) ? nombreArchivoRepo : nombreArchivoLocal;
 			if (!nombreArchivo.equals("")){
-				Object[] res = cargarArchivoInicialRepositorio(); // [String, TipoLibrary]
+				Object[] res = cargarArchivoInicial(); // [String, TipoLibrary]
 				String urlPlugin = ((res != null) && (res.length > 0)) ? (String) res[0] : null;
 				TipoLibrary library = ((res != null) && (res.length > 1)) ? (TipoLibrary) res[1] : null;
 				if (urlPlugin != null){
@@ -279,45 +307,69 @@ public class ImportarModeloBean {
 
 	public void cargarTodoDeRepositorio(String dirPlugin){
 		try {
-			URL url = new URL(Constantes.URL_GITHUB + repositorio + dirPlugin.replace(" ", "%20"));
+			if (desdeRepositorio){
+				URL url = new URL(Constantes.URL_GITHUB + repositorio + dirPlugin.replace(" ", "%20"));
 			
-			// Directorios
-			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			String linea;
-			while ((linea = in.readLine()) != null){
-				String dir = repositorio;
-				int index = dir.indexOf("blob");
-				if (index != -1){
-					dir = dir.replace("blob", "tree");
+				// Directorios
+				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+				String linea;
+				while ((linea = in.readLine()) != null){
+					String dir = repositorio;
+					int index = dir.indexOf("blob");
+					if (index != -1){
+						dir = dir.replace("blob", "tree");
+					}
+					dir = dir + dirPlugin;
+					// <a href="/repositorio/.../nomArchivo"
+					String strBuscado = "<a href=\"/" + dir;
+					int indexIni = linea.indexOf(strBuscado);
+					if (indexIni != -1){
+						String archivo = linea.substring(indexIni + strBuscado.length());
+						archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
+						File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
+						f.mkdirs();
+						cargarTodoDeRepositorio(dirPlugin + archivo + "/");
+					}
 				}
-				dir = dir + dirPlugin;
-				// <a href="/repositorio/.../nomArchivo"
-				String strBuscado = "<a href=\"/" + dir;
-				int indexIni = linea.indexOf(strBuscado);
-				if (indexIni != -1){
-					String archivo = linea.substring(indexIni + strBuscado.length());
-					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
-					File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
-					f.mkdirs();
-					cargarTodoDeRepositorio(dirPlugin + archivo + "/");
+				in.close();
+				
+				// Archivos
+				in = new BufferedReader(new InputStreamReader(url.openStream()));
+				while ((linea = in.readLine()) != null){
+					// <a href="/repositorio/.../nomArchivo"
+					String strBuscado = "<a href=\"/" + repositorio + dirPlugin.replace(" ", "%20");
+					int indexIni = linea.indexOf(strBuscado);
+					if (indexIni != -1){
+						String archivo = linea.substring(indexIni + strBuscado.length());
+						archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
+						descargarArchivos(dirPlugin, archivo, archivo);
+					}
+				}
+				
+				in.close();
+
+			}
+			else{
+				File directorio = new File(repositorio + dirPlugin);
+				
+				if (directorio.exists()){
+					File[] archivos = directorio.listFiles();
+					int nArchivos = archivos.length;
+					for (int i = 0; i < nArchivos; i++){
+						String archivo = archivos[i].getName();
+						int indexExtension = archivo.indexOf(".");
+						// Si no tiene extensión => es un directorio
+						if (indexExtension == -1){
+							File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
+							f.mkdirs();
+							cargarTodoDeRepositorio(dirPlugin + archivo + "/");
+						}
+						else{
+							descargarArchivos(dirPlugin, archivo, archivo);
+						}
+					}
 				}
 			}
-			in.close();
-			
-			// Archivos
-			in = new BufferedReader(new InputStreamReader(url.openStream()));
-			while ((linea = in.readLine()) != null){
-				// <a href="/repositorio/.../nomArchivo"
-				String strBuscado = "<a href=\"/" + repositorio + dirPlugin.replace(" ", "%20");
-				int indexIni = linea.indexOf(strBuscado);
-				if (indexIni != -1){
-					String archivo = linea.substring(indexIni + strBuscado.length());
-					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
-					descargarArchivos(dirPlugin, archivo, archivo);
-				}
-			}
-			
-			in.close();
 		}
 		catch (ConnectionException e) {
 			FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Falló la conexión con el repositorio.");
@@ -330,16 +382,37 @@ public class ImportarModeloBean {
 			e.printStackTrace();
 		}
 	}
-	public Object[] cargarArchivoInicialRepositorio() {
+	
+	public Object[] cargarArchivoInicial() {
 		String archivoExport = nombreArchivo;
+		URL url  = null;
 		
-		// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
-		int index = repositorio.indexOf("blob/");
-		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
+		if (desdeRepositorio){
+			// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+			int index = repositorio.indexOf("blob/");
+			String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+			//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
+			try {
+				url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
+			} 
+			catch (MalformedURLException e) {
+				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al intentar acceder a la URL.");
+	        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				//e.printStackTrace();
+			}
+		}
+		else{
+			File f = new File(repositorio + archivoExport);
+			try {
+				url =  f.toURL();
+			} catch (MalformedURLException e) {
+				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Error al intentar acceder al directorio local.");
+	        	FacesContext.getCurrentInstance().addMessage(null, mensaje);
+				//e.printStackTrace();
+			}
+		}
 		
 		try{
-			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoExport);
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
@@ -372,38 +445,60 @@ public class ImportarModeloBean {
 	public TipoMethodConfiguration cargarArchivoConfigurationRepositorio(){
 		List<String> archivosXML = new ArrayList<String>(); 
 		try{
-			// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
-			int index = repositorio.indexOf("blob/");
-			URL url = new URL(Constantes.URL_GITHUB + repositorio + "configurations/");
-			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			
-			String linea;
-			while ((linea = in.readLine()) != null){
-				// <a href="/repositorio/.../nomArchivo"
-				String strBuscado = "<a href=\"/" + repositorio + "configurations/";
-				int indexIni = linea.indexOf(strBuscado);
-				if (indexIni != -1){
-					String archivo = linea.substring(indexIni + strBuscado.length());
-					archivo = archivo.substring(0, archivo.indexOf("\""));
-					int indexExtension = archivo.indexOf(".");
-					if (indexExtension != -1){
-						String nomArchivo = archivo.substring(0, indexExtension);
-						String extArchivo = archivo.substring(indexExtension + 1, archivo.length());
-						// Solo cargo archivos xmi
-						if (extArchivo.equals("xmi")){
-							// nomArchivo puede ser de la forma: dir1/dir2/.../nombre
-							int indexDiv = nomArchivo.indexOf("/");
-							while (indexDiv != -1){
-								nomArchivo = nomArchivo.substring(indexDiv + 1, nomArchivo.length());
-								indexDiv = nomArchivo.indexOf("/");
+			int index = 0;
+			if (desdeRepositorio){
+				// Si en la url del repositorio existe el string "blob/" => Lo sustituyo por "", sino, le agrego el string "master/"
+				index = repositorio.indexOf("blob/");
+				URL url = new URL(Constantes.URL_GITHUB + repositorio + "configurations/");
+				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+				
+				String linea;
+				while ((linea = in.readLine()) != null){
+					// <a href="/repositorio/.../nomArchivo"
+					String strBuscado = "<a href=\"/" + repositorio + "configurations/";
+					int indexIni = linea.indexOf(strBuscado);
+					if (indexIni != -1){
+						String archivo = linea.substring(indexIni + strBuscado.length());
+						archivo = archivo.substring(0, archivo.indexOf("\""));
+						int indexExtension = archivo.indexOf(".");
+						if (indexExtension != -1){
+							String nomArchivo = archivo.substring(0, indexExtension);
+							String extArchivo = archivo.substring(indexExtension + 1, archivo.length());
+							// Solo cargo archivos xmi
+							if (extArchivo.equals("xmi")){
+								// nomArchivo puede ser de la forma: dir1/dir2/.../nombre
+								int indexDiv = nomArchivo.indexOf("/");
+								while (indexDiv != -1){
+									nomArchivo = nomArchivo.substring(indexDiv + 1, nomArchivo.length());
+									indexDiv = nomArchivo.indexOf("/");
+								}
+								archivosXML.add(nomArchivo + "." + extArchivo);
 							}
-							archivosXML.add(nomArchivo + "." + extArchivo);
+						}
+					}
+				}
+				
+				in.close();
+			}
+			else{
+				File directorio = new File(repositorio + "configurations/");
+				if (directorio.exists()){
+					File[] archivos = directorio.listFiles();
+					int nArchivos = archivos.length;
+					for (int i = 0; i < nArchivos; i++){
+						String archivo = archivos[i].getName();
+						int indexExtension = archivo.indexOf(".");
+						if (indexExtension != -1){
+							String nomArchivo = archivo.substring(0, indexExtension);
+							String extArchivo = archivo.substring(indexExtension + 1, archivo.length());
+							// Solo cargo archivos xmi
+							if (extArchivo.equals("xmi")){
+								archivosXML.add(nomArchivo + "." + extArchivo);
+							}
 						}
 					}
 				}
 			}
-			
-			in.close();
 			
 			if (archivosXML.size() == 0){
 				FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "No se encontró el archivo de configuración.");
@@ -411,12 +506,27 @@ public class ImportarModeloBean {
 			}
 			else{
 				// Si lo encontré, lo parseo. Asumo que hay un único achivo dentro de la carpeta 'configurations'.
-				String archivoConfig = archivosXML.get(0);
-				String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+				String archivoConfig =  "configurations/" + archivosXML.get(0);
+				String urlDescargar = "";
+				if (desdeRepositorio){
+					urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+				}
+				else{
+					urlDescargar = repositorio;
+				}
 				//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
 				
 				try{
-					url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + "configurations/" + archivoConfig);
+					File directorio = new File(Constantes.destinoDescargas + "configurations");
+					directorio.mkdirs();
+					URL url = null;
+					if (desdeRepositorio){
+						url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + archivoConfig);
+					}
+					else{
+						File f = new File(urlDescargar + archivoConfig);
+						url = f.toURL();
+					}
 					URLConnection urlCon = url.openConnection();
 					
 					InputStream is = urlCon.getInputStream();
@@ -452,12 +562,25 @@ public class ImportarModeloBean {
 	}
 
 	public void descargarArchivos(String dir, String archivo, String archivoFinal) throws Exception {
-		int index = repositorio.indexOf("blob/");
-		String urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
-		//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
+		String urlDescargar = "";
+		if (desdeRepositorio){
+			int index = repositorio.indexOf("blob/");
+			urlDescargar = (index != -1) ? repositorio.replace("blob/", "") : repositorio.concat("master/");
+			//System.out.println("Descarga: " + Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
+		}
+		else{
+			urlDescargar = repositorio;
+		}
 		
 		try{
-			URL url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
+			URL url = null;
+			if (desdeRepositorio){
+				url = new URL(Constantes.URL_GITHUB_DOWNLOAD + urlDescargar + dir.replace(" ", "%20") + archivo);
+			}
+			else{
+				File f = new File(urlDescargar + dir.replace(" ", "%20") + archivo);
+				url = f.toURL();
+			}
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();

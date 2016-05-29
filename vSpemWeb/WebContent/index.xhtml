@@ -7,8 +7,8 @@
       xmlns:p="http://primefaces.org/ui">
       
 <h:head>
-	<link rel="icon" href="imagenes/tailoredProcess.png"/>
-   	<title>vSPEM</title>
+	<link rel="icon" href="imagenes/headIcon.png"/>
+   	<title>SPEM</title>
 	
    	<!-- Bootstrap core CSS -->
    	<link href="css/bootstrap.min.css" rel="stylesheet"/>
@@ -18,46 +18,42 @@
 </h:head>
 
 <h:body style="height: 100%">
-	<div class="page-header">
-		<p:toolbar>
-			<f:facet name="left">
-	        	<p:outputLabel value="vSPEM" style="font-size: 25px; margin-left: 15%;"/>
-        	</f:facet>
-	    </p:toolbar>
-	</div>
 	
-	<div class="container" style="width: 100%; padding: 0px;">
- 
-		<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
-		<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="box-shadow: inherit; background-color: transparent; border: none !important;">
-		    <p:graphicImage value="/iconos/ajax-loader.gif" id="statusDialog"/>
-		</p:dialog>
+	<p:toolbar style="border-radius: 0px;">
+		<f:facet name="left">
+			<img src="imagenes/titulo.png" style="padding: 10px; width: 280px;"/>
+       	</f:facet>
+    </p:toolbar>
+	
+	<p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+	<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="box-shadow: inherit; background-color: transparent; border: none !important;">
+	    <p:graphicImage value="/iconos/ajax-loader.gif" id="statusDialog"/>
+	</p:dialog>
 		
-		<p:panel id="panel_principal" style="border-width: 0; background-color:transparent; padding: 0px;">
-	  		<h:form id="form_index">
-				<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
-				    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update=":panel_principal"/>
-				    <p:menuitem value="Adaptar modelo"   action="#{VistaBean.actualizarIndiceActivo(1)}" disabled="#{VistaBean.deshabilitar(1)}" update=":panel_principal"/>
-				    <p:menuitem value="Exportar modelo"  action="#{VistaBean.actualizarIndiceActivo(3)}" disabled="#{VistaBean.deshabilitar(2)}" update=":panel_principal"/>
-				</p:steps>
-			</h:form>
+	<p:panel id="panel_principal" style="width: 100%;">
+  		<h:form id="form_index">
+			<p:steps activeIndex="#{VistaBean.indiceActivo}" readonly="false">
+			    <p:menuitem value="Importar modelo"  action="#{VistaBean.actualizarIndiceActivo(0)}" update=":panel_principal"/>
+			    <p:menuitem value="Adaptar modelo"   action="#{VistaBean.actualizarIndiceActivo(1)}" disabled="#{VistaBean.deshabilitar(1)}" update=":panel_principal"/>
+			    <p:menuitem value="Exportar modelo"  action="#{VistaBean.actualizarIndiceActivo(3)}" disabled="#{VistaBean.deshabilitar(2)}" update=":panel_principal"/>
+			</p:steps>
+		</h:form>
+	
+		<p:panelGrid id="panelGridImportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 0}">
+			 <ui:include src="/importarModelo.xhtml"/>
+		</p:panelGrid>
+		<p:panelGrid id="panelGridAdaptar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 1}">
+			 <ui:include src="/adaptarModelo.xhtml"/>
+		</p:panelGrid>
+		<p:panelGrid id="panelGridExportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 2}">
+			 <ui:include src="/exportarModelo.xhtml"/>
+		</p:panelGrid>
 		
-			<p:panelGrid id="panelGridImportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 0}">
-				 <ui:include src="/importarModelo.xhtml"/>
-			</p:panelGrid>
-			<p:panelGrid id="panelGridAdaptar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 1}">
-				 <ui:include src="/adaptarModelo.xhtml"/>
-			</p:panelGrid>
-			<p:panelGrid id="panelGridExportar" columns="1" layout="grid" rendered="#{VistaBean.indiceActivo == 2}">
-				 <ui:include src="/exportarModelo.xhtml"/>
-			</p:panelGrid>
-		</p:panel>
-	</div>
-	<footer style="height: 5%; background-color:#eeeeee;">
-		<p>© Proyecto de Grado 2015</p>
-	</footer>
-		
-	 <!-- Bootstrap core JavaScript
+	    <br/>
+	    <p:outputLabel value="© Proyecto de Grado 2015" style="font-size: 10px;"/>
+	</p:panel>
+		 		
+	<!-- Bootstrap core JavaScript
     ================================================== -->
     <script src="js/bootstrap.min.js"/>
     

@@ -2,7 +2,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 	
-	<h3 style="margin-top:1%">Importar modelo</h3>
+	<p:outputLabel value="Importar modelo" style="font-size: 20px; margin-top:1%;"/>
 	
 	<h:form id="importar_form">
 		
@@ -17,28 +17,26 @@
 				
 				<h:panelGrid columns="3">
 					<p:outputLabel value="Archivo: " style="width: 200px;" />
-					<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivo}" filter="true" style="margin: 10px 10px 0px 10px;" >
+					<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivoRepo}" filter="true" style="margin: 10px 10px 0px 10px;" >
 						<f:selectItems value="#{importarModeloBean.archivosDisponibles}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
 					</p:selectOneListbox>
 					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponibles.size() == 0}" update="importar_form:msg, importar_form:sig"/>
 				</h:panelGrid>
 			</p:tab>
 	        <p:tab title="Directorio local">
-				<p:outputLabel value="Delivery Process"/>
-				<p:fileUpload id="fileUploadDP"
-							  fileUploadListener="#{importarModeloBean.cargarArchivoLocal}" multiple="false"
-							  allowTypes="/(\.|\/)(xmi)$/" invalidFileMessage="Formato de archivo incorrecto."
-							  fileLimit="1" fileLimitMessage="Solo es posible cargar un archivo."
-							  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"
-							  update="importar_form:msg, importar_form:sig, fileUploadDP"/>
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Directorio local:" style="width: 200px;"/>
+					<p:inputText value="#{importarModeloBean.directorioLocalIngresado}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos(false)}" update=":panel_principal" />
+				</h:panelGrid>
 				
-				<p:outputLabel value="Capability Patterns" style="margin-top: 10px;"/>
-				<p:fileUpload id="fileUploadCP"
-							  fileUploadListener="#{importarModeloBean.cargarCapabilityPatternsLocal}" multiple="true"
-							  allowTypes="/(\.|\/)(xmi)$/" invalidFileMessage="Formato de archivo incorrecto."
-							  uploadLabel="Cargar" cancelLabel="Cancelar" label="Seleccionar"
-							  update="importar_form:msg, importar_form:sig, fileUploadCP"/>
-				
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Archivo: " style="width: 200px;" />
+					<p:selectOneListbox id="buscadorArchivosLocal" value="#{importarModeloBean.nombreArchivoLocal}" filter="true" style="margin: 10px 10px 0px 10px;" >
+						<f:selectItems value="#{importarModeloBean.archivosDisponiblesLocal}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
+					</p:selectOneListbox>
+					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponiblesLocal.size() == 0}" update="importar_form:msg, importar_form:sig"/>
+				</h:panelGrid>
 	        </p:tab>
 	        <p:ajax event="tabChange" listener="#{importarModeloBean.onTabChange}" update="importar_form"/>
 		</p:tabView>
