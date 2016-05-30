@@ -581,7 +581,7 @@ public class AdaptarModeloBean {
 			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
 	    	for (int i = 0; i < cantVariantes; i++){
 	    		// Creo la variante
-	    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+	    		Variant v = Utils.buscarVariante(nodos, this.variantesSeleccionadas[i]);
 	    		String nombreVariante = v.getName();
 				String tipoVariante = v.getVarType();
 	    		String idVariante = this.variantesSeleccionadas[i];
@@ -856,7 +856,7 @@ public class AdaptarModeloBean {
 		        			y += Constantes.distanciaEntreNiveles;
 		        		}
 		        		while (i < cantVariantesSeleccionadasParaPV){
-		        			Variant var = buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
+		        			Variant var = Utils.buscarVariante(this.nodos, variantesSeleccionadasParaPV[i]);
 		        			if (var != null){
 		        				TipoElemento tipoVar = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(var.getVarType()));
 			    	    		String iconoVar = XMIParser.obtenerIconoPorTipo(tipoVar);
@@ -1179,7 +1179,7 @@ public class AdaptarModeloBean {
 			if (modeloRolesTareas != null){
 		    	for (int i = 0; i < cantVariantes; i++){
 		    		// Creo la variante
-		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+		    		Variant v = Utils.buscarVariante(nodos, this.variantesSeleccionadas[i]);
 		    		if (v != null){
 			    		String nombreVariante = v.getName();
 						String tipoVariante = v.getVarType();
@@ -1437,7 +1437,7 @@ public class AdaptarModeloBean {
 			if (modeloRolesWPS != null){
 		    	for (int i = 0; i < cantVariantes; i++){
 		    		// Creo la variante
-		    		Variant v = buscarVariante(nodos, this.variantesSeleccionadas[i]);
+		    		Variant v = Utils.buscarVariante(nodos, this.variantesSeleccionadas[i]);
 		    		String nombreVariante = v.getName();
 					String tipoVariante = v.getVarType();
 		    		String idVariante = this.variantesSeleccionadas[i];
@@ -2098,36 +2098,6 @@ public class AdaptarModeloBean {
 			}
 		}
 		return null;
-	}
-
-	public Variant buscarVariante(List<Struct> nodos, String Id){
-		Iterator<Struct> it = nodos.iterator();
-		Variant res = null;
-		
-		while (it.hasNext() && (res == null)){
-			Struct s = it.next();
-			TipoElemento type = s.getType();
-			if (Utils.esPuntoDeVariacion(type)){
-				List<Variant> variantes = s.getVariantes();
-				Iterator<Variant> itH = variantes.iterator();
-				while (itH.hasNext() && (res == null)){
-					Variant v = itH.next();
-					if (v.getID().equals(Id)){
-						res = v;
-					}
-					else {
-						res = buscarVariante(v.getHijos(),Id);
-					}
-				}
-			}
-			else { 
-				if (s.getHijos().size() > 0){
-					res = buscarVariante(s.getHijos(),Id);
-				}				
-			}
-		}
-		
-		return res;
 	}
 
 	public TipoElemento getElementoParaVarPoint(TipoElemento type){

@@ -2279,26 +2279,6 @@ public class XMIParser {
     }
     
     public static void actualizarDiagram(String dirDiagram, List<Struct> nodos, DefaultDiagramModel modeloAdaptado){
-		/*File file = new File(dirDiagram);
-	    File tmpFile = new File(dirDiagram.substring(0, dirDiagram.length() - 4) + "_tmp.xmi");
-    	try{
-    		BufferedReader br = new BufferedReader(new FileReader(dirDiagram));
-    		PrintWriter pw = new PrintWriter(new FileWriter(tmpFile));
-		    String line = null;
-		    while ((line = br.readLine()) != null) {
-		    	//if (!line.trim().equals(lineToRemove)) {
-		    	//	pw.println(line);
-		    	//	pw.flush();
-		        //}
-		    	System.out.println("######### " + line);
-		    }
-		    pw.close();
-		    br.close();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}*/
-    	   
 		File inputFile = new File(dirDiagram);
 		try{
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -2324,20 +2304,27 @@ public class XMIParser {
 										String key = eDetail.getAttribute("key");
 										if ((key != null) && (key.equals("uri")) && (eDetail.hasAttribute("value"))){
 											String value = eDetail.getAttribute("value");
-											// value = "uma://_A_znMCXQEeaZI6JbOHEuYA#_CtOLQSXQEeaZI6JbOHEuYA"
-											String[] res = value.split("#");
+											String[] res = value.split("#"); // value = "uma://_A_znMCXQEeaZI6JbOHEuYA#_CtOLQSXQEeaZI6JbOHEuYA"
 											String id = (res.length > 1) ? res[1] : "";
 											if (!id.equals("")){
 												Struct sModelo = Utils.buscarElemento(id, nodos, "");
-												Struct sModeloAdaptado = Utils.buscarElementoEnModelo(id, modeloAdaptado, "");
 												// Si no está en el modelo o es un punto de variación => lo borro.
-												if ((sModeloAdaptado == null) || (Utils.esPuntoDeVariacion(sModelo.getType()))){
-													System.out.println("############### id borrar: " + (sModeloAdaptado != null ? sModelo.getNombre() : "null"));
-													deleteNodes.add(node);
+												if (sModelo == null){ // Posiblemente sea una variante
+													Variant var = Utils.buscarVariante(nodos, id);
+													if (var != null){ // Es una variante
+														Struct s = Utils.buscarElementoEnModelo(id, modeloAdaptado, "");
+														if (s == null){ // No está en el modelo final => La borro
+															System.out.println("############### id borrar: " + var.getName());
+															deleteNodes.add(node);
+														}
+														else{ // Sino, la modifico
+															System.out.println("############### modificar var: " + var.getName());
+														}
+													}
 												}
-												// Si es una variante => lo modifico
-												else if (Utils.esVariante(sModelo.getType())){
-													System.out.println("############### modificar var: " + sModelo.getNombre());
+												else if (Utils.esPuntoDeVariacion(sModelo.getType())){
+													System.out.println("############### id borrar: " + sModelo.getNombre());
+													deleteNodes.add(node);
 												}
 											}
 										}

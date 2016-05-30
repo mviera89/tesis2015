@@ -8,6 +8,7 @@ import org.primefaces.model.diagram.Element;
 
 import dataTypes.TipoElemento;
 import dominio.Struct;
+import dominio.Variant;
 
 public class Utils {
 
@@ -74,5 +75,35 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
+
+	public static Variant buscarVariante(List<Struct> nodos, String Id){
+		Iterator<Struct> it = nodos.iterator();
+		Variant res = null;
+		
+		while (it.hasNext() && (res == null)){
+			Struct s = it.next();
+			TipoElemento type = s.getType();
+			if (Utils.esPuntoDeVariacion(type)){
+				List<Variant> variantes = s.getVariantes();
+				Iterator<Variant> itH = variantes.iterator();
+				while (itH.hasNext() && (res == null)){
+					Variant v = itH.next();
+					if (v.getID().equals(Id)){
+						res = v;
+					}
+					else {
+						res = buscarVariante(v.getHijos(),Id);
+					}
+				}
+			}
+			else { 
+				if (s.getHijos().size() > 0){
+					res = buscarVariante(s.getHijos(),Id);
+				}				
+			}
+		}
+		
+		return res;
+	}
 }
