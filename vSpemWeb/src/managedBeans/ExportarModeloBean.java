@@ -21,6 +21,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
 import logica.GitControl;
+import logica.Utils;
+import logica.XMIParser;
 
 import org.eclipse.jgit.api.errors.TransportException;
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -118,13 +120,23 @@ public class ExportarModeloBean {
 		this.mensajeAyudaRepositorioExport = mensajeAyudaRepositorioExport;
 	}
 
-	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo){
+	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo, List<Struct> nodos){
 		try{
 			if (modeloAdaptado != null){
-				
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
+				
+				// Actualizo todos los diagram.xmi
+				Iterator<String> itD = vb.getDiagrams().iterator();
+				System.out.println("########### diagrams");
+				while (itD.hasNext()){
+					String diagram = itD.next();
+					System.out.println("############ diagram: " + diagram);
+					XMIParser.actualizarDiagram(diagram, nodos, modeloAdaptado);
+				}
+				System.out.println("########### fin diagrams");
+				
 		        String nomArchivo = vb.getNombreArchivo();
 		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
 				
@@ -261,7 +273,7 @@ public class ExportarModeloBean {
 						String processIsPlanned = s.getIsPlanned();
 						String processIsOptional = s.getIsOptional();
 						String processVariabilityType = s.getVariabilityType();
-						String diagramURI = ""; //s.getDiagramURI(); 
+						String diagramURI = s.getDiagramURI(); 
 						
 						if (tipo == TipoElemento.DELIVERY_PROCESS){
 					  		// ContentCategory
@@ -861,15 +873,6 @@ public class ExportarModeloBean {
 						Entry<String, String[]> e = iter.next();
 						String idLink = e.getKey();
 				    	String sucesor = e.getValue()[0];
-				    	/*String properties = e.getValue()[1];
-				    	if (!properties.equals("")){
-				    		properties = " properties=\"" + properties;
-				    		Struct sScope = buscarElementoEnModelo(superactivity, modeloAdaptado, "");
-				    		if (sScope != null){
-				    			properties += "scope=" + sScope.getElementIDExtends();
-				    		}
-				    		properties += "\"";
-				    	}*/
 				    	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" /*+ properties*/ + ">" + sucesor + "</Predecessor>" + "\n";
 					}
 				}
@@ -1005,61 +1008,18 @@ public class ExportarModeloBean {
 		return texto;
 	}
 	
-	public Struct buscarElemento(String id, List<Struct> elementos, String buscarPor){
-		if (elementos != null){
-			Iterator<Struct> it = elementos.iterator();
-			while (it.hasNext()){
-				Struct s = it.next();
-				String sId = (buscarPor.equals("idTask")) ? s.getIdTask() :
-					 		 (buscarPor.equals("idWorkProduct")) ? s.getIdWorkProduct() :
-			 			 	 (buscarPor.equals("idRole")) ? s.getIdRole() :
-		 			 		 s.getElementID();
-					 
-				if ((sId != null) && (sId.equals(id))){
-					return s;
-				}
-				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
-				if (hijo != null){
-					return hijo;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public Struct buscarElementoEnModelo(String id, DefaultDiagramModel modelo, String buscarPor){
-		if ((modelo != null) && (modelo.getElements() != null)){
-			Iterator<Element> it = modelo.getElements().iterator();
-			while (it.hasNext()){
-				Struct s = (Struct) it.next().getData();
-				String sId = (buscarPor.equals("idTask")) ? s.getIdTask() :
-							 (buscarPor.equals("idWorkProduct")) ? s.getIdWorkProduct() :
-							 (buscarPor.equals("idRole")) ? s.getIdRole() :
-							 s.getElementID();
-				if ((sId != null) && (sId.equals(id))){
-					return s;
-				}
-				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
-				if (hijo != null){
-					return hijo;
-				}
-			}
-		}
-		return null;
-	}
-	
 	public Struct buscarElementoEnTipoRolesWorkProducts(String id, List<TipoRolesWorkProducts> modeloRolesWP, String buscarPor){
 		if (modeloRolesWP != null){
 			Iterator<TipoRolesWorkProducts> it = modeloRolesWP.iterator();
 			while (it.hasNext()){
 				TipoRolesWorkProducts trwp = it.next();
 				DefaultDiagramModel dModifica = trwp.getModifica();
-				Struct sModifica = buscarElementoEnModelo(id, dModifica, buscarPor);
+				Struct sModifica = Utils.buscarElementoEnModelo(id, dModifica, buscarPor);
 				if (sModifica != null){
 					return sModifica;
 				}
 				DefaultDiagramModel dResponsable = trwp.getResponsableDe();
-				Struct sResponsable = buscarElementoEnModelo(id, dResponsable, buscarPor);
+				Struct sResponsable = Utils.buscarElementoEnModelo(id, dResponsable, buscarPor);
 				if (sResponsable != null){
 					return sResponsable;
 				}
@@ -1188,7 +1148,6 @@ public class ExportarModeloBean {
 			}
 		}
 		return false;
-		
 	}
 	
 	public void actualizarPredecesor(String idVP, String idVariant, List<Struct> list, int num){

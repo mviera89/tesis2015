@@ -38,6 +38,7 @@ public class VistaBean {
 	private List<TipoContentPackage> contentPackages = null;
 	private Map<String, TipoContentElement> templates = null;
 	private Map<String, List<TipoContentElement>> roles = null;
+	private List<String> diagrams = null;
 	
 	public int getIndiceActivo() {
 		return indiceActivo;
@@ -168,6 +169,14 @@ public class VistaBean {
 		this.roles = roles;
 	}
 
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
+	}
+
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
 		
@@ -206,4 +215,14 @@ public class VistaBean {
 		}
 		capabilityPatterns.add(nombreArchivoCP);
 	}
+
+	public void addDiagram(String dirDiagram){
+		if (diagrams == null){
+			diagrams = new ArrayList<String>();
+		}
+		if (!diagrams.contains(dirDiagram)){
+			diagrams.add(dirDiagram);
+		}
+	}
+	
 }

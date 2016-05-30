@@ -1,6 +1,18 @@
 package logica;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,9 +25,15 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import managedBeans.VistaBean;
 
+import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1390,6 +1408,10 @@ public class XMIParser {
 					}
 					
 					TipoElemento tipo = obtenerTipoElemento(type);
+					
+					FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
+		  			HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		  			VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		     		
 					String processComponentId = (dataProcess != null) ? dataProcess.get("processComponentId") : null;
 					String processComponentName = (dataProcess != null) ? dataProcess.get("processComponentName") : null;
@@ -1403,6 +1425,33 @@ public class XMIParser {
 	      		    h.setIsOptional(isOptional);
 	      			h.setVariabilityType(variabilityType);
 	      			h.setIsSynchronizedWithSource(isSynchronizedWithSource);
+	      			if ((tipo == TipoElemento.DELIVERY_PROCESS) || (tipo == TipoElemento.CAPABILITY_PATTERN)){
+		      			String[] res = separarDireccion(nomFile);
+		      			String nameDir = res[0];
+		      			File f = new File(nameDir + "diagram.xmi");
+		      			if (f.exists()){
+			      			int index = nameDir.indexOf(Constantes.destinoDescargas);
+			      			if (index != -1){
+			      				nameDir = nameDir.substring(Constantes.destinoDescargas.length(), nameDir.length());
+			      				// nameDir = 'dirPlugin/lineProcess/lineProcessName/...' o 'dirPlugin/...'
+			      				String strBuscado = "lineprocess";
+			      				index = nameDir.indexOf(strBuscado);
+				      			if (index != -1){
+				      				nameDir = nameDir.substring(index + 1 + strBuscado.length(), nameDir.length());
+				      				index = nameDir.indexOf("/");
+				      				if (index != -1){
+				      					nameDir = vb.getDirPlugin() + nameDir.substring(index + 1, nameDir.length());
+				      					copiarArchivo(f, nameDir, "diagram.xmi");
+						      			vb.addDiagram(Constantes.destinoDescargas + nameDir + "diagram.xmi");
+				      				}
+				      			}
+				      			h.setDiagramURI(nameDir + "diagram.xmi");
+			      			}
+		      			}
+		      			else{
+		      				h.setDiagramURI("");
+		      			}
+	      			}
 					result.add(h);
 				}
 				else if (nodo.getNodeName().equals("processElements")){
@@ -1555,7 +1604,10 @@ public class XMIParser {
 		      		    h.setIsOptional(isOptional);
 		      			h.setVariabilityType(variabilityType);
 		      			h.setIsSynchronizedWithSource(isSynchronizedWithSource);
-		      		   
+		      			if ((tipo != TipoElemento.DELIVERY_PROCESS) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
+		      				h.setDiagramURI("");
+		      			}
+		      			
 						if (eHijo.hasAttribute("linkToPredecessor")){
 							List<String> list = new ArrayList<String>();
 							pred = eHijo.getAttribute("linkToPredecessor");
@@ -2191,4 +2243,122 @@ public class XMIParser {
     	return result;
     }
 
+    public static void copiarArchivo(File origen, String nomDestino, String nomArchivo){
+		if (origen.isFile()){
+			try{
+				URL url = origen.toURL();	
+				URLConnection urlCon = url.openConnection();
+				
+				InputStream is = urlCon.getInputStream();
+				File destino = new File(Constantes.destinoDescargas + nomDestino);
+				destino.mkdirs();
+				FileOutputStream fos = new FileOutputStream(destino + "/" + nomArchivo);
+				byte [] array = new byte[1000];
+				int leido = is.read(array);
+				while (leido > 0) {
+				   fos.write(array, 0, leido);
+				   leido = is.read(array);
+				}
+				is.close();
+				fos.close();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+    }
+    
+    public static void actualizarDiagram(String dirDiagram, List<Struct> nodos, DefaultDiagramModel modeloAdaptado){
+		/*File file = new File(dirDiagram);
+	    File tmpFile = new File(dirDiagram.substring(0, dirDiagram.length() - 4) + "_tmp.xmi");
+    	try{
+    		BufferedReader br = new BufferedReader(new FileReader(dirDiagram));
+    		PrintWriter pw = new PrintWriter(new FileWriter(tmpFile));
+		    String line = null;
+		    while ((line = br.readLine()) != null) {
+		    	//if (!line.trim().equals(lineToRemove)) {
+		    	//	pw.println(line);
+		    	//	pw.flush();
+		        //}
+		    	System.out.println("######### " + line);
+		    }
+		    pw.close();
+		    br.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}*/
+    	   
+		File inputFile = new File(dirDiagram);
+		try{
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(inputFile);
+	        doc.getDocumentElement().normalize();
+	        
+	        List<Node> deleteNodes = new ArrayList<Node>();
+	        NodeList nodes = doc.getElementsByTagName("node");
+	        for (int temp = 0; temp < nodes.getLength(); temp ++){
+				Node node = nodes.item(temp);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					NodeList eAnotationsNodes = node.getChildNodes();
+					for (int i = 0; i < eAnotationsNodes.getLength(); i++){
+						Node eAnotation = eAnotationsNodes.item(i);
+						if (eAnotation.getNodeType() == Node.ELEMENT_NODE) {
+							NodeList detailsNodes = eAnotation.getChildNodes();
+							for (int j = 0; j < detailsNodes.getLength(); j++){
+								Node detail = detailsNodes.item(j);
+								if (detail.getNodeType() == Node.ELEMENT_NODE) {
+									Element eDetail = (Element) detail;
+									if (eDetail.hasAttribute("key")){
+										String key = eDetail.getAttribute("key");
+										if ((key != null) && (key.equals("uri")) && (eDetail.hasAttribute("value"))){
+											String value = eDetail.getAttribute("value");
+											// value = "uma://_A_znMCXQEeaZI6JbOHEuYA#_CtOLQSXQEeaZI6JbOHEuYA"
+											String[] res = value.split("#");
+											String id = (res.length > 1) ? res[1] : "";
+											if (!id.equals("")){
+												Struct sModelo = Utils.buscarElemento(id, nodos, "");
+												Struct sModeloAdaptado = Utils.buscarElementoEnModelo(id, modeloAdaptado, "");
+												// Si no está en el modelo o es un punto de variación => lo borro.
+												if ((sModeloAdaptado == null) || (Utils.esPuntoDeVariacion(sModelo.getType()))){
+													System.out.println("############### id borrar: " + (sModeloAdaptado != null ? sModelo.getNombre() : "null"));
+													deleteNodes.add(node);
+												}
+												// Si es una variante => lo modifico
+												else if (Utils.esVariante(sModelo.getType())){
+													System.out.println("############### modificar var: " + sModelo.getNombre());
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+        	}
+	        Iterator<Node> itNodes = deleteNodes.iterator();
+	        while (itNodes.hasNext()){
+	        	Node node = itNodes.next();
+	        	node.getParentNode().removeChild(node);
+	        }
+	        System.out.println("doc");
+	        doc.normalize();
+	        Transformer tf = TransformerFactory.newInstance().newTransformer();
+	        tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+	        tf.setOutputProperty(OutputKeys.INDENT, "yes");
+	        Writer out = new StringWriter();
+	        tf.transform(new DOMSource(doc), new StreamResult(out));
+	        File tmpFile = new File(dirDiagram.substring(0, dirDiagram.length() - 4) + "_tmp.xmi");
+    		PrintWriter pw = new PrintWriter(new FileWriter(tmpFile));
+		    pw.println(out.toString());
+		    pw.flush();
+		    pw.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
 }

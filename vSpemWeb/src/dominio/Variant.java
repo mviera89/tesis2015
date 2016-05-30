@@ -36,7 +36,8 @@ public class Variant {
 	private String idWorkProduct;
     private List<TipoSection> steps;
     private List<TipoMethodElementProperty> methodElementProperties;
-	
+    private String diagramURI;
+    
 	public Variant(String ID, String name, String presentationName, String IDVarPoint, boolean isInclusive, String varType, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.ID = ID;
 		this.name = name;
@@ -280,6 +281,14 @@ public class Variant {
 	public void setMethodElementProperties(
 			List<TipoMethodElementProperty> methodElementProperties) {
 		this.methodElementProperties = methodElementProperties;
+	}
+
+	public String getDiagramURI() {
+		return diagramURI;
+	}
+
+	public void setDiagramURI(String diagramURI) {
+		this.diagramURI = diagramURI;
 	}
 
 }

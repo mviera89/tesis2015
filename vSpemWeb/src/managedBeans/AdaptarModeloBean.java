@@ -37,6 +37,7 @@ import dataTypes.TipoRolesWorkProducts;
 import dataTypes.TipoTareasWorkProducts;
 import dominio.Struct;
 import dominio.Variant;
+import logica.Utils;
 import logica.XMIParser;
 
 @ManagedBean
@@ -317,6 +318,8 @@ public class AdaptarModeloBean {
 	        r.setSteps(raiz.getSteps());
 	        r.setMethodElementProperties(raiz.getMethodElementProperties());
 	        r.setPredecesores(raiz.getPredecesores());
+	        r.setDiagramURI(raiz.getDiagramURI());
+	        
 	        Element root = new Element(r);
 	        
 	        root.setY(this.y + "em");
@@ -332,7 +335,7 @@ public class AdaptarModeloBean {
 	        	Struct s = it.next();
 	        	TipoElemento tipo = s.getType();
 	        	// Si es un punto de variación => Lo agrego al hash restriccionesPV
-	        	if (esPuntoDeVariacion(tipo)){
+	        	if (Utils.esPuntoDeVariacion(tipo)){
 	        		this.restriccionesPV.put(s.getElementID(), validarSeleccion(null, s));
 	        	}
 	        	
@@ -609,6 +612,7 @@ public class AdaptarModeloBean {
 				s.setIdWorkProduct(v.getIdWorkProduct());
 		        s.setSteps(v.getSteps());
 		        s.setMethodElementProperties(v.getMethodElementProperties());
+		        s.setDiagramURI(v.getDiagramURI());
 				
 	    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 	    		hijo.addEndPoint(endPointH1);
@@ -673,7 +677,7 @@ public class AdaptarModeloBean {
 	        	Element hijo = null;
 	        	TipoElemento tipo = s.getType();
 	        	// Si es un punto de variación => Lo agrego al hash restriccionesPV
-	        	if (esPuntoDeVariacion(tipo)){
+	        	if (Utils.esPuntoDeVariacion(tipo)){
 	        		this.restriccionesPV.put(s.getElementID(), validarSeleccion(null, s));
 	        	}
 	        	
@@ -1700,6 +1704,8 @@ public class AdaptarModeloBean {
 			        newS.setSteps(s.getSteps());
 			        newS.setMethodElementProperties(s.getMethodElementProperties());
 			        newS.setPredecesores(s.getPredecesores());
+			        newS.setDiagramURI(s.getDiagramURI());
+			        
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					
@@ -1713,7 +1719,7 @@ public class AdaptarModeloBean {
 				else{
 					// Si es un punto de variación, recorro las variantes y agrego las que están en el modelo
 					// Lo hago así porque sino se incluyen al final
-					if (esPuntoDeVariacion(type)){
+					if (Utils.esPuntoDeVariacion(type)){
 						//busco padre del varpoint
 						Struct padre = null;
 						Iterator<Element> iter = modelo.getElements().iterator();
@@ -1733,9 +1739,6 @@ public class AdaptarModeloBean {
 									}
 								}
 							}
-						}
-						if (padre != null){
-							//padre.getHijos().remove(s);
 						}
 						
 						// Esto lo agrego para evitar que las variantes que van en niveles inferiores no se incluyan en los superiores
@@ -1761,6 +1764,8 @@ public class AdaptarModeloBean {
 								newS.setIdWorkProduct(v.getIdWorkProduct());
 						        newS.setSteps(v.getSteps());
 						        newS.setMethodElementProperties(v.getMethodElementProperties());
+						        newS.setDiagramURI(v.getDiagramURI());
+						        
 								// Seteo las variantes
 								List<Variant> lstVariantes = s.getVariantes();
 								if (lstVariantes.size() > 0){
@@ -1856,6 +1861,7 @@ public class AdaptarModeloBean {
         newS.setSteps(s.getSteps());
         newS.setMethodElementProperties(s.getMethodElementProperties());
         newS.setPredecesores(s.getPredecesores());
+        newS.setDiagramURI(s.getDiagramURI());
 		
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
@@ -1958,16 +1964,6 @@ public class AdaptarModeloBean {
 		return false;
 	}
 
-	public boolean esPuntoDeVariacion(TipoElemento tipo){
-		return (tipo == TipoElemento.VP_ACTIVITY  ||
-        		tipo == TipoElemento.VP_TASK 	  ||
-        		tipo == TipoElemento.VP_PHASE 	  ||
-        		tipo == TipoElemento.VP_ITERATION ||
-        		tipo == TipoElemento.VP_ROLE 	  ||
-        		tipo == TipoElemento.VP_MILESTONE ||
-        		tipo == TipoElemento.VP_WORK_PRODUCT);
-	}
-
 	/*** Buscar elementos ***/
 
     public String obtenerEtiquetaParaModelo(Struct padre, Struct hijo){
@@ -2066,7 +2062,7 @@ public class AdaptarModeloBean {
 		
         while (iterator.hasNext() && (res == null)){
         	Struct s = iterator.next();
-        	if((esPuntoDeVariacion(s.getType())) && (s.getElementID().equals(idElemSeleccionado))){
+        	if((Utils.esPuntoDeVariacion(s.getType())) && (s.getElementID().equals(idElemSeleccionado))){
         		res = s;
         	}
         	else if (s.getHijos().size() > 0){
@@ -2095,7 +2091,7 @@ public class AdaptarModeloBean {
 		while (it.hasNext() && (res == null)){
 			Struct s = it.next();
 			TipoElemento type = s.getType();
-			if (esPuntoDeVariacion(type)){
+			if (Utils.esPuntoDeVariacion(type)){
 				List<Variant> variantes = s.getVariantes();
 				Iterator<Variant> itH = variantes.iterator();
 				while (itH.hasNext() && (res == null)){

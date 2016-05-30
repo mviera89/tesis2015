@@ -57,6 +57,8 @@ public class Struct {
     private List<TipoSection> steps;
     private List<TipoMethodElementProperty> methodElementProperties;
 	
+    private String diagramURI;
+    
 	public Struct(){}
 	
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
@@ -433,6 +435,14 @@ public class Struct {
 	public void setMethodElementProperties(
 			List<TipoMethodElementProperty> methodElementProperties) {
 		this.methodElementProperties = methodElementProperties;
+	}
+
+	public String getDiagramURI() {
+		return diagramURI;
+	}
+
+	public void setDiagramURI(String diagramURI) {
+		this.diagramURI = diagramURI;
 	}
 
 	@Override
