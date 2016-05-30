@@ -2065,8 +2065,24 @@ public class AdaptarModeloBean {
         	if((Utils.esPuntoDeVariacion(s.getType())) && (s.getElementID().equals(idElemSeleccionado))){
         		res = s;
         	}
-        	else if (s.getHijos().size() > 0){
-        		res = buscarPV(idElemSeleccionado, s.getHijos());
+        	else 
+        	{
+        		if (s.getHijos().size() > 0){
+        			res = buscarPV(idElemSeleccionado, s.getHijos());
+        		}
+        		if (res == null){
+	        		if (s.getVariantes().size() > 0){
+	        			Iterator<Variant> itv = s.getVariantes().iterator();
+	        			while (itv.hasNext() && (res==null)){
+	        				Variant v = itv.next();
+	        				if (v.getHijos() != null){
+	        					res = buscarPV(idElemSeleccionado, v.getHijos());
+	        				}
+	        			}
+	        			
+	        		}
+        		}
+        		
         	}
         }
         
@@ -2099,10 +2115,15 @@ public class AdaptarModeloBean {
 					if (v.getID().equals(Id)){
 						res = v;
 					}
+					else {
+						res = buscarVariante(v.getHijos(),Id);
+					}
 				}
 			}
-			else if (s.getHijos().size() > 0){
-				res = buscarVariante(s.getHijos(),Id);
+			else { 
+				if (s.getHijos().size() > 0){
+					res = buscarVariante(s.getHijos(),Id);
+				}				
 			}
 		}
 		
