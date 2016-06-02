@@ -1765,7 +1765,6 @@ public class AdaptarModeloBean {
 						        newS.setSteps(v.getSteps());
 						        newS.setMethodElementProperties(v.getMethodElementProperties());
 						        newS.setDiagramURI(v.getDiagramURI());
-						        
 								// Seteo las variantes
 								List<Variant> lstVariantes = s.getVariantes();
 								if (lstVariantes.size() > 0){
@@ -1911,6 +1910,15 @@ public class AdaptarModeloBean {
 		newV.setIdRole(v.getIdRole());
 		newV.setIdWorkProduct(v.getIdWorkProduct());
 		
+		
+		newV.setIsPlanned(v.getIsPlanned());
+		newV.setIsOptional(v.getIsOptional());
+		newV.setVariabilityType(v.getVariabilityType());
+		newV.setSuperActivities(v.getSuperActivities());
+		newV.setDescription(v.getDescription());
+		newV.setGuid(v.getGuid());
+		newV.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
+			
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();
 		if (lstHijos.size() > 0){
