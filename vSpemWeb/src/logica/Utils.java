@@ -1,5 +1,6 @@
 package logica;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class Utils {
 		while (it.hasNext() && (res == null)){
 			Struct s = it.next();
 			TipoElemento type = s.getType();
-			if (Utils.esPuntoDeVariacion(type)){
+			if (esPuntoDeVariacion(type)){
 				List<Variant> variantes = s.getVariantes();
 				Iterator<Variant> itH = variantes.iterator();
 				while (itH.hasNext() && (res == null)){
@@ -136,10 +137,154 @@ public class Utils {
 			else { 
 				if (s.getHijos().size() > 0){
 					res = buscarVariante(s.getHijos(),Id);
-				}				
+				}
 			}
 		}
 		
 		return res;
+	}
+	
+	
+	public static Struct buscarRolPorId (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if(((s.getType() == TipoElemento.VP_ROLE || s.getType() == TipoElemento.ROLE)) &&
+        	   (s.getElementID().equals(idElemSeleccionado))){
+        			res = s;
+        	}
+        	else {
+        		
+        		if (s.getVariantes() != null){
+        			Iterator<Variant> iterv = s.getVariantes().iterator();
+        			while (iterv.hasNext() && res == null){
+        				Variant v = iterv.next();
+        				if (v.getHijos() != null){
+        					res = buscarRolPorId(idElemSeleccionado, v.getHijos());
+        				}
+        			}      			
+        		}
+        		if (s.getHijos().size() > 0 && res == null){
+    	      		res = buscarRolPorId(idElemSeleccionado, s.getHijos());
+        		}
+        	}
+        }
+        return res;
+	}
+	
+
+	
+	public static List<Struct> buscarRolPorNombre (String nombreElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		List<Struct> res = new ArrayList<Struct>();
+		
+        while (iterator.hasNext()){
+        	Struct s = iterator.next();
+        	if((s.getType() == TipoElemento.VP_ROLE || s.getType() == TipoElemento.ROLE) &&
+        	   (s.getNombre().equals(nombreElemSeleccionado))){
+        		res.add(s);
+        	}
+        	else {
+        		if (s.getHijos().size() > 0){
+	        		List<Struct> resHijos = buscarRolPorNombre(nombreElemSeleccionado, s.getHijos());
+	        		res.addAll(resHijos);
+        		}
+        		
+        		if (s.getVariantes() != null){
+        			Iterator<Variant> iterv = s.getVariantes().iterator();
+        			while (iterv.hasNext()){
+        				Variant v = iterv.next();
+        				if (v.getHijos() != null){
+        					List<Struct> resHijos = buscarRolPorNombre(nombreElemSeleccionado, v.getHijos());
+        					res.addAll(resHijos);
+        				}
+        			}      			
+        		}
+        	}
+        }
+        return res;
+	}
+
+	public static Struct buscarTareaPorId (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if ((s.getType() == TipoElemento.VP_TASK || s.getType() == TipoElemento.TASK) &&
+        	   (s.getElementID().equals(idElemSeleccionado))){
+        		res = s;
+        	}
+        	else if (s.getHijos().size() > 0){
+        		res = buscarTareaPorId(idElemSeleccionado, s.getHijos());
+        	}
+        }
+        return res;
+	}
+
+	public static List<Struct> buscarTareaPorNombre (String nombreElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		List<Struct> res = new ArrayList<Struct>();
+		
+        while (iterator.hasNext()){
+        	Struct s = iterator.next();
+        	if ((s.getType() == TipoElemento.VP_TASK || s.getType() == TipoElemento.TASK) &&
+        	   (s.getNombre().equals(nombreElemSeleccionado))){
+        		res.add(s);
+        	}
+        	else if (s.getHijos().size() > 0){
+        		List<Struct> resHijos = buscarTareaPorNombre(nombreElemSeleccionado, s.getHijos());
+        		res.addAll(resHijos);
+        	}
+        }
+        return res;
+	}
+
+	public static Struct buscarWP (String idElemSeleccionado, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if((s.getType() == TipoElemento.VP_WORK_PRODUCT || s.getType() == TipoElemento.WORK_PRODUCT) &&
+        	   (s.getElementID().equals(idElemSeleccionado))){
+        		res = s;
+        	}
+        	else if (s.getHijos().size() > 0){
+        		res = buscarWP(idElemSeleccionado, s.getHijos());
+        	}
+        }
+        return res;
+	}
+	
+	public static Struct buscarElementoPorId (String id, List<Struct> list) {
+		Iterator<Struct> iterator = list.iterator();
+		Struct res = null;
+		
+        while (iterator.hasNext() && (res == null)){
+        	Struct s = iterator.next();
+        	if(s.getElementID().equals(id)){
+        		res = s;
+        	}
+        	else { 
+        		
+        		if (s.getHijos().size() > 0){
+        			res = buscarElementoPorId(id, s.getHijos());
+        		}
+        		if ((res == null) && (s.getVariantes().size()>0)){
+        			Iterator<Variant> iter = s.getVariantes().iterator();
+        			while (iter.hasNext()){
+        				Variant v = iter.next();
+        				if (v.getHijos()!=null){
+        					res = buscarElementoPorId(id,v.getHijos());
+        				}
+        			}
+        			
+        		}
+        	}
+        }
+        return res;
 	}
 }
