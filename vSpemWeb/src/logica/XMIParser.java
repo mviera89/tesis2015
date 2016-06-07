@@ -36,6 +36,7 @@ import managedBeans.VistaBean;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -1920,6 +1921,13 @@ public class XMIParser {
 		      		    	Variant var = new Variant(id, nameHijo, presentationName, "", true, type, processComponentId, processComponentName, presentationId, null);
 		      		    	var.getHijos().addAll(hijosS);
 	            			registroVar.add(var);
+	            			var.setIsPlanned(isPlanned);
+	            			var.setIsOptional(isOptional);
+	            			var.setVariabilityType(variabilityType);
+	 		      		    var.setSuperActivities(superActivities);
+	            			var.setDescription(description);
+	 		      		    var.setGuid(guid);
+	 		      			var.setIsSynchronizedWithSource(isSynchronizedWithSource);
 		      		    	
 		      		    	NodeList nHijosVar = nodo.getChildNodes();
 	                    	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {
@@ -2205,7 +2213,7 @@ public class XMIParser {
     						}
     						else {
     							Map<String,String[]> lista = new HashMap<String,String[]>();
-    							String[] array = {s.getElementID(), pred[1]};
+    							String[] array = {predS.getElementID(), pred[1]};
     							lista.put(idLink, array);
     							s.setPredecesores(lista);
     						}
@@ -2278,15 +2286,17 @@ public class XMIParser {
 		}
     }
     
-    public static void actualizarDiagram(String dirDiagram, List<Struct> nodos, DefaultDiagramModel modeloAdaptado){
+    /*public static void actualizarDiagram(String dirDiagram, List<Struct> nodos, DefaultDiagramModel modeloAdaptado){
 		File inputFile = new File(dirDiagram);
 		try{
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	        Document doc = dBuilder.parse(inputFile);
 	        doc.getDocumentElement().normalize();
-	        
-	        List<Node> deleteNodes = new ArrayList<Node>();
+
+	        Map<String, Node> changeNodes = new HashMap<String, Node>(); // <id variante, nodo>
+	        Map<String, Node> deleteNodes = new HashMap<String, Node>(); // <id varpoint, nodo>
+	        Map<String, List<String>> vpVar = new HashMap<String, List<String>>(); // <id varpoint, [idVariantes]>
 	        NodeList nodes = doc.getElementsByTagName("node");
 	        for (int temp = 0; temp < nodes.getLength(); temp ++){
 				Node node = nodes.item(temp);
@@ -2314,17 +2324,25 @@ public class XMIParser {
 													if (var != null){ // Es una variante
 														Struct s = Utils.buscarElementoEnModelo(id, modeloAdaptado, "");
 														if (s == null){ // No está en el modelo final => La borro
-															System.out.println("############### id borrar: " + var.getName());
-															deleteNodes.add(node);
+															deleteNodes.put(id, node);
 														}
 														else{ // Sino, la modifico
-															System.out.println("############### modificar var: " + var.getName());
+															changeNodes.put(id, node);
 														}
 													}
 												}
-												else if (Utils.esPuntoDeVariacion(sModelo.getType())){
-													System.out.println("############### id borrar: " + sModelo.getNombre());
-													deleteNodes.add(node);
+												else if (Utils.esPuntoDeVariacion(sModelo.getType())){ // Si es un punto de variación => lo borro.
+													deleteNodes.put(id, node);
+													// Guardo los PV mapeados con las variantes seleccionadas
+													List<String> variantes = new ArrayList<String>();
+													Iterator<Variant> itVar = sModelo.getVariantes().iterator();
+													while (itVar.hasNext()){
+														String idVar = itVar.next().getID();
+														if ((Utils.buscarVariante(nodos, idVar) != null) && (Utils.buscarElementoEnModelo(idVar, modeloAdaptado, "") != null)){
+															variantes.add(idVar);
+														}
+													}
+													vpVar.put(id, variantes);
 												}
 											}
 										}
@@ -2335,12 +2353,157 @@ public class XMIParser {
 					}
 				}
         	}
-	        Iterator<Node> itNodes = deleteNodes.iterator();
-	        while (itNodes.hasNext()){
-	        	Node node = itNodes.next();
+	        
+	        // Actualizo los nodos correspondientes a variantes
+	        Iterator<Entry<String, Node>> itChange = changeNodes.entrySet().iterator();
+	        int i = 1;
+	        while (itChange.hasNext()){
+	        	Entry<String, Node> entry = itChange.next();
+	        	String idVarModel = entry.getKey();
+	        	Node nodeVar = entry.getValue();
+	        	String idVP = null;
+	        	Iterator<Entry<String, List<String>>> itVpVar = vpVar.entrySet().iterator();
+	        	while ((itVpVar.hasNext()) && (idVP == null)){
+	        		Entry<String, List<String>> entryVpVar = itVpVar.next();
+	        		List<String> vars = entryVpVar.getValue();
+	        		if (vars.contains(idVarModel)){
+	        			idVP = entryVpVar.getKey(); 
+	        		}
+	        	}
+	        	if (idVP != null){
+        			Element eNodeVar = null;
+	        		Node nodeVP = deleteNodes.get(idVP);
+        			String idNodeVP = null;
+	        		// Modifico los atributos incoming y outgoing con el valor de la variante seleccionada
+	        		if ((nodeVar.getNodeType() == Node.ELEMENT_NODE) && (nodeVP.getNodeType() == Node.ELEMENT_NODE)){
+	        			eNodeVar = (Element) nodeVar;
+	        			Element eNodeVP = (Element) nodeVP;
+	        			if (eNodeVP.hasAttribute("incoming")){
+	        				eNodeVar.setAttribute("incoming", eNodeVP.getAttribute("incoming") + i);
+	        			}
+	        			if (eNodeVP.hasAttribute("outgoing")){
+	        				eNodeVar.setAttribute("outgoing", eNodeVP.getAttribute("outgoing") + i);
+	        			}
+	        			if (eNodeVP.hasAttribute("xmi:id")){
+	        				idNodeVP = eNodeVP.getAttribute("xmi:id");
+	        			}
+	        		}
+	        		i++;
+	        	}
+	        }
+	        
+	        // Si hay más de una variante seleccionada para el mismo PV => Duplico la edge del PV
+	        Map<Node, Node>insertNodes = new HashMap<Node, Node>(); 
+			Iterator<Entry<String, List<String>>> iter = vpVar.entrySet().iterator();
+			while (iter.hasNext()){
+				Entry<String, List<String>> entry = iter.next();
+				String pV = entry.getKey();
+				List<String> vars = entry.getValue();
+				int cantVar = vars.size();
+				String idPV = ((Element) deleteNodes.get(pV)).getAttribute("xmi:id");
+				// Busco la edge que contiene el PV
+				NodeList edges = doc.getElementsByTagName("edge");
+    	        for (int temp = 0; temp < edges.getLength(); temp ++){
+    				Node edge = edges.item(temp);
+    				if (edge.getNodeType() == Node.ELEMENT_NODE){
+    					Element eEdge = (Element) edge;
+    					String source = "";
+    					String target = "";
+    					if (eEdge.hasAttribute("source")){
+    						source = eEdge.getAttribute("source");
+    					}
+    					if (eEdge.hasAttribute("target")){
+    						target = eEdge.getAttribute("target");
+    					}
+    					if (source.equals(idPV) || target.equals(idPV)){
+    						List<Element> eEdgeModify = new ArrayList<Element>(); 
+    						for (int j = 2; j < cantVar + 1; j++){
+	    						Node newChild = edge.cloneNode(true);
+	    						Element eNewChild = (Element) newChild;
+	    						eNewChild.setAttribute("xmi:id", eNewChild.getAttribute("xmi:id") + j);
+	    						insertNodes.put(newChild, edge);
+	    						eEdgeModify.add(eNewChild);
+    						}
+    						eEdge.setAttribute("xmi:id", eEdge.getAttribute("xmi:id") + 1);
+    						eEdgeModify.add(eEdge);
+    						
+    						Iterator<String> itVars = vars.iterator();
+    						while (itVars.hasNext()){
+    							String idVar = itVars.next();
+    							Node nodeVar = changeNodes.get(idVar);
+    							Element eNodeVar = (Element) nodeVar;
+    							String idENodeVar = ((Element) nodeVar).getAttribute("xmi:id");
+    							if (source.equals(idPV)){
+    								Iterator<Element> itEEdgeModify = eEdgeModify.iterator();
+    								boolean fin = false;
+    								while (itEEdgeModify.hasNext() && !fin){
+    									Element eModify = itEEdgeModify.next();
+    									if (eNodeVar.getAttribute("incoming").equals(eModify.getAttribute("xmi:id"))){
+    										eModify.setAttribute("source", idENodeVar);
+    										fin = true;
+    									}
+    								}
+		    					}
+    							else{
+    								Iterator<Element> itEEdgeModify = eEdgeModify.iterator();
+    								boolean fin = false;
+    								while (itEEdgeModify.hasNext() && !fin){
+    									Element eModify = itEEdgeModify.next();
+    									if (eNodeVar.getAttribute("incoming").equals(eModify.getAttribute("xmi:id"))){
+    										eModify.setAttribute("target", idENodeVar);
+    										fin = true;
+    									}
+    								}
+	    						}
+    						}
+    					}
+    				}
+    	        }
+				
+			}
+			Iterator<Entry<Node, Node>> itInsert = insertNodes.entrySet().iterator();
+			while (itInsert.hasNext()){
+				Entry<Node, Node> entry = itInsert.next();
+				Node edge = entry.getValue();
+				edge.getParentNode().insertBefore(entry.getKey(), edge);
+			}
+	        
+	        // Elimino los nodos de puntos de variación y variantes que no se usan
+	        Iterator<Entry<String, Node>> itDelete = deleteNodes.entrySet().iterator();
+	        while (itDelete.hasNext()){
+	        	Entry<String, Node> entry = itDelete.next();
+	        	Node node = entry.getValue();
 	        	node.getParentNode().removeChild(node);
 	        }
-	        System.out.println("doc");
+	        
+	        // Elimino los children de puntos de variación y variantes que no se usan
+	        NodeList childrens = doc.getElementsByTagName("children");
+	        for (int temp = 0; temp < childrens.getLength(); temp ++){
+				Node children = childrens.item(temp);
+				if (children.getNodeType() == Node.ELEMENT_NODE){
+					Element eChildren = (Element) children;
+					if (eChildren.hasAttribute("element")){
+    					String element =  eChildren.getAttribute("element");
+    					Iterator<Entry<String, Node>> it = deleteNodes.entrySet().iterator();
+    					boolean fin = false;
+    					while (it.hasNext() && !fin){
+    						Entry<String, Node> entry = it.next();
+    						Node node = entry.getValue();
+    						if (node.getNodeType() == Node.ELEMENT_NODE){
+    							Element eNode = (Element) node;
+    							if (eNode.hasAttribute("xmi:id")){
+    								String id = eNode.getAttribute("xmi:id");
+    								if (element.equals(id)){
+    									fin = true;
+    									children.getParentNode().removeChild(children);
+    								}
+    							}
+    						}
+    					}
+					}
+				}
+	        }
+	        
 	        doc.normalize();
 	        Transformer tf = TransformerFactory.newInstance().newTransformer();
 	        tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
@@ -2356,6 +2519,6 @@ public class XMIParser {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-    }
+    }*/
     
 }

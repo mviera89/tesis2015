@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -127,15 +128,12 @@ public class ExportarModeloBean {
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 				
-				// Actualizo todos los diagram.xmi
+				/*// Actualizo todos los diagram.xmi
 				Iterator<String> itD = vb.getDiagrams().iterator();
-				System.out.println("########### diagrams");
 				while (itD.hasNext()){
 					String diagram = itD.next();
-					System.out.println("############ diagram: " + diagram);
 					XMIParser.actualizarDiagram(diagram, nodos, modeloAdaptado);
-				}
-				System.out.println("########### fin diagrams");
+				}*/
 				
 		        String nomArchivo = vb.getNombreArchivo();
 		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
@@ -1038,39 +1036,38 @@ public class ExportarModeloBean {
 			Element e = itModelo.next();
 			Struct s = (Struct) e.getData();
 			TipoElemento tipo = s.getType();
-			if(tipo == TipoElemento.VP_ACTIVITY  ||
-	        		tipo == TipoElemento.VP_TASK 	  ||
-	        		tipo == TipoElemento.VP_PHASE 	  ||
-	        		tipo == TipoElemento.VP_ITERATION ||
-	        		tipo == TipoElemento.VP_ROLE 	  ||
-	        		tipo == TipoElemento.VP_MILESTONE ||
-	        		tipo == TipoElemento.VP_WORK_PRODUCT){
-					//tomo las variantes
-					List<Variant> variants = s.getVariantes();
-					Map<String, String[]> predecesores = s.getPredecesores();
-					String idVarPoint = s.getElementID();
-					Iterator<Variant> itV = variants.iterator();
-					int num = 0;
-					while (itV.hasNext()){
-						num ++;
-						Variant v = itV.next();
-						//veo si v esta en modelo adaptado
-						String idV = v.getID();
-						boolean pertenece = false;
-						Iterator<Element> it = modeloAdaptado.getElements().iterator();
-						while (it.hasNext() && !pertenece){
-							Element el = it.next();
-							Struct st = (Struct) el.getData();
-							if (st.getElementID().equals(idV)){
-								pertenece = true;
-								st.setPredecesores(predecesores);
+			if(Utils.esPuntoDeVariacion(tipo)){
+				//tomo las variantes
+				List<Variant> variants = s.getVariantes();
+				Map<String, String[]> predecesores = s.getPredecesores();
+				String idVarPoint = s.getElementID();
+				Iterator<Variant> itV = variants.iterator();
+				int num = 0;
+				while (itV.hasNext()){
+					num ++;
+					Variant v = itV.next();
+					//veo si v esta en modelo adaptado
+					String idV = v.getID();
+					boolean pertenece = false;
+					Iterator<Element> it = modeloAdaptado.getElements().iterator();
+					while (it.hasNext() && !pertenece){
+						Element el = it.next();
+						Struct st = (Struct) el.getData();
+						if (st.getElementID().equals(idV)){
+							pertenece = true;
+							Map<String, String[]> predecesores2 = new HashMap<String, String[]>();
+							Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
+							while (itPred.hasNext()){
+								Entry<String, String[]> entry = itPred.next();
+								String idLink = entry.getKey() + num;
+								predecesores2.put(idLink, entry.getValue());
 							}
-							else{
-								pertenece = elementoPerteneceAModelo(idV, s.getHijos(),predecesores);
-								
-							}
-
+							st.setPredecesores(predecesores2);
 						}
+						else{
+							pertenece = elementoPerteneceAModelo(idV, s.getHijos(),predecesores);
+						}
+					}
 					if (pertenece){
 						//buscar quien tiene este id como predecessor
 						Iterator<Element> itModeloA = modeloAdaptado.getElements().iterator();
@@ -1325,7 +1322,6 @@ public class ExportarModeloBean {
 	        origen  = new File(Constantes.destinoExport + dirPlugin);
 	        copiarDirectorio(origen, new File(destino + "/" + dirPlugin));
 	        
-	        
 	        // Hacer el add, commit y push
 	        gc.addToRepo();
 	        gc.commitToRepo(comentarioRepositorioExport);
@@ -1380,8 +1376,8 @@ public class ExportarModeloBean {
 				int indexExtension = nombreExt.indexOf(".");
 				if (indexExtension != -1){
 					String extArchivo = nombreExt.substring(indexExtension + 1, nombreExt.length());
-					// Solo cargo archivos que no son xmi
-					if (!extArchivo.equals("xmi")){
+					// Solo cargo archivos que no son xmi, excepto los 'diagram.xmi'
+					if ((!extArchivo.equals("xmi")) || (nombreExt.equals("diagram.xmi"))){
 						copiarArchivos(archivo, new File(destino + "/" + archivo.getName()));
 					}
 				}
