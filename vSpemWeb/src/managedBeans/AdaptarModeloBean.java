@@ -343,43 +343,7 @@ public class AdaptarModeloBean {
 	        	}
 	        	
 	        	// Este modelo NO muestra roles ni workproducts
-	        	// Si en un wp me fijo en los roles
-	        	if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VP_ROLE)){
-	        		if (s.getResponsableDe() != null){
-	        			Iterator<String> it1 = s.getResponsableDe().iterator();
-	        			while(it1.hasNext()){
-	        				String wp = it1.next();
-		        			if (rolesWPResponsable.containsKey(s.getNombre())){
-		        				List<String> responsableDe = rolesWPResponsable.get(s.getNombre());
-		        				// Si el wp no está => Lo agrego
-		        				if (!responsableDe.contains(wp)){
-		        					responsableDe.add(wp);
-		        				}
-		        			}
-		        			else{
-		        				List<String> list = new ArrayList<String>();
-		        				list.add(wp);
-		        				rolesWPResponsable.put(s.getNombre(), list);
-		        			}
-	        			}
-	        		}
-	        		
-	        		if (s.getModifica() != null){
-	        			Iterator<String> it1 = s.getModifica().iterator();
-	        			while(it1.hasNext()){
-	        				String wp = it1.next();
-		        			if (rolesWPModifica.containsKey(s.getNombre())){
-		        				rolesWPModifica.get(s.getNombre()).add(wp);
-		        			}
-		        			else{
-		        				List<String> list = new ArrayList<String>();
-		        				list.add(wp);
-		        				rolesWPModifica.put(s.getNombre(), list);
-		        			}
-	        			}
-	        		}
-	        	}
-	        	else if ((tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
+	        	if ((tipo != TipoElemento.WORK_PRODUCT) && (tipo != TipoElemento.VP_WORK_PRODUCT)){
 		        	Element padre = new Element(s, x + "em", this.y + "em");
 			        EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 			        padre.addEndPoint(endPointP1_T);
@@ -830,7 +794,42 @@ public class AdaptarModeloBean {
 					modeloRolesTareas.removeElement(e);
 				}
 				else if (idTab.equals("tab3")){
+					
+					// Busco el modelo en el que debo agregarlo
+		    		DefaultDiagramModel modeloRolesWP = null;
+					String idPuntoVariacionAdaptado = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
+					Iterator<TipoRolesWorkProducts> it = rolesWP.iterator();
+					while ((it.hasNext())){
+						TipoRolesWorkProducts trt = it.next();
+						
+						if (trt.getResponsableDe() != null){
+							Iterator<Element> iterResp = trt.getResponsableDe().getElements().iterator();
+							while (iterResp.hasNext() && (modeloRolesWP == null)){
+									Element el = iterResp.next();
+									String id = ((Struct) el.getData()).getElementID();
+									if (id.equals(idPuntoVariacionAdaptado)){
+										modeloRolesWP = trt.getResponsableDe();
+									}
+								}
+								
+							}
+						if ((modeloRolesWP == null) && (trt.getModifica() != null)){
+								Iterator<Element> iterMod = trt.getModifica().getElements().iterator();
+								while (iterMod.hasNext() && (modeloRolesWP == null)){
+										Element el = iterMod.next();
+										String id = ((Struct) el.getData()).getElementID();
+										if (id.equals(idPuntoVariacionAdaptado)){
+											modeloRolesWP = trt.getModifica();
+										}
+									}
+									
+							}
+						if (modeloRolesWP != null) {
+								modeloRolesWP.removeElement(e);
+						}
+					}
 				}
+				
 				else if (idTab.equals("tab4")){
 				}
 			}
