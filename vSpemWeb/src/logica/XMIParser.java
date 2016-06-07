@@ -1928,6 +1928,7 @@ public class XMIParser {
 	            			var.setDescription(description);
 	 		      		    var.setGuid(guid);
 	 		      			var.setIsSynchronizedWithSource(isSynchronizedWithSource);
+	 		      			var.setPresentationName(presentationName);
 		      		    	
 		      		    	NodeList nHijosVar = nodo.getChildNodes();
 	                    	for (int temp3 = 0; temp3 < nHijosVar.getLength(); temp3++) {

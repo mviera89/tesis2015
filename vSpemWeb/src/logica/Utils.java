@@ -7,6 +7,7 @@ import java.util.List;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
+import config.Constantes;
 import dataTypes.TipoElemento;
 import dominio.Struct;
 import dominio.Variant;
@@ -49,6 +50,41 @@ public class Utils {
 				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
 				if (hijo != null){
 					return hijo;
+				}
+				Iterator<Variant> itVar = s.getVariantes().iterator();
+				while (itVar.hasNext()){
+					Variant var = itVar.next();
+					String varId = (buscarPor.equals("idTask")) ? var.getIdTask() :
+				 		 		   (buscarPor.equals("idWorkProduct")) ? var.getIdWorkProduct() :
+				 		 		   (buscarPor.equals("idRole")) ? var.getIdRole() :
+				 		 		   var.getID();
+				 	if ((varId != null) && (varId.equals(id))){
+				 		TipoElemento tipo = XMIParser.obtenerTipoElemento(var.getVarType());
+			    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+						Struct sVar = new Struct(var.getID(), var.getName(), tipo, Constantes.min_default, Constantes.max_default, iconoVariante, var.getProcessComponentId(), var.getProcessComponentName(), var.getPresentationId(), var.getElementIDExtends());
+						sVar.setHijos(var.getHijos());
+						sVar.setPresentationName(var.getPresentationName());
+						sVar.setProcessComponentPresentationName(var.getProcessComponentPresentationName());
+						sVar.setGuid(var.getGuid());
+						sVar.setIsPlanned(var.getIsPlanned());
+						sVar.setSuperActivities(var.getSuperActivities());
+						sVar.setIsOptional(var.getIsOptional());
+						sVar.setVariabilityType(var.getVariabilityType());
+						sVar.setIsSynchronizedWithSource(var.getIsSynchronizedWithSource());
+						sVar.setDescription(var.getDescription());
+						sVar.setBriefDescription(var.getBriefDescription());
+						sVar.setIdTask(var.getIdTask());
+						sVar.setIdRole(var.getIdRole());
+						sVar.setIdWorkProduct(var.getIdWorkProduct());
+						sVar.setSteps(var.getSteps());
+						sVar.setMethodElementProperties(var.getMethodElementProperties());
+						sVar.setDiagramURI(var.getDiagramURI());
+				 		return sVar;
+				 	}
+				 	Struct hijoVar = buscarElemento(id, var.getHijos(), buscarPor);
+					if (hijoVar != null){
+						return hijoVar;
+					}
 				}
 			}
 		}
