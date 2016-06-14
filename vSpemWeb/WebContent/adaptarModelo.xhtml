@@ -23,8 +23,9 @@
 				<div style="padding-bottom: 0.3em;">
 					<p:diagram id="diagram" value="#{adaptarModeloBean.modelo}" style="height: 400px;" styleClass="ui-widget-content" var="elem">
 						<f:facet name="element">
-							<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-											   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
+							<div style="width: 150px; text-align: center;">
+								<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+												   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color}">
 									<div style="position: relative; display:block; margin:auto; width: 32px;">
 										<h:commandLink disabled="#{elem.hijos.size() == 0}" >
 											<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
@@ -40,6 +41,7 @@
 									<p:ajax update=":panel_principal"/>
 									<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 								</h:commandLink>
+							</div>
 						</f:facet>
 					</p:diagram>
 				</div>

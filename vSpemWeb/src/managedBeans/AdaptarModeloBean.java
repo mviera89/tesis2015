@@ -1292,41 +1292,43 @@ public class AdaptarModeloBean {
 		    	for (int i = 0; i < cantVariantes; i++){
 		    		// Creo la variante
 		    		Variant v = Utils.buscarVariante(nodos, this.variantesSeleccionadas[i]);
-		    		String nombreVariante = v.getName();
-					String tipoVariante = v.getVarType();
-		    		String idVariante = this.variantesSeleccionadas[i];
-		    		List<Struct> hijos = v.getHijos();
-		    		String processComponentId = v.getProcessComponentId();
-		    		String processComponentName = v.getProcessComponentName();
-		    		String presentationId = v.getPresentationId();
-		    		String idExtends = v.getElementIDExtends();
-		    		
-		    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
-		    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
-					Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
-					Struct s = (Struct) hijo.getData();
-					s.setHijos(hijos);
-					s.setDescription(v.getDescription());
-					s.setBriefDescription(v.getBriefDescription());
-					s.setIdTask(v.getIdTask());
-					s.setIdRole(v.getIdRole());
-					s.setIdWorkProduct(v.getIdWorkProduct());
-					s.setPresentationName(v.getPresentationName());
-					
-		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
-		    		hijo.addEndPoint(endPointH1);
-		    		hijo.setDraggable(false);
-		    		
-		    		modeloRolesWPS.addElement(hijo);
-			        
-			        // Creo el endPoint del punto de variación
-			        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
-			        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
-			        
-			        // Conecto el punto de variación con la variante
-			        modeloRolesWPS.connect(crearConexion(endPointPV_B, endPointH1));
-			        
-			        x +=  Constantes.distanciaEntreElemsMismoNivel;
+		    		if (v != null){
+			    		String nombreVariante = v.getName();
+						String tipoVariante = v.getVarType();
+			    		String idVariante = this.variantesSeleccionadas[i];
+			    		List<Struct> hijos = v.getHijos();
+			    		String processComponentId = v.getProcessComponentId();
+			    		String processComponentName = v.getProcessComponentName();
+			    		String presentationId = v.getPresentationId();
+			    		String idExtends = v.getElementIDExtends();
+			    		
+			    		TipoElemento tipo = XMIParser.obtenerTipoElemento(tipoVariante);
+			    		String iconoVariante = XMIParser.obtenerIconoPorTipo(tipo);
+						Element hijo = new Element(new Struct(idVariante, nombreVariante, tipo, Constantes.min_default, Constantes.max_default, iconoVariante, processComponentId, processComponentName, presentationId, idExtends), x + "em", y + "em");
+						Struct s = (Struct) hijo.getData();
+						s.setHijos(hijos);
+						s.setDescription(v.getDescription());
+						s.setBriefDescription(v.getBriefDescription());
+						s.setIdTask(v.getIdTask());
+						s.setIdRole(v.getIdRole());
+						s.setIdWorkProduct(v.getIdWorkProduct());
+						s.setPresentationName(v.getPresentationName());
+						
+			    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
+			    		hijo.addEndPoint(endPointH1);
+			    		hijo.setDraggable(false);
+				        
+				        // Creo el endPoint del punto de variación
+				        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
+				        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
+				        
+				        // Conecto el punto de variación con la variante
+				        modeloRolesWPS.connect(crearConexion(endPointPV_B, endPointH1));
+			    		
+			    		modeloRolesWPS.addElement(hijo);
+				        
+				        x +=  Constantes.distanciaEntreElemsMismoNivel;
+		    		}
 		    	}
 			}
 		}
