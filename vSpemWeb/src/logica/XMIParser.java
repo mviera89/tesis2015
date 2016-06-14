@@ -2131,19 +2131,21 @@ public class XMIParser {
     		Iterator<Variant> itaux = registroVar.iterator();
          	while (itaux.hasNext()){
          		Variant v = itaux.next();
-     			if (vpToVar.get(s.getElementID()).contains(v.getID())){
-     				v.setIDVarPoint(s.getElementID());
- 					s.getVariantes().add(v);
- 					//si las variantes tienen hijos vp
- 					if (v.getHijos()!= null){
- 						Iterator<Struct> itv = v.getHijos().iterator();
- 			        	while (itv.hasNext()){
- 			        		Struct hijo = itv.next();
- 			        		seteoVariantes(hijo,registroVar,vpToVar);
- 			        	}
- 						
- 					}
-     			}
+         		if (vpToVar.get(s.getElementID())!= null){
+	     			if (vpToVar.get(s.getElementID()).contains(v.getID())){
+	     				v.setIDVarPoint(s.getElementID());
+	 					s.getVariantes().add(v);
+	 					//si las variantes tienen hijos vp
+	 					if (v.getHijos()!= null){
+	 						Iterator<Struct> itv = v.getHijos().iterator();
+	 			        	while (itv.hasNext()){
+	 			        		Struct hijo = itv.next();
+	 			        		seteoVariantes(hijo,registroVar,vpToVar);
+	 			        	}
+	 						
+	 					}
+	     			}
+         		}
          	}
          	
     	}
