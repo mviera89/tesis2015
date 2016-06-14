@@ -158,6 +158,7 @@ public class AdaptarModeloBean {
 		pv.setEstaExpandido(variantesSeleccionadas.length > 0);
 		String error = this.validarSeleccion(variantesSeleccionadas, pv);
 		if (error.isEmpty()){
+			eliminarRestricciones(pv.getElementID());
 			String clave = pv.getElementID();
 			String[] variantesParaPV = this.puntosDeVariacion.get(clave);
 			if (variantesParaPV != null){
@@ -532,8 +533,7 @@ public class AdaptarModeloBean {
     		Iterator<Variant> itVar = s.getVariantes().iterator();
     		while (itVar.hasNext()){
     			Variant var = itVar.next();
-    			//if (Utils.buscarElementoEnModelo(var.getID(), modelo, "") != null){ // Si está en el modelo final => Cargo las restricciones
-    			if ((variantesPV != null) && (variantesPV.length > 0)){
+    			if ((variantesPV != null) && (variantesPV.length > 0)){ // Si está en el modelo final => Cargo las restricciones
     				List<String> lst = Arrays.asList(variantesPV);
     				if (lst.contains(var.getID())){
     					cargarRestriccionesVar(var);
@@ -1077,6 +1077,37 @@ public class AdaptarModeloBean {
         }
 	}
 
+	public void eliminarRestricciones(String id){
+		Struct s = Utils.buscarElemento(id, nodos, "");
+		if (s != null){
+			if (Utils.esPuntoDeVariacion(s.getType())){
+				this.restriccionesPV.put(id, ""); // Si voy a eliminar el elemento => No tengo que considerar las restricciones que este pueda tener
+				String[] variantesPV = this.puntosDeVariacion.get(id);
+				if (variantesPV != null){
+					int cantVariantesPV = variantesPV.length;
+					for (int i = 0; i < cantVariantesPV; i++){
+						eliminarRestricciones(variantesPV[i]);
+					}
+				}
+			}
+			else{
+				Iterator<Struct> itHijos = s.getHijos().iterator();
+				while (itHijos.hasNext()){
+					eliminarRestricciones(itHijos.next().getElementID());
+				}
+			}
+		}
+		else{ // Sino, es una variante
+			Variant var = Utils.buscarVariante(nodos, id);
+			if (var != null){
+				Iterator<Struct> itHijos = var.getHijos().iterator();
+				while (itHijos.hasNext()){
+					eliminarRestricciones(itHijos.next().getElementID());
+				}
+			}
+		}
+	}
+	
 	public void eliminarVariantesSeleccionadas(String[] variantesParaPV, String idTab){
     	int i = 0;
     	int cantVariantes = variantesParaPV.length;
@@ -1112,7 +1143,7 @@ public class AdaptarModeloBean {
 	public void actualizarVariantesParaPV(){
 		String clave = ((Struct) this.puntoVariacionAdaptado.getData()).getElementID();
 		this.puntosDeVariacion.put(clave, this.variantesSeleccionadas);
-		this.restriccionesPV.put(clave, ""); //.replace(clave, ""); // Si estoy agregando las variantes es porque cumple las restricciones
+		this.restriccionesPV.put(clave, ""); // Si estoy agregando las variantes es porque cumple las restricciones
 	}
 
 	/*** Modelo roles-tareas ***/
