@@ -252,9 +252,21 @@ public class Utils {
         	   (s.getElementID().equals(idElemSeleccionado))){
         		res = s;
         	}
-        	else if (s.getHijos().size() > 0){
-        		res = buscarWP(idElemSeleccionado, s.getHijos());
+        	else {
+        		if (s.getVariantes() != null){
+        			Iterator<Variant> iterv = s.getVariantes().iterator();
+        			while (iterv.hasNext() && res == null){
+        				Variant v = iterv.next();
+        				if (v.getHijos() != null){
+        					res = buscarWP(idElemSeleccionado, v.getHijos());
+        				}
+        			}      			
+        		}
+        		if (s.getHijos().size() > 0 && res == null){
+    	      		res = buscarWP(idElemSeleccionado, s.getHijos());
+        		}
         	}
+        	
         }
         return res;
 	}
