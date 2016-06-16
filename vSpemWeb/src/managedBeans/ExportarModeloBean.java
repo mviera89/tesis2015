@@ -705,6 +705,14 @@ public class ExportarModeloBean {
 					texto +=
 							"\t\t<MethodPackageSelection>" + pId + "</MethodPackageSelection>" + "\n";
 				}
+				
+				Iterator<TipoContentPackage> itcontentPackages = contentPackages.iterator();
+				while (itcontentPackages.hasNext()){
+					TipoContentPackage tcp = itcontentPackages.next();
+					TipoContentCategory cp = tcp.getContentPackages();
+					texto +=
+							"\t\t<MethodPackageSelection>" + cp.getId() + "</MethodPackageSelection>" + "\n";
+				}
 
 				texto +=
 						"\t\t<DefaultView>" + idDefaultView + "</DefaultView>" + "\n";
