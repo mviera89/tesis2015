@@ -981,8 +981,18 @@ public class ExportarModeloBean {
 				Iterator<Struct> it = s.getHijos().iterator();
 				while (it.hasNext()){
 					Struct hijo = it.next();
-					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT)){
+					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT) && (!Utils.esPuntoDeVariacion(hijo.getType()))){
 						texto += agregarElementoAxml(hijo, modeloAdaptado);
+					}
+					else if (Utils.esPuntoDeVariacion(hijo.getType())){
+						Iterator<Variant> itVars = hijo.getVariantes().iterator();
+						while (itVars.hasNext()){
+							Struct var = Utils.buscarElementoEnModelo(itVars.next().getID(), modeloAdaptado, "");
+							if (var != null){
+								var.setSuperActivities(hijo.getSuperActivities());
+								texto += agregarElementoAxml(var, modeloAdaptado);
+							}
+						}
 					}
 					else if (hijo.getType() == TipoElemento.ROLE){
 						roles.add(hijo);

@@ -250,9 +250,9 @@
 		</h:form>
 	</p:dialog>
 	
-	<p:dialog header="Vista previa" widgetVar="vistaPreviaDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 50%; ">
-		<h:form>
-			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="height:400px" styleClass="ui-widget-content" var="elem">
+	<p:dialog header="Vista previa" widgetVar="vistaPreviaDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 50%; min-height:400px; height: 100%" maximizable="true">
+		<h:form style="min-height:400px; height: 100%">
+			<p:diagram value="#{adaptarModeloBean.modeloAdaptado}" style="min-height:400px; height: 100%" styleClass="ui-widget-content" var="elem">
 				<f:facet name="element">
 					<div style="width: 150px; text-align: center;">
 						<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;"/>
