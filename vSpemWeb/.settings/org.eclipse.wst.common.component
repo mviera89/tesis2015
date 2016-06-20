@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="vSpemWeb">
+    <wb-module deploy-name="vSpem">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="vSpemWeb"/>
-        <property name="java-output-path" value="/vSpemWeb/build/classes"/>
+        <property name="java-output-path" value="/vSpem/build/classes"/>
+        <property name="context-root" value="vSpem"/>
     </wb-module>
 </project-modules>
