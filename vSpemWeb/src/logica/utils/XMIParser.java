@@ -42,6 +42,7 @@ import org.w3c.dom.NodeList;
 
 import presentacion.managedBeans.VistaBean;
 import config.Constantes;
+import config.ReadProperties;
 
 public class XMIParser {
 	
@@ -1416,9 +1417,9 @@ public class XMIParser {
 		      			String nameDir = res[0];
 		      			File f = new File(nameDir + "diagram.xmi");
 		      			if (f.exists()){
-			      			int index = nameDir.indexOf(Constantes.destinoDescargas);
+			      			int index = nameDir.indexOf(ReadProperties.getProperty("destinoDescargas"));
 			      			if (index != -1){
-			      				nameDir = nameDir.substring(Constantes.destinoDescargas.length(), nameDir.length());
+			      				nameDir = nameDir.substring(ReadProperties.getProperty("destinoDescargas").length(), nameDir.length());
 			      				// nameDir = 'dirPlugin/lineProcess/lineProcessName/...' o 'dirPlugin/...'
 			      				String strBuscado = "lineprocess";
 			      				index = nameDir.indexOf(strBuscado);
@@ -1428,7 +1429,7 @@ public class XMIParser {
 				      				if (index != -1){
 				      					nameDir = vb.getDirPlugin() + nameDir.substring(index + 1, nameDir.length());
 				      					copiarArchivo(f, nameDir, "diagram.xmi");
-						      			vb.addDiagram(Constantes.destinoDescargas + nameDir + "diagram.xmi");
+						      			vb.addDiagram(ReadProperties.getProperty("destinoDescargas") + nameDir + "diagram.xmi");
 				      				}
 				      			}
 				      			h.setDiagramURI(nameDir + "diagram.xmi");
@@ -1528,7 +1529,7 @@ public class XMIParser {
 		  			}
 		  			String nombreArchivoCapabilityPattern = "";
 		  			if (fin){
-		  				nombreArchivoCapabilityPattern = Constantes.destinoDescargas + vb.getDirectorioArchivo() + dirArchivo + nomArchivo;
+		  				nombreArchivoCapabilityPattern = ReadProperties.getProperty("destinoDescargas") + vb.getDirectorioArchivo() + dirArchivo + nomArchivo;
 		  			}
       		    	File inputFile = new File(nombreArchivoCapabilityPattern);
       		    	// Si es un capability pattern y está el archivo descargado => Lo parseo
@@ -2256,7 +2257,7 @@ public class XMIParser {
 				URLConnection urlCon = url.openConnection();
 				
 				InputStream is = urlCon.getInputStream();
-				File destino = new File(Constantes.destinoDescargas + nomDestino);
+				File destino = new File(ReadProperties.getProperty("destinoDescargas") + nomDestino);
 				destino.mkdirs();
 				FileOutputStream fos = new FileOutputStream(destino + "/" + nomArchivo);
 				byte [] array = new byte[1000];

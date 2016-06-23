@@ -29,6 +29,7 @@ import org.primefaces.event.TabChangeEvent;
 import com.sun.mail.iap.ConnectionException;
 
 import config.Constantes;
+import config.ReadProperties;
 
 @ManagedBean
 @SessionScoped
@@ -37,8 +38,8 @@ public class ImportarModeloBean {
 	IImportarManager iim;
 	
 	private String mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
-	private String repositorioIngresado = Constantes.URL_GITHUB_DEFAULT;
-	private String directorioLocalIngresado = Constantes.DIRECTORIO_LOCAL_DEFAULT;
+	private String repositorioIngresado = ReadProperties.getProperty("URL_GITHUB_DEFAULT");
+	private String directorioLocalIngresado = ReadProperties.getProperty("DIRECTORIO_LOCAL_DEFAULT");
 	private Boolean desdeRepositorio = true;
 	private String repositorio = "";
 	private String nombreArchivo = "";

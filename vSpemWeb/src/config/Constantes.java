@@ -2,17 +2,17 @@ package config;
 
 public class Constantes {
 	
-	// Constantes de archivos
+	/*// Constantes de archivos
 	public static final String destinoDescargas = "C:\\download\\";
-	public static final String destinoExport = "C:\\download\\";
+	public static final String destinoExport = "C:\\download\\";*/
 	public static final String nomArchivoDownload = "model.xmi";
 	public static final String nomArchivoExport = "export.xml";
 	
 	// Constantes de Github
 	public static final String URL_GITHUB = "https://github.com/";
-	public static final String URL_GITHUB_DEFAULT = "ModelosVEPF/Modelos/tree/master/bpsom/";
+	/*public static final String URL_GITHUB_DEFAULT = "ModelosVEPF/Modelos/tree/master/bpsom/";
 	public static final String URL_GITHUB_EXPORT_DEFAULT = "mviera89/modelosXMI/";
-	public static final String DIRECTORIO_LOCAL_DEFAULT ="C:/wsEclipse/modelosXMI/bpsom_a/";
+	public static final String DIRECTORIO_LOCAL_DEFAULT ="C:/wsEclipse/modelosXMI/bpsom_a/";*/
 	public static final String URL_GITHUB_DOWNLOAD = "https://raw.githubusercontent.com/";
 	
 	// Constantes para la representación del modelo

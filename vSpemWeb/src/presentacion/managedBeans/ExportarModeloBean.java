@@ -40,6 +40,7 @@ import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
 import config.Constantes;
+import config.ReadProperties;
  
 @ManagedBean
 @SessionScoped
@@ -67,7 +68,7 @@ public class ExportarModeloBean {
 			e.printStackTrace();		
 		}
 		exportar = false;
-		repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+		repositorioExport = ReadProperties.getProperty("URL_GITHUB_EXPORT_DEFAULT");
 		comentarioRepositorioExport = "";
 		userRepositorioExport = "";
 		passRepositorioExport = "";
@@ -138,7 +139,7 @@ public class ExportarModeloBean {
 		        String nomArchivo = vb.getNombreArchivo();
 		        nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
 				
-				File archivo = new File(Constantes.destinoExport + nomArchivo + "_" + Constantes.nomArchivoExport);
+				File archivo = new File(ReadProperties.getProperty("destinoExport") + nomArchivo + "_" + Constantes.nomArchivoExport);
 				OutputStream out = new FileOutputStream(archivo);
 
 				TipoLibrary library = vb.getLibrary();
@@ -1046,7 +1047,7 @@ public class ExportarModeloBean {
     	}
         
         exportar = false;
-		repositorioExport = Constantes.URL_GITHUB_EXPORT_DEFAULT;
+		repositorioExport = ReadProperties.getProperty("URL_GITHUB_EXPORT_DEFAULT");
         comentarioRepositorioExport = "";
         userRepositorioExport = "";
         passRepositorioExport = "";

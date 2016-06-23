@@ -37,6 +37,7 @@ import logica.utils.XMIParser;
 import com.sun.mail.iap.ConnectionException;
 
 import config.Constantes;
+import config.ReadProperties;
 
 @Stateless
 public class ImportarManager implements IImportarManager{
@@ -127,7 +128,7 @@ public class ImportarManager implements IImportarManager{
 				if (indexIni != -1){
 					String archivo = linea.substring(indexIni + strBuscado.length());
 					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
-					File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
+					File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivo);
 					f.mkdirs();
 					//cargarTodoDeRepositorio(dirPlugin + archivo + "/");
 					cargarTodoDeRepositorio(desdeRepositorio, repositorio, dirPlugin + archivo + "/");
@@ -162,7 +163,7 @@ public class ImportarManager implements IImportarManager{
 					int indexExtension = archivo.indexOf(".");
 					// Si no tiene extensión => es un directorio
 					if (indexExtension == -1){
-						File f = new File(Constantes.destinoDescargas + dirPlugin + archivo);
+						File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivo);
 						f.mkdirs();
 						//cargarTodoDeRepositorio(dirPlugin + archivo + "/");
 						cargarTodoDeRepositorio(desdeRepositorio, repositorio, dirPlugin + archivo + "/");
@@ -190,7 +191,7 @@ public class ImportarManager implements IImportarManager{
 		
 		InputStream is = urlCon.getInputStream();
 		dir = dir.replace("%20", " ");
-		File directorio = new File(Constantes.destinoDescargas + dir);
+		File directorio = new File(ReadProperties.getProperty("destinoDescargas") + dir);
 		directorio.mkdirs();
 		FileOutputStream fos = new FileOutputStream(directorio + "/" + archivoFinal);
 		byte [] array = new byte[1000];
@@ -221,7 +222,7 @@ public class ImportarManager implements IImportarManager{
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
-			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + nombreArchivo);
+			FileOutputStream fos = new FileOutputStream(ReadProperties.getProperty("destinoDescargas") + nombreArchivo);
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
@@ -231,7 +232,7 @@ public class ImportarManager implements IImportarManager{
 			is.close();
 			fos.close();
 			
-			return XMIParser.getElementsXMIResource(Constantes.destinoDescargas + nombreArchivo); // [String, TipoLibrary]
+			return XMIParser.getElementsXMIResource(ReadProperties.getProperty("destinoDescargas") + nombreArchivo); // [String, TipoLibrary]
 		}
 		return null;
 	}
@@ -304,7 +305,7 @@ public class ImportarManager implements IImportarManager{
 				urlDescargar = repositorio;
 			}
 			
-			File directorio = new File(Constantes.destinoDescargas + "configurations");
+			File directorio = new File(ReadProperties.getProperty("destinoDescargas") + "configurations");
 			directorio.mkdirs();
 			URL url = null;
 			if (desdeRepositorio){
@@ -317,7 +318,7 @@ public class ImportarManager implements IImportarManager{
 			URLConnection urlCon = url.openConnection();
 			
 			InputStream is = urlCon.getInputStream();
-			FileOutputStream fos = new FileOutputStream(Constantes.destinoDescargas + archivoConfig);
+			FileOutputStream fos = new FileOutputStream(ReadProperties.getProperty("destinoDescargas") + archivoConfig);
 			byte [] array = new byte[1000];
 			int leido = is.read(array);
 			while (leido > 0) {
@@ -327,19 +328,19 @@ public class ImportarManager implements IImportarManager{
 			is.close();
 			fos.close();
 			
-			return XMIParser.getElementsXMIConfigurations(Constantes.destinoDescargas + archivoConfig);
+			return XMIParser.getElementsXMIConfigurations(ReadProperties.getProperty("destinoDescargas") + archivoConfig);
 		}
 		return null;
 	}
 
 	public TipoPlugin cargarDeRepositorio(boolean desdeRepositorio, String repositorio, String dir, String archivo, String archivoFinal){
 		try{
-			File f = new File(Constantes.destinoDescargas + dir.replace("%20", " ") + "/" + archivoFinal);
+			File f = new File(ReadProperties.getProperty("destinoDescargas") + dir.replace("%20", " ") + "/" + archivoFinal);
 			if (!f.isFile()){
 				descargarArchivos(desdeRepositorio, repositorio, dir, archivo, archivoFinal);
 			}
 			dir = dir.replace("%20", " ");
-			File directorio = new File(Constantes.destinoDescargas + dir);
+			File directorio = new File(ReadProperties.getProperty("destinoDescargas") + dir);
 			return XMIParser.getElementsXMIPlugin(directorio + "/" + archivoFinal);
 		}
 		catch (Exception e) {
@@ -349,9 +350,9 @@ public class ImportarManager implements IImportarManager{
 	}
 
 	public List<TipoMethodPackage> cargarProcessPackageRepositorio(String archivoPlugin){
-		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		File f = new File(ReadProperties.getProperty("destinoDescargas") + archivoPlugin);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIProcessPackage(Constantes.destinoDescargas + archivoPlugin);	
+			return XMIParser.getElementsXMIProcessPackage(ReadProperties.getProperty("destinoDescargas") + archivoPlugin);	
 		}
 		return null;		
 	}
@@ -381,7 +382,7 @@ public class ImportarManager implements IImportarManager{
 			resParser.put("vbDirectorioArchivo", dirPlugin + dirLineProcess);
 			cargarDeRepositorio(desdeRepositorio, repositorio, dirPlugin + dirLineProcess + dirDeliveryProcess, archivoDP, archivoDP);// Cargo los Capability Patterns
 			// Para que se seteen todos los hijos
-			XMIParser.getElementXMI(Constantes.destinoDescargas + dirPlugin + dirLineProcess + dirDeliveryProcess + archivoDP);
+			XMIParser.getElementXMI(ReadProperties.getProperty("destinoDescargas") + dirPlugin + dirLineProcess + dirDeliveryProcess + archivoDP);
 			resParser.put("vbRepositorio", repositorio);
 		}
 		
@@ -445,7 +446,7 @@ public class ImportarManager implements IImportarManager{
 		
 		// Parseo las tasks
 		Map<String, TipoContentElement> lstTask = new HashMap<String, TipoContentElement>();
-		List<TipoContentElement> tceTasks = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.TASK.toString());
+		List<TipoContentElement> tceTasks = XMIParser.getElementsXMIPlugin(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, TipoTag.TASK.toString());
 		Iterator<TipoContentElement> itTceTasks = tceTasks.iterator();
 		while (itTceTasks.hasNext()){
 			TipoContentElement tce = itTceTasks.next();
@@ -474,7 +475,7 @@ public class ImportarManager implements IImportarManager{
 		
 		// Parseo los workproducts
 		Map<String, TipoContentElement> lstWorkproduct = new HashMap<String, TipoContentElement>();
-		List<TipoContentElement> lstWP = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.ARTIFACT.toString());
+		List<TipoContentElement> lstWP = XMIParser.getElementsXMIPlugin(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, TipoTag.ARTIFACT.toString());
 		Iterator<TipoContentElement> itWP = lstWP.iterator();
 		while (itWP.hasNext()){
 			TipoContentElement wp = itWP.next();
@@ -536,7 +537,7 @@ public class ImportarManager implements IImportarManager{
 		
 		// Cargo en el contentPackage
 		Map<String, TipoContentElement> mapRoles = new HashMap<String, TipoContentElement>();
-		List<TipoContentElement> lstRoles = XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + dirPlugin + archivoPlugin, TipoTag.ROLE.toString());
+		List<TipoContentElement> lstRoles = XMIParser.getElementsXMIPlugin(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, TipoTag.ROLE.toString());
 		Iterator<TipoContentElement> itRoles = lstRoles.iterator();
 		while (itRoles.hasNext()){
 			TipoContentElement rol = itRoles.next();
@@ -556,9 +557,9 @@ public class ImportarManager implements IImportarManager{
 			Entry<String, TipoContentElement> entry = itCE.next();
 			TipoContentElement tce = entry.getValue();
 			String idTce = entry.getKey();
-			TipoContentCategory contentElement = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "contentElements", idTce, false);
+			TipoContentCategory contentElement = XMIParser.getElementsXMITipoId(dirPlugin, ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, "contentElements", idTce, false);
 			if (contentElement != null){
-				TipoContentCategory childPackage = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "childPackages", contentElement.getId(), true);
+				TipoContentCategory childPackage = XMIParser.getElementsXMITipoId(dirPlugin, ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, "childPackages", contentElement.getId(), true);
 				if (childPackage != null){
 					if (!cpAgregados.contains(childPackage.getId())){
 						cpAgregados.add(childPackage.getId());
@@ -616,8 +617,8 @@ public class ImportarManager implements IImportarManager{
 	}
 
 	public TipoContentCategory cargarCustomCategoriesRepositorio(String dirPlugin, String dirCustomCategory, String archivoCC, String archivoPlugin){
-		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, Constantes.destinoDescargas + dirPlugin + dirCustomCategory + archivoCC);
-		TipoContentCategory contentCategory = XMIParser.getElementsXMITipoId(dirPlugin, Constantes.destinoDescargas + dirPlugin + archivoPlugin, "contentElements", contentDescription.getId(), true);
+		TipoContentDescription contentDescription = XMIParser.getElementsXMICustomCategories(dirPlugin + dirCustomCategory, ReadProperties.getProperty("destinoDescargas") + dirPlugin + dirCustomCategory + archivoCC);
+		TipoContentCategory contentCategory = XMIParser.getElementsXMITipoId(dirPlugin, ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivoPlugin, "contentElements", contentDescription.getId(), true);
 		if (contentCategory != null){
 			contentCategory.setContentDescription(contentDescription);
 		}
@@ -625,26 +626,26 @@ public class ImportarManager implements IImportarManager{
 	}
 
 	public Map<String, TipoContentCategory> cargarCategorizedElementsRepositorio(String dirPrevia, String archivoPlugin, String categorizedElements){
-		File f = new File(Constantes.destinoDescargas + dirPrevia + archivoPlugin);
+		File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPrevia + archivoPlugin);
 		if (f.isFile()){
 			String[] categorizedElementsArray = categorizedElements.split(" ");
-			return XMIParser.getElementsXMICategorizedElements(dirPrevia, Constantes.destinoDescargas + dirPrevia + archivoPlugin, categorizedElementsArray);	
+			return XMIParser.getElementsXMICategorizedElements(dirPrevia, ReadProperties.getProperty("destinoDescargas") + dirPrevia + archivoPlugin, categorizedElementsArray);	
 		}
 		return null;
 	}
 
 	public TipoContentElement cargarContentElementsRepositorio(String dirPrevia, String archivo, String tag){
-		File f = new File(Constantes.destinoDescargas + dirPrevia + archivo);
+		File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPrevia + archivo);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIContentElement(dirPrevia, Constantes.destinoDescargas + dirPrevia + archivo, tag);	
+			return XMIParser.getElementsXMIContentElement(dirPrevia, ReadProperties.getProperty("destinoDescargas") + dirPrevia + archivo, tag);	
 		}
 		return null;
 	}
 
 	public List<TipoContentElement> cargarTemplateRepositorio(String archivoPlugin, String tag){
-		File f = new File(Constantes.destinoDescargas + archivoPlugin);
+		File f = new File(ReadProperties.getProperty("destinoDescargas") + archivoPlugin);
 		if (f.isFile()){
-			return XMIParser.getElementsXMIPlugin(Constantes.destinoDescargas + archivoPlugin, tag);	
+			return XMIParser.getElementsXMIPlugin(ReadProperties.getProperty("destinoDescargas") + archivoPlugin, tag);	
 		}
 		return null;
 	}

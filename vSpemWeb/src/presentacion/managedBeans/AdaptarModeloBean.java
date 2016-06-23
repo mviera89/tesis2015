@@ -30,6 +30,7 @@ import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
 
 import config.Constantes;
+import config.ReadProperties;
 import logica.dataTypes.TipoRolesTareas;
 import logica.dataTypes.TipoRolesWorkProducts;
 import logica.dataTypes.TipoTareasWorkProducts;
@@ -274,7 +275,7 @@ public class AdaptarModeloBean {
 		VistaBean vb =(VistaBean) session.getAttribute("VistaBean");
 		
 		if ((vb != null) && (!vb.getNombreArchivo().isEmpty())){
-			String nomArchivo = Constantes.destinoDescargas + vb.getDirectorioArchivo() + vb.getPlugin().getDeliveryProcessDir();
+			String nomArchivo = ReadProperties.getProperty("destinoDescargas") + vb.getDirectorioArchivo() + vb.getPlugin().getDeliveryProcessDir();
 		   	
 		   	/*** Creo el modelo con los nodos obtenidos del archivo ***/
 		   	

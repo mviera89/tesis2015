@@ -29,6 +29,7 @@ import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
 import config.Constantes;
+import config.ReadProperties;
 
 @Stateless
 public class ExportarManager implements IExportarManager{
@@ -239,7 +240,7 @@ public class ExportarManager implements IExportarManager{
 		}
 		
         String dir = "gitExport_" + dirRepo;
-		String localPath = Constantes.destinoExport + dir;
+		String localPath = ReadProperties.getProperty("destinoExport") + dir;
         String remotePath = Constantes.URL_GITHUB + repositorioExport;
         GitControl gc = new GitControl(localPath, remotePath, userRepositorioExport, passRepositorioExport);
         
@@ -258,17 +259,17 @@ public class ExportarManager implements IExportarManager{
         String fecha = sdf.format(new Date());
         
         String nombre = nomArchivo + "_" + Constantes.nomArchivoExport;
-        File origen  = new File(Constantes.destinoExport + nombre);
+        File origen  = new File(ReadProperties.getProperty("destinoExport") + nombre);
         
 		// Creo la ruta destinoExport/dir/fecha/
-        File destino = new File(Constantes.destinoExport + dir + "/Export" + fecha);
+        File destino = new File(ReadProperties.getProperty("destinoExport") + dir + "/Export" + fecha);
         destino.mkdirs();
         
         // Creo en esa ruta el archivo 'nombre'
-        copiarArchivos(origen, new File(Constantes.destinoExport + dir + "/Export" + fecha + "/" + nombre));
+        copiarArchivos(origen, new File(ReadProperties.getProperty("destinoExport") + dir + "/Export" + fecha + "/" + nombre));
         
         // Copiar archivos de imagenes al localPath
-        origen  = new File(Constantes.destinoExport + dirPlugin);
+        origen  = new File(ReadProperties.getProperty("destinoExport") + dirPlugin);
         copiarDirectorio(origen, new File(destino + "/" + dirPlugin));
         
         // Hacer el add, commit y push
