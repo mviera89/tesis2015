@@ -65,7 +65,6 @@
 											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
 														   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
 												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-												<p:ajax update=":panel_principal"/>
 												<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 											</h:commandLink>
 										</h:panelGroup>
@@ -115,10 +114,10 @@
 			        	<h:panelGrid columns="2" columnClasses="column1, column2" style="width: 100%;">
 				            
 				            <h:panelGroup>
-			               			<!-- Muestro el rol -->
-						                <h:outputLabel value="#{rolWP.rol.presentationName}" >
-											<p:graphicImage value="/imagenes/#{rolWP.rol.imagen}" style="display:block; margin:auto;" />
-										</h:outputLabel>
+		               			<!-- Muestro el rol -->
+				                <h:outputLabel value="#{rolWP.rol.presentationName}" >
+									<p:graphicImage value="/imagenes/#{rolWP.rol.imagen}" style="display:block; margin:auto;" />
+								</h:outputLabel>
 							</h:panelGroup>
 							
 							<h:panelGroup>
@@ -237,11 +236,9 @@
 		</div>
 	</h:form>
 	
-	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true"
-			  style="min-width: 25%; ">
+	<p:dialog header="Seleccionar variantes" widgetVar="variantesDialog" modal="true" dynamic="true" closeOnEscape="true" style="min-width: 25%;">
 		<h:form id="seleccionarVariante_form">
-			<p:selectManyCheckbox id="variantesCheck" value="#{adaptarModeloBean.variantesSeleccionadas}" layout="grid" columns="1"
-								  style="margin-bottom: 5%;">
+			<p:selectManyCheckbox id="variantesCheck" value="#{adaptarModeloBean.variantesSeleccionadas}" layout="grid" columns="1" style="margin-bottom: 5%;">
 				<f:selectItems value="#{adaptarModeloBean.variantes}" var="var" itemLabel="#{var.label}" itemValue="#{var.value}" />
 			</p:selectManyCheckbox>
 			<p:messages id="msg" showDetail="true"/>

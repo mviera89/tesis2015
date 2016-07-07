@@ -320,7 +320,7 @@ public class ExportarModeloBean {
 							List<Struct> hijos = s.getHijos();
 							Iterator<Struct> itHijos = hijos.iterator();
 							while (itHijos.hasNext()){
-								Struct hijo = itHijos.next();								
+								Struct hijo = itHijos.next();		
 								textoDeliveryProcess += agregarElementoAxml(hijo, modeloAdaptado);
 							}
 						}
@@ -767,7 +767,7 @@ public class ExportarModeloBean {
 	public String agregarElementoAxml(Struct s, DefaultDiagramModel modeloAdaptado){
 		String texto = "";
 		String id = s.getElementID();
-		if (!idsAgregados.contains(id)){
+		if (!idsAgregados.contains(id) && (Utils.buscarElementoEnModeloSinHijos(id, modeloAdaptado) != null)){
 			idsAgregados.add(id);
 			String nombre = s.getNombre();
 			String nombrePresentacion = s.getPresentationName();
@@ -819,13 +819,13 @@ public class ExportarModeloBean {
 						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
 						"\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
 			}
-			else if (tipo == TipoElemento.ROLE){
+			else if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VAR_ROLE)){
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:RoleDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
 						"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
 			}
-			else if (tipo == TipoElemento.WORK_PRODUCT){
+			else if ((tipo == TipoElemento.WORK_PRODUCT) || (tipo == TipoElemento.VAR_WORK_PRODUCT)){
 				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
 						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
 						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
@@ -987,7 +987,15 @@ public class ExportarModeloBean {
 							Struct var = Utils.buscarElementoEnModelo(itVars.next().getID(), modeloAdaptado, "");
 							if (var != null){
 								var.setSuperActivities(hijo.getSuperActivities());
-								texto += agregarElementoAxml(var, modeloAdaptado);
+								if (var.getType() == TipoElemento.VAR_ROLE){
+									roles.add(var);
+								}
+								else if (var.getType() == TipoElemento.VAR_WORK_PRODUCT){
+									workProduct.add(var);
+								}
+								else{
+									texto += agregarElementoAxml(var, modeloAdaptado);
+								}
 							}
 						}
 					}

@@ -28,6 +28,7 @@ import org.primefaces.model.diagram.endpoint.BlankEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
+import org.primefaces.model.diagram.overlay.Overlay;
 
 import config.Constantes;
 import config.ReadProperties;
@@ -346,7 +347,7 @@ public class AdaptarModeloBean {
 		}
 		
 		if (modelo.getElements().size() > 0){
-    		this.crearModeloFinal(this.modelo);
+    		this.crearModeloFinal(this.modelo, null, null);
     	}
     }
 
@@ -444,7 +445,7 @@ public class AdaptarModeloBean {
 			float x = (cantVariantes > 1) ? xIni - (xIni / cantVariantes) : xIni;
 			float y = Float.valueOf(yStr.substring(0, yStr.length() - 2)) + Constantes.distanciaEntreNiveles;
 	    	for (int i = 0; i < cantVariantes; i++){
-	    		Element hijo = iam.crearVariante(nodos, ((Struct) puntoVariacionAdaptado.getData()).getEtiqueta(), this.variantesSeleccionadas[i], x, y);
+	    		Element hijo = iam.crearVariante(nodos, (Struct) puntoVariacionAdaptado.getData(), this.variantesSeleccionadas[i], x, y);
 	    		if (hijo != null){
 		    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 		    		hijo.addEndPoint(endPointH1);
@@ -463,7 +464,7 @@ public class AdaptarModeloBean {
 	    	}
 	    	
 	    	if (cantVariantes > 0){
-	    		this.crearModeloFinal(this.modelo);
+	    		this.crearModeloFinal(this.modelo, null, null);
 	    	}
 		}
 		catch (Exception e) {
@@ -546,7 +547,7 @@ public class AdaptarModeloBean {
 		        			y += Constantes.distanciaEntreNiveles;
 		        		}
 		        		while (i < cantVariantesSeleccionadasParaPV){
-		        			Element e = iam.crearVariante(nodos, etiqueta, variantesSeleccionadasParaPV[i], x, y);
+		        			Element e = iam.crearVariante(nodos, s, variantesSeleccionadasParaPV[i], x, y);
 		        			if (e != null){
 			        			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
 			    		        e.addEndPoint(endPointVar);
@@ -597,7 +598,7 @@ public class AdaptarModeloBean {
     	if ((p.getVariantes().size() > 0) && (cantVariantesSeleccionadasParaPV > 0)){
     		int i = 0;
     		while (i < cantVariantesSeleccionadasParaPV){
-    			Element e = iam.crearVariante(nodos, p.getEtiqueta(), variantesSeleccionadasParaPV[i], x, y);
+    			Element e = iam.crearVariante(nodos, p, variantesSeleccionadasParaPV[i], x, y);
     			if (e != null){
         			EndPoint endPointVar = crearEndPoint(EndPointAnchor.TOP);
     		        e.addEndPoint(endPointVar);
@@ -952,13 +953,13 @@ public class AdaptarModeloBean {
     		
 			if (modeloRolesTareas != null){
 		    	for (int i = 0; i < cantVariantes; i++){
-		    		Element hijo = iam.crearVariante(nodos, ((Struct) puntoVariacionAdaptado.getData()).getEtiqueta(), this.variantesSeleccionadas[i], x, y);
+		    		Element hijo = iam.crearVariante(nodos, (Struct) puntoVariacionAdaptado.getData(), this.variantesSeleccionadas[i], x, y);
 		    		if (hijo != null){
 			    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 			    		hijo.addEndPoint(endPointH1);
 			    		hijo.setDraggable(false);
 				        modeloRolesTareas.addElement(hijo);
-				        
+			    		
 				        // Creo el endPoint del punto de variación
 				        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
 				        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
@@ -970,6 +971,10 @@ public class AdaptarModeloBean {
 			    	}
 		    	}
 			}
+			
+			if (cantVariantes > 0){
+	    		this.crearModeloFinal(modelo, modeloRolesTareas, null);
+	    	}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1188,13 +1193,13 @@ public class AdaptarModeloBean {
 			
 			if (modeloRolesWPS != null){
 		    	for (int i = 0; i < cantVariantes; i++){
-		    		Element hijo = iam.crearVariante(nodos, ((Struct) puntoVariacionAdaptado.getData()).getEtiqueta(), this.variantesSeleccionadas[i], x, y);
+		    		Element hijo = iam.crearVariante(nodos, (Struct) puntoVariacionAdaptado.getData(), this.variantesSeleccionadas[i], x, y);
 		    		if (hijo != null){
 			    		EndPoint endPointH1 = crearEndPoint(EndPointAnchor.TOP);
 			    		hijo.addEndPoint(endPointH1);
 			    		hijo.setDraggable(false);
 			    		modeloRolesWPS.addElement(hijo);
-				        
+			    		
 				        // Creo el endPoint del punto de variación
 				        EndPoint endPointPV_B = crearEndPoint(EndPointAnchor.BOTTOM);
 				        this.puntoVariacionAdaptado.addEndPoint(endPointPV_B);
@@ -1206,6 +1211,10 @@ public class AdaptarModeloBean {
 		    		}
 		    	}
 			}
+			
+			if (cantVariantes > 0){
+	    		this.crearModeloFinal(modelo, null, modeloRolesWPS);
+	    	}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1393,7 +1402,7 @@ public class AdaptarModeloBean {
 
     /*** Modelo final ***/
 
-	public void crearModeloFinal(DefaultDiagramModel modelo) {
+	public void crearModeloFinal(DefaultDiagramModel modelo, DefaultDiagramModel modeloRoles, DefaultDiagramModel modeloRolesWPS) {
 		modeloAdaptado = new DefaultDiagramModel();
 		modeloAdaptado.setMaxConnections(-1);
 		
@@ -1425,7 +1434,6 @@ public class AdaptarModeloBean {
 					endPointRoot = AdaptarModeloBean.crearEndPoint(EndPointAnchor.BOTTOM);
 					newE.setDraggable(false);
 					newE.addEndPoint(endPointRoot);
-					
 					modeloAdaptado.addElement(newE);
 					yElement += Constantes.distanciaEntreNiveles;
 				}
@@ -1458,14 +1466,17 @@ public class AdaptarModeloBean {
 						Iterator<Variant> itVar = s.getVariantes().iterator();
 						while (itVar.hasNext()){
 							Variant v = itVar.next();
-							if (elementoPerteneceAModelo(v.getID(), modelo)){
-								Struct newS = iam.crearStruct(v, s.getVariantes());
-								if (padre != null){
-									padre.getHijos().add(newS);
+							if ((this.puntosDeVariacion != null) && (this.puntosDeVariacion.size() > 0)){
+								List<String> varSeleccionadas = Arrays.asList(this.puntosDeVariacion.get(s.getElementID()));
+								if (varSeleccionadas.contains(v.getID())){
+									Struct newS = iam.crearStruct(v, s.getVariantes());
+									if (padre != null){
+										padre.getHijos().add(newS);
+									}
+									Element newE = new Element(newS, xElement + "em", yElement + "em");
+									newE.setDraggable(false);
+									xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 								}
-								Element newE = new Element(newS, xElement + "em", yElement + "em");
-								newE.setDraggable(false);
-								xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 							}
 						}
 					}
@@ -1485,10 +1496,129 @@ public class AdaptarModeloBean {
 			}
 		}
 		
+		actualizarRolesEnModeloFinal(modeloRoles);
+		actualizarWorkProductsEnModeloFinal(modeloRolesWPS);
+		
 		if (root != null){
 			root.setX(xElement/2 + "em");
 		}
 		
+	}
+
+	public void actualizarRolesEnModeloFinal(DefaultDiagramModel modeloRoles){
+		if (modeloRoles != null){
+			Struct s = (modeloRoles.getElements().size() > 0) ? (Struct) modeloRoles.getElements().get(0).getData() : null;
+			if ((s != null) && (s.getType().equals(TipoElemento.VP_ROLE))){
+				Iterator<Element> itElems = modeloAdaptado.getElements().iterator();
+				while (itElems.hasNext()){
+					Element eTask  = itElems.next();
+					Struct sTask = (Struct) eTask.getData();
+					if ((this.puntosDeVariacion != null) && (this.puntosDeVariacion.size() > 0)){
+						List<String> varSeleccionadas = Arrays.asList(this.puntosDeVariacion.get(s.getElementID()));
+						if (sTask.getType() == TipoElemento.TASK){
+							if (sTask.getPerformedPrimaryBy().equals(s.getElementID())){
+								boolean fin = false;
+								Iterator<Variant> itVar = s.getVariantes().iterator();
+								while (itVar.hasNext() && !fin){
+									Variant v = itVar.next();
+									if (varSeleccionadas.contains(v.getID())){
+										sTask.setPerformedPrimaryBy(v.getID());
+										fin = true;
+									}
+								}
+							}
+							else if (sTask.getPerformedAditionallyBy() != null){
+								String idVarAdd = null;
+								Iterator<String> itAdd = sTask.getPerformedAditionallyBy().iterator();
+								while (itAdd.hasNext()){
+									String add = itAdd.next();
+									if (add.equals(s.getElementID())){
+										Iterator<Variant> itVar = s.getVariantes().iterator();
+										while (itVar.hasNext() && (idVarAdd == null)){
+											Variant v = itVar.next();
+											if (varSeleccionadas.contains(v.getID())){
+												itAdd.remove();
+												idVarAdd = v.getID();
+											}
+										}
+									}
+								}
+								if (idVarAdd != null){
+									sTask.getPerformedAditionallyBy().add(idVarAdd);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void actualizarWorkProductsEnModeloFinal(DefaultDiagramModel modeloRolesWPS){
+		if (modeloRolesWPS != null){
+			if (modeloRolesWPS.getElements().size() > 0){
+				Iterator<Element> itRolesWS = modeloRolesWPS.getElements().iterator();
+				while (itRolesWS.hasNext()){
+					Struct s = (Struct) itRolesWS.next().getData();
+					if ((s != null) && (s.getType().equals(TipoElemento.VP_WORK_PRODUCT))){
+						Iterator<Element> itElems = modeloAdaptado.getElements().iterator();
+						while (itElems.hasNext()){
+							Element eTask  = itElems.next();
+							Struct sTask = (Struct) eTask.getData();
+							if ((this.puntosDeVariacion != null) && (this.puntosDeVariacion.size() > 0)){
+								List<String> varSeleccionadas = Arrays.asList(this.puntosDeVariacion.get(s.getElementID()));
+								if (sTask.getType() == TipoElemento.VAR_ROLE){
+									if (sTask.getModifica() != null){
+										String idVarAdd = null;
+										Iterator<String> itModifica = sTask.getModifica().iterator();
+										while (itModifica.hasNext()){
+											String modifica = itModifica.next();
+											if (modifica.equals(s.getElementID())){
+												Iterator<Variant> itVar = s.getVariantes().iterator();
+												while (itVar.hasNext() && (idVarAdd == null)){
+													Variant v = itVar.next();
+													//if (elementoPerteneceAModelo(v.getID(), modeloRolesWPS)){
+													if (varSeleccionadas.contains(v.getID())){
+														itModifica.remove();
+														idVarAdd = v.getID();
+													}
+												}
+											}
+										}
+										if (idVarAdd != null){
+											sTask.getModifica().add(idVarAdd);
+										}
+									}
+									else if (sTask.getResponsableDe() != null){
+										String idVarAdd = null;
+										List<String> responsableDe = sTask.getResponsableDe();
+										Iterator<String> itResp = responsableDe.iterator();
+										while ((itResp.hasNext()) && (idVarAdd == null)){
+											String responsable = itResp.next();
+											if (responsable.equals(s.getElementID())){
+												Iterator<Variant> itVar = s.getVariantes().iterator();
+												while (itVar.hasNext() && (idVarAdd == null)){
+													Variant v = itVar.next();
+													//if (elementoPerteneceAModelo(v.getID(), modeloRolesWPS)){
+													if (varSeleccionadas.contains(v.getID())){
+														itResp.remove();
+														idVarAdd = v.getID();
+													}
+												}
+											}
+										}
+										if (idVarAdd != null){
+											responsableDe.add(idVarAdd);
+											sTask.setResponsableDe(responsableDe);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public float agregarElementoModeloFinal(Element e, EndPoint superior, float x, String etiqueta){
@@ -1496,7 +1626,7 @@ public class AdaptarModeloBean {
 		if (e != null){
 			EndPoint endPointP1_T = crearEndPoint(EndPointAnchor.TOP);
 			e.addEndPoint(endPointP1_T);
-			
+
 			modeloAdaptado.addElement(e);
 			modeloAdaptado.connect(crearConexion(superior, endPointP1_T));
 			

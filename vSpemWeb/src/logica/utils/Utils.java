@@ -80,6 +80,14 @@ public class Utils {
 						sVar.setSteps(var.getSteps());
 						sVar.setMethodElementProperties(var.getMethodElementProperties());
 						sVar.setDiagramURI(var.getDiagramURI());
+						
+						sVar.setModifica(s.getModifica());
+						sVar.setResponsableDe(s.getResponsableDe());
+						sVar.setExternalInputs(s.getExternalInputs());
+						sVar.setMandatoryInputs(s.getMandatoryInputs());
+						sVar.setOptionalInputs(s.getOptionalInputs());
+						sVar.setOutputs(s.getOutputs());
+			    		
 				 		return sVar;
 				 	}
 				 	Struct hijoVar = buscarElemento(id, var.getHijos(), buscarPor);
@@ -136,6 +144,20 @@ public class Utils {
 				Struct hijo = buscarElemento(id, s.getHijos(), buscarPor);
 				if (hijo != null){
 					return hijo;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static Struct buscarElementoEnModeloSinHijos(String id, DefaultDiagramModel modelo){
+		if ((modelo != null) && (modelo.getElements() != null)){
+			Iterator<Element> it = modelo.getElements().iterator();
+			while (it.hasNext()){
+				Struct s = (Struct) it.next().getData();
+				String sId = s.getElementID();
+				if ((sId != null) && (sId.equals(id))){
+					return s;
 				}
 			}
 		}
@@ -321,4 +343,12 @@ public class Utils {
 		return null;
 	}
 
+	public static List<String> asList(String[] array){
+		List<String> res = new ArrayList<String>();
+		int n = array.length;
+		for (int i = 0; i < n; i++){
+			res.add(array[i]);
+		}
+		return res;
+	}
 }

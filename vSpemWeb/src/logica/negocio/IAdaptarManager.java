@@ -22,7 +22,7 @@ public interface IAdaptarManager {
 	void modificarExpandido(Struct s, boolean expandido);
 	void modificarExpandido(Variant v, boolean expandido);
 	void modificarEtiqueta(Struct s, String etiqueta);
-	Element crearVariante(List<Struct> nodos, String etiqueta, String varianteSeleccionada, float x, float y);
+	Element crearVariante(List<Struct> nodos, Struct pv, String varianteSeleccionada, float x, float y);
 	Struct crearStruct(Struct s);
 	Struct crearStruct(Variant v, List<Variant> lstVariantes);
 	TipoElemento getElementoParaVarPoint(TipoElemento type);

@@ -107,7 +107,7 @@ public class AdaptarManager implements IAdaptarManager{
 		s.setEtiqueta(etiqueta);
 	}
 
-	public Element crearVariante(List<Struct> nodos, String etiqueta, String varianteSeleccionada, float x, float y){
+	public Element crearVariante(List<Struct> nodos, Struct pv, String varianteSeleccionada, float x, float y){
 		Variant v = Utils.buscarVariante(nodos, varianteSeleccionada);
 		if (v != null){
 			String nombreVariante = v.getName();
@@ -127,10 +127,10 @@ public class AdaptarManager implements IAdaptarManager{
 			s.setHijos(hijos);
 			s.setPresentationName(presentationName);
 	        s.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
-			    s.setGuid(v.getGuid());
-			    s.setIsPlanned(v.getIsPlanned());
-			    s.setSuperActivities(v.getSuperActivities());
-			    s.setIsOptional(v.getIsOptional());
+			s.setGuid(v.getGuid());
+			s.setIsPlanned(v.getIsPlanned());
+			s.setSuperActivities(v.getSuperActivities());
+			s.setIsOptional(v.getIsOptional());
 			s.setVariabilityType(v.getVariabilityType());
 			s.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
 			s.setDescription(v.getDescription());
@@ -141,7 +141,15 @@ public class AdaptarManager implements IAdaptarManager{
 	        s.setSteps(v.getSteps());
 	        s.setMethodElementProperties(v.getMethodElementProperties());
 	        s.setDiagramURI(v.getDiagramURI());
-	        s.setEtiqueta(etiqueta);
+	        s.setEtiqueta(pv.getEtiqueta());
+	        	        
+    		s.setModifica(pv.getModifica());
+    		s.setResponsableDe(pv.getResponsableDe());
+    		s.setExternalInputs(pv.getExternalInputs());
+    		s.setMandatoryInputs(pv.getMandatoryInputs());
+    		s.setOptionalInputs(pv.getOptionalInputs());
+    		s.setOutputs(pv.getOutputs());
+    		
 	        return elem;
 		}
 		return null;
@@ -178,10 +186,10 @@ public class AdaptarManager implements IAdaptarManager{
 		newS.setBriefDescription(v.getBriefDescription());
 		newS.setPresentationName(v.getPresentationName());
         newS.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
-		    newS.setGuid(v.getGuid());
-		    newS.setIsPlanned(v.getIsPlanned());
-		    newS.setSuperActivities(v.getSuperActivities());
-		    newS.setIsOptional(v.getIsOptional());
+		newS.setGuid(v.getGuid());
+		newS.setIsPlanned(v.getIsPlanned());
+		newS.setSuperActivities(v.getSuperActivities());
+		newS.setIsOptional(v.getIsOptional());
 		newS.setVariabilityType(v.getVariabilityType());
 		newS.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
 		newS.setIdTask(v.getIdTask());
@@ -190,8 +198,8 @@ public class AdaptarManager implements IAdaptarManager{
         newS.setSteps(v.getSteps());
         newS.setMethodElementProperties(v.getMethodElementProperties());
         newS.setDiagramURI(v.getDiagramURI());
+        
 		// Seteo las variantes
-		//List<Variant> lstVariantes = s.getVariantes();
 		if (lstVariantes.size() > 0){
 			ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
 			Iterator<Variant> itVariantes = lstVariantes.iterator();

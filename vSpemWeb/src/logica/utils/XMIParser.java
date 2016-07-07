@@ -1598,7 +1598,7 @@ public class XMIParser {
 						if (eHijo.hasAttribute("linkToPredecessor")){
 							List<String> list = new ArrayList<String>();
 							pred = eHijo.getAttribute("linkToPredecessor");
-							list = Arrays.asList(pred.split("\\s"));
+							list = Utils.asList(pred.split("\\s"));
 							h.setLinkToPredecessor(list);
 						}
 		      		    
@@ -1611,7 +1611,7 @@ public class XMIParser {
 							if (eHijo.hasAttribute("additionallyPerformedBy")){
 								List<String> list = new ArrayList<String>();
 								perfAdditionallyBy = eHijo.getAttribute("additionallyPerformedBy");
-								list = Arrays.asList(perfAdditionallyBy.split("\\s"));
+								list = Utils.asList(perfAdditionallyBy.split("\\s"));
 								
 								h.setPerformedAditionallyBy(list);
 								performedAditionallyBy.put(h, list);
@@ -1619,7 +1619,7 @@ public class XMIParser {
 							if (eHijo.hasAttribute("mandatoryInput")){
 								List<String> list = new ArrayList<String>();
 								mandatoryInputs = eHijo.getAttribute("mandatoryInput");
-								list = Arrays.asList(mandatoryInputs.split("\\s"));
+								list = Utils.asList(mandatoryInputs.split("\\s"));
 								h.setMandatoryInputs(list);
 								WorkProduct wp = new WorkProduct("mandatoryInput", list);
 								lwp.add(wp);
@@ -1627,7 +1627,7 @@ public class XMIParser {
 							if (eHijo.hasAttribute("optionalInput")){
 								List<String> list = new ArrayList<String>();
 								optionalInputs = eHijo.getAttribute("optionalInput");
-								list = Arrays.asList(optionalInputs.split("\\s"));
+								list = Utils.asList(optionalInputs.split("\\s"));
 								h.setOptionalInputs(list);
 								WorkProduct wp = new WorkProduct("optionalInput", list);
 								lwp.add(wp);
@@ -1635,7 +1635,7 @@ public class XMIParser {
 							if (eHijo.hasAttribute("externalInput")){
 								List<String> list = new ArrayList<String>();
 								externalInputs = eHijo.getAttribute("externalInput");
-								list = Arrays.asList(externalInputs.split("\\s"));
+								list = Utils.asList(externalInputs.split("\\s"));
 								h.setExternalInputs(list);
 								WorkProduct wp = new WorkProduct("externalInput", list);
 								lwp.add(wp);
@@ -1643,7 +1643,7 @@ public class XMIParser {
 							if (eHijo.hasAttribute("output")){
 								List<String> list = new ArrayList<String>();
 								outputs = eHijo.getAttribute("output");
-								list = Arrays.asList(outputs.split("\\s"));
+								list = Utils.asList(outputs.split("\\s"));
 								h.setOutputs(list);
 								WorkProduct wp = new WorkProduct("outputs", list);
 								lwp.add(wp);
@@ -1720,13 +1720,13 @@ public class XMIParser {
 							if (eHijo.hasAttribute("responsibleFor")){
 								List<String> list = new ArrayList<String>();
 								responsableDe = eHijo.getAttribute("responsibleFor");
-								list = Arrays.asList(responsableDe.split("\\s"));
+								list = Utils.asList(responsableDe.split("\\s"));
 								h.setResponsableDe(list);
 							}
 							if (eHijo.hasAttribute("modifies")){
 								List<String> list = new ArrayList<String>();
 								modifica = eHijo.getAttribute("modifies");
-								list = Arrays.asList(modifica.split("\\s"));
+								list = Utils.asList(modifica.split("\\s"));
 								h.setModifica(list);
 							}
 							boolean salir = false;
