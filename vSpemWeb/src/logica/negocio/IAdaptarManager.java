@@ -23,11 +23,6 @@ public interface IAdaptarManager {
 	void modificarExpandido(Variant v, boolean expandido);
 	void modificarEtiqueta(Struct s, String etiqueta);
 	Element crearVariante(List<Struct> nodos, Struct pv, String varianteSeleccionada, float x, float y);
-	Struct crearStruct(Struct s);
-	Struct crearStruct(Variant v, List<Variant> lstVariantes);
-	TipoElemento getElementoParaVarPoint(TipoElemento type);
-	Struct crearCopiaStruct(Struct s);
-	Variant crearCopiaVariante(Variant v);
 	List<Struct> cargarNodos(String nomArchivo);
 	Struct crearElementoRaiz(List<Struct> nodos);
 	String obtenerEtiquetaParaModelo(Struct padre, Struct hijo);

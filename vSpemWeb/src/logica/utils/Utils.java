@@ -100,6 +100,187 @@ public class Utils {
 		return null;
 	}
 
+	public static Struct crearStruct(Struct s){
+		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
+		newS.setDescription(s.getDescription());
+		newS.setBriefDescription(s.getBriefDescription());
+		newS.setPresentationName(s.getPresentationName());
+        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
+	    newS.setGuid(s.getGuid());
+	    newS.setIsPlanned(s.getIsPlanned());
+	    newS.setSuperActivities(s.getSuperActivities());
+	    newS.setIsOptional(s.getIsOptional());
+		newS.setVariabilityType(s.getVariabilityType());
+		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
+		newS.setIdTask(s.getIdTask());
+		newS.setIdRole(s.getIdRole());
+		newS.setIdWorkProduct(s.getIdWorkProduct());
+		newS.setHijos(s.getHijos());
+        newS.setSteps(s.getSteps());
+        newS.setMethodElementProperties(s.getMethodElementProperties());
+        newS.setPredecesores(s.getPredecesores());
+        newS.setDiagramURI(s.getDiagramURI());
+        return newS;
+	}
+	
+	public static Struct crearStruct(Variant v, List<Variant> lstVariantes){
+		TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
+		Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
+		newS.setHijos(v.getHijos());
+		newS.setDescription(v.getDescription());
+		newS.setBriefDescription(v.getBriefDescription());
+		newS.setPresentationName(v.getPresentationName());
+        newS.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
+		newS.setGuid(v.getGuid());
+		newS.setIsPlanned(v.getIsPlanned());
+		newS.setSuperActivities(v.getSuperActivities());
+		newS.setIsOptional(v.getIsOptional());
+		newS.setVariabilityType(v.getVariabilityType());
+		newS.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
+		newS.setIdTask(v.getIdTask());
+		newS.setIdRole(v.getIdRole());
+		newS.setIdWorkProduct(v.getIdWorkProduct());
+        newS.setSteps(v.getSteps());
+        newS.setMethodElementProperties(v.getMethodElementProperties());
+        newS.setDiagramURI(v.getDiagramURI());
+        
+		// Seteo las variantes
+		if (lstVariantes.size() > 0){
+			ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
+			Iterator<Variant> itVariantes = lstVariantes.iterator();
+			while (itVariantes.hasNext()){
+				Variant vrt = itVariantes.next();
+				Variant newVariant = crearCopiaVariante(vrt);
+				variantesNewS.add(newVariant);
+			}
+			newS.setVariantes(variantesNewS);
+		}
+		return newS;
+	}
+
+	public static TipoElemento getElementoParaVarPoint(TipoElemento type){
+		if (type == TipoElemento.VAR_ACTIVITY){
+			return TipoElemento.ACTIVITY;
+		}
+		if (type == TipoElemento.VAR_PHASE){
+			return TipoElemento.PHASE;
+		}
+		if (type == TipoElemento.VAR_ITERATION){
+			return TipoElemento.ITERATION;
+		}
+		if (type == TipoElemento.VAR_TASK){
+			return TipoElemento.TASK;
+		}
+		if (type == TipoElemento.VAR_ROLE){
+			return TipoElemento.ROLE;
+		}
+		if (type == TipoElemento.VAR_MILESTONE){
+			return TipoElemento.MILESTONE;
+		}
+		if (type == TipoElemento.VAR_WORK_PRODUCT){
+			return TipoElemento.WORK_PRODUCT;
+		}
+		return null;
+	}
+
+	public static Struct crearCopiaStruct(Struct s){
+		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
+		
+		newS.setDescription(s.getDescription());
+		newS.setBriefDescription(s.getBriefDescription());
+		newS.setPresentationName(s.getPresentationName());
+        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
+	    newS.setGuid(s.getGuid());
+	    newS.setIsPlanned(s.getIsPlanned());
+	    newS.setSuperActivities(s.getSuperActivities());
+		newS.setIsOptional(s.getIsOptional());
+		newS.setVariabilityType(s.getVariabilityType());
+		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
+		newS.setIdTask(s.getIdTask());
+		newS.setIdRole(s.getIdRole());
+		newS.setIdWorkProduct(s.getIdWorkProduct());
+        newS.setSteps(s.getSteps());
+        newS.setMethodElementProperties(s.getMethodElementProperties());
+        newS.setPredecesores(s.getPredecesores());
+        newS.setDiagramURI(s.getDiagramURI());
+		
+		// Seteo los hijos
+		List<Struct> lstHijos = s.getHijos();
+		if (lstHijos.size() > 0){
+			List<Struct> hijosNewS = new ArrayList<Struct>();
+			Iterator<Struct> itHijos = lstHijos.iterator();
+			while (itHijos.hasNext()){
+				Struct hijo = itHijos.next();
+				Struct newHijo = crearCopiaStruct(hijo);
+				hijosNewS.add(newHijo);
+			}
+			newS.setHijos(hijosNewS);
+		}
+		
+		newS.setPerformedPrimaryBy(s.getPerformedPrimaryBy());
+		newS.setPerformedAditionallyBy(s.getPerformedAditionallyBy());
+		newS.setMandatoryInputs(s.getMandatoryInputs());
+		newS.setOptionalInputs(s.getOptionalInputs());
+		newS.setExternalInputs(s.getExternalInputs());
+		newS.setOutputs(s.getOutputs());
+		
+		newS.setResponsableDe(s.getResponsableDe());
+		newS.setModifica(s.getModifica());
+		
+		// Seteo las variantes
+		List<Variant> lstVariantes = s.getVariantes();
+		if (lstVariantes.size() > 0){
+			ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
+			Iterator<Variant> itVariantes = lstVariantes.iterator();
+			while (itVariantes.hasNext()){
+				Variant v = itVariantes.next();
+				Variant newVariant = crearCopiaVariante(v);
+				variantesNewS.add(newVariant);
+			}
+			newS.setVariantes(variantesNewS);
+		}
+		
+		return newS;
+	}
+
+	public static Variant crearCopiaVariante(Variant v){
+		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
+		
+		newV.setDescription(v.getDescription());
+		newV.setBriefDescription(v.getBriefDescription());
+		newV.setIdTask(v.getIdTask());
+		newV.setIdRole(v.getIdRole());
+		newV.setIdWorkProduct(v.getIdWorkProduct());
+		
+		
+		newV.setIsPlanned(v.getIsPlanned());
+		newV.setIsOptional(v.getIsOptional());
+		newV.setVariabilityType(v.getVariabilityType());
+		newV.setSuperActivities(v.getSuperActivities());
+		newV.setDescription(v.getDescription());
+		newV.setGuid(v.getGuid());
+		newV.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
+			
+		// Seteo los hijos
+		List<Struct> lstHijos = v.getHijos();
+		if (lstHijos.size() > 0){
+			List<Struct> hijosNewV = new ArrayList<Struct>();
+			Iterator<Struct> itHijos = lstHijos.iterator();
+			while (itHijos.hasNext()){
+				Struct hijo = itHijos.next();
+				Struct newHijo = crearCopiaStruct(hijo);
+				hijosNewV.add(newHijo);
+			}
+			newV.setHijos(hijosNewV);
+		}
+		
+		// Seteo las variantes inclusivas y exclusivas
+		newV.setInclusivas(v.getInclusivas());
+		newV.setExclusivas(v.getExclusivas());
+		
+		return newV;
+	}
+
 	public static Struct buscarElementoPorId (String id, List<Struct> list) {
 		Iterator<Struct> iterator = list.iterator();
 		Struct res = null;

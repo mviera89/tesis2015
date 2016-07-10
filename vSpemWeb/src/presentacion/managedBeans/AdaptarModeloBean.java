@@ -1427,7 +1427,7 @@ public class AdaptarModeloBean {
 			if (type != null){
 				// Si es el elemento de inicio, obtengo el un único endPoint que tiene y lo agrego al modelo final
 				if (type == TipoElemento.CAPABILITY_PATTERN || type == TipoElemento.DELIVERY_PROCESS){
-					Struct newS = iam.crearStruct(s);
+					Struct newS = Utils.crearStruct(s);
 					Element newE = new Element(newS, e.getX(), e.getY());
 					root = newE;
 					
@@ -1467,15 +1467,18 @@ public class AdaptarModeloBean {
 						while (itVar.hasNext()){
 							Variant v = itVar.next();
 							if ((this.puntosDeVariacion != null) && (this.puntosDeVariacion.size() > 0)){
-								List<String> varSeleccionadas = Arrays.asList(this.puntosDeVariacion.get(s.getElementID()));
-								if (varSeleccionadas.contains(v.getID())){
-									Struct newS = iam.crearStruct(v, s.getVariantes());
-									if (padre != null){
-										padre.getHijos().add(newS);
+								String[] variantesParaPV = this.puntosDeVariacion.get(s.getElementID());
+								if (variantesParaPV != null){
+									List<String> varSeleccionadas = Arrays.asList(variantesParaPV);
+									if (varSeleccionadas.contains(v.getID())){
+										Struct newS = Utils.crearStruct(v, s.getVariantes());
+										if (padre != null){
+											padre.getHijos().add(newS);
+										}
+										Element newE = new Element(newS, xElement + "em", yElement + "em");
+										newE.setDraggable(false);
+										xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 									}
-									Element newE = new Element(newS, xElement + "em", yElement + "em");
-									newE.setDraggable(false);
-									xElement = agregarElementoModeloFinal(newE, endPointRoot, xElement, "");
 								}
 							}
 						}
@@ -1485,7 +1488,7 @@ public class AdaptarModeloBean {
 					else if (!iam.esVariante(type)){
 						// Si ya no se agregó al modelo (lo agrego porque sino los hijos se incluyen 2 veces)
 						if (!elementoPerteneceAModelo(s.getElementID(), modeloAdaptado)){
-							Struct newS = iam.crearCopiaStruct(s);
+							Struct newS = Utils.crearCopiaStruct(s);
 							Element newE = new Element(newS, xElement + "em", yElement + "em");
 							newE.setDraggable(false);
 							String etiqueta = iam.obtenerEtiquetaParaModelo((Struct) root.getData(), newS);
@@ -1564,20 +1567,19 @@ public class AdaptarModeloBean {
 						Iterator<Element> itElems = modeloAdaptado.getElements().iterator();
 						while (itElems.hasNext()){
 							Element eTask  = itElems.next();
-							Struct sTask = (Struct) eTask.getData();
+							Struct sRole = (Struct) eTask.getData();
 							if ((this.puntosDeVariacion != null) && (this.puntosDeVariacion.size() > 0)){
 								List<String> varSeleccionadas = Arrays.asList(this.puntosDeVariacion.get(s.getElementID()));
-								if (sTask.getType() == TipoElemento.VAR_ROLE){
-									if (sTask.getModifica() != null){
+								if (sRole.getType() == TipoElemento.VAR_ROLE){
+									if (sRole.getModifica() != null){
 										String idVarAdd = null;
-										Iterator<String> itModifica = sTask.getModifica().iterator();
+										Iterator<String> itModifica = sRole.getModifica().iterator();
 										while (itModifica.hasNext()){
 											String modifica = itModifica.next();
 											if (modifica.equals(s.getElementID())){
 												Iterator<Variant> itVar = s.getVariantes().iterator();
 												while (itVar.hasNext() && (idVarAdd == null)){
 													Variant v = itVar.next();
-													//if (elementoPerteneceAModelo(v.getID(), modeloRolesWPS)){
 													if (varSeleccionadas.contains(v.getID())){
 														itModifica.remove();
 														idVarAdd = v.getID();
@@ -1586,12 +1588,12 @@ public class AdaptarModeloBean {
 											}
 										}
 										if (idVarAdd != null){
-											sTask.getModifica().add(idVarAdd);
+											sRole.getModifica().add(idVarAdd);
 										}
 									}
-									else if (sTask.getResponsableDe() != null){
+									else if (sRole.getResponsableDe() != null){
 										String idVarAdd = null;
-										List<String> responsableDe = sTask.getResponsableDe();
+										List<String> responsableDe = sRole.getResponsableDe();
 										Iterator<String> itResp = responsableDe.iterator();
 										while ((itResp.hasNext()) && (idVarAdd == null)){
 											String responsable = itResp.next();
@@ -1599,7 +1601,6 @@ public class AdaptarModeloBean {
 												Iterator<Variant> itVar = s.getVariantes().iterator();
 												while (itVar.hasNext() && (idVarAdd == null)){
 													Variant v = itVar.next();
-													//if (elementoPerteneceAModelo(v.getID(), modeloRolesWPS)){
 													if (varSeleccionadas.contains(v.getID())){
 														itResp.remove();
 														idVarAdd = v.getID();
@@ -1609,7 +1610,7 @@ public class AdaptarModeloBean {
 										}
 										if (idVarAdd != null){
 											responsableDe.add(idVarAdd);
-											sTask.setResponsableDe(responsableDe);
+											sRole.setResponsableDe(responsableDe);
 										}
 									}
 								}
