@@ -1471,7 +1471,7 @@ public class AdaptarModeloBean {
 								if (variantesParaPV != null){
 									List<String> varSeleccionadas = Arrays.asList(variantesParaPV);
 									if (varSeleccionadas.contains(v.getID())){
-										Struct newS = Utils.crearStruct(v, s.getVariantes());
+										Struct newS = Utils.crearStruct(v, s);
 										if (padre != null){
 											padre.getHijos().add(newS);
 										}

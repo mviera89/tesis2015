@@ -123,38 +123,40 @@ public class Utils {
         return newS;
 	}
 	
-	public static Struct crearStruct(Variant v, List<Variant> lstVariantes){
+	public static Struct crearStruct(Variant v, Struct pv){
 		TipoElemento newType = getElementoParaVarPoint(XMIParser.obtenerTipoElemento(v.getVarType()));
 		Struct newS = new Struct(v.getID(), v.getName(), newType, Constantes.min_default, Constantes.max_default, XMIParser.obtenerIconoPorTipo(newType), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
-		newS.setHijos(v.getHijos());
-		newS.setDescription(v.getDescription());
 		newS.setBriefDescription(v.getBriefDescription());
+		newS.setDescription(v.getDescription());
+		newS.setDiagramURI(v.getDiagramURI());
+		newS.setGuid(v.getGuid());
+		newS.setHijos(v.getHijos());
+		newS.setIdRole(v.getIdRole());
+		newS.setIdTask(v.getIdTask());
+		newS.setIdWorkProduct(v.getIdWorkProduct());
+		newS.setIsOptional(v.getIsOptional());
+		newS.setIsPlanned(v.getIsPlanned());
+		newS.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
+        newS.setMethodElementProperties(v.getMethodElementProperties());
 		newS.setPresentationName(v.getPresentationName());
         newS.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
-		newS.setGuid(v.getGuid());
-		newS.setIsPlanned(v.getIsPlanned());
-		newS.setSuperActivities(v.getSuperActivities());
-		newS.setIsOptional(v.getIsOptional());
-		newS.setVariabilityType(v.getVariabilityType());
-		newS.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
-		newS.setIdTask(v.getIdTask());
-		newS.setIdRole(v.getIdRole());
-		newS.setIdWorkProduct(v.getIdWorkProduct());
         newS.setSteps(v.getSteps());
-        newS.setMethodElementProperties(v.getMethodElementProperties());
-        newS.setDiagramURI(v.getDiagramURI());
-        
-		// Seteo las variantes
-		if (lstVariantes.size() > 0){
-			ArrayList<Variant> variantesNewS = new ArrayList<Variant>();
-			Iterator<Variant> itVariantes = lstVariantes.iterator();
-			while (itVariantes.hasNext()){
-				Variant vrt = itVariantes.next();
-				Variant newVariant = crearCopiaVariante(vrt);
-				variantesNewS.add(newVariant);
-			}
-			newS.setVariantes(variantesNewS);
-		}
+		newS.setSuperActivities(v.getSuperActivities());
+		newS.setVariabilityType(v.getVariabilityType());
+		
+		// Agrego datos del punto de variación
+		newS.setLinkToPredecessor(pv.getLinkToPredecessor());
+		newS.setMandatoryInputs(pv.getMandatoryInputs());
+		newS.setModifica(pv.getModifica());
+		newS.setOptionalInputs(pv.getOptionalInputs());
+		newS.setOutputs(pv.getOutputs());
+		newS.setPerformedAditionallyBy(pv.getPerformedAditionallyBy());
+		newS.setPerformedPrimaryBy(pv.getPerformedPrimaryBy());
+		newS.setPredecesores(pv.getPredecesores());
+		newS.setResponsableDe(pv.getResponsableDe());
+		newS.setSteps(pv.getSteps());
+		newS.setSuperActivities(pv.getSuperActivities());
+		
 		return newS;
 	}
 
@@ -185,25 +187,14 @@ public class Utils {
 
 	public static Struct crearCopiaStruct(Struct s){
 		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
-		
-		newS.setDescription(s.getDescription());
+
 		newS.setBriefDescription(s.getBriefDescription());
-		newS.setPresentationName(s.getPresentationName());
-        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
-	    newS.setGuid(s.getGuid());
-	    newS.setIsPlanned(s.getIsPlanned());
-	    newS.setSuperActivities(s.getSuperActivities());
-		newS.setIsOptional(s.getIsOptional());
-		newS.setVariabilityType(s.getVariabilityType());
-		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
-		newS.setIdTask(s.getIdTask());
-		newS.setIdRole(s.getIdRole());
-		newS.setIdWorkProduct(s.getIdWorkProduct());
-        newS.setSteps(s.getSteps());
-        newS.setMethodElementProperties(s.getMethodElementProperties());
-        newS.setPredecesores(s.getPredecesores());
+		newS.setDescription(s.getDescription());
         newS.setDiagramURI(s.getDiagramURI());
-		
+        newS.setEtiqueta(s.getEtiqueta());
+		newS.setExternalInputs(s.getExternalInputs());
+	    newS.setGuid(s.getGuid());
+
 		// Seteo los hijos
 		List<Struct> lstHijos = s.getHijos();
 		if (lstHijos.size() > 0){
@@ -216,16 +207,28 @@ public class Utils {
 			}
 			newS.setHijos(hijosNewS);
 		}
-		
-		newS.setPerformedPrimaryBy(s.getPerformedPrimaryBy());
-		newS.setPerformedAditionallyBy(s.getPerformedAditionallyBy());
+
+		newS.setIdRole(s.getIdRole());
+		newS.setIdTask(s.getIdTask());
+		newS.setIdWorkProduct(s.getIdWorkProduct());
+		newS.setIsOptional(s.getIsOptional());
+	    newS.setIsPlanned(s.getIsPlanned());
+		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
+		newS.setLinkToPredecessor(s.getLinkToPredecessor());
 		newS.setMandatoryInputs(s.getMandatoryInputs());
-		newS.setOptionalInputs(s.getOptionalInputs());
-		newS.setExternalInputs(s.getExternalInputs());
-		newS.setOutputs(s.getOutputs());
-		
-		newS.setResponsableDe(s.getResponsableDe());
+        newS.setMethodElementProperties(s.getMethodElementProperties());
 		newS.setModifica(s.getModifica());
+		newS.setOptionalInputs(s.getOptionalInputs());
+		newS.setOutputs(s.getOutputs());
+		newS.setPerformedAditionallyBy(s.getPerformedAditionallyBy());
+		newS.setPerformedPrimaryBy(s.getPerformedPrimaryBy());
+        newS.setPredecesores(s.getPredecesores());
+		newS.setPresentationName(s.getPresentationName());
+        newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
+		newS.setResponsableDe(s.getResponsableDe());
+        newS.setSteps(s.getSteps());
+	    newS.setSuperActivities(s.getSuperActivities());
+		newS.setVariabilityType(s.getVariabilityType());
 		
 		// Seteo las variantes
 		List<Variant> lstVariantes = s.getVariantes();
@@ -245,22 +248,13 @@ public class Utils {
 
 	public static Variant crearCopiaVariante(Variant v){
 		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
-		
-		newV.setDescription(v.getDescription());
+
 		newV.setBriefDescription(v.getBriefDescription());
-		newV.setIdTask(v.getIdTask());
-		newV.setIdRole(v.getIdRole());
-		newV.setIdWorkProduct(v.getIdWorkProduct());
-		
-		
-		newV.setIsPlanned(v.getIsPlanned());
-		newV.setIsOptional(v.getIsOptional());
-		newV.setVariabilityType(v.getVariabilityType());
-		newV.setSuperActivities(v.getSuperActivities());
 		newV.setDescription(v.getDescription());
+		newV.setDiagramURI(v.getDiagramURI());
+		newV.setExclusivas(v.getExclusivas());
 		newV.setGuid(v.getGuid());
-		newV.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
-			
+		
 		// Seteo los hijos
 		List<Struct> lstHijos = v.getHijos();
 		if (lstHijos.size() > 0){
@@ -273,10 +267,19 @@ public class Utils {
 			}
 			newV.setHijos(hijosNewV);
 		}
-		
-		// Seteo las variantes inclusivas y exclusivas
+
+		newV.setIdRole(v.getIdRole());
+		newV.setIdTask(v.getIdTask());
+		newV.setIdWorkProduct(v.getIdWorkProduct());
 		newV.setInclusivas(v.getInclusivas());
-		newV.setExclusivas(v.getExclusivas());
+		newV.setIsOptional(v.getIsOptional());
+		newV.setIsPlanned(v.getIsPlanned());
+		newV.setIsSynchronizedWithSource(v.getIsSynchronizedWithSource());
+		newV.setMethodElementProperties(v.getMethodElementProperties());
+		newV.setProcessComponentPresentationName(v.getProcessComponentPresentationName());
+		newV.setSteps(v.getSteps());
+		newV.setSuperActivities(v.getSuperActivities());
+		newV.setVariabilityType(v.getVariabilityType());
 		
 		return newV;
 	}

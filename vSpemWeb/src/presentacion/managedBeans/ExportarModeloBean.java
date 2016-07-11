@@ -41,8 +41,6 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.primefaces.model.diagram.DefaultDiagramModel;
 import org.primefaces.model.diagram.Element;
 
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-
 import config.Constantes;
 import config.ReadProperties;
  
@@ -133,109 +131,8 @@ public class ExportarModeloBean {
 		this.mensajeAyudaRepositorioExport = mensajeAyudaRepositorioExport;
 	}
 
-	/*public void mostrarHijos(Struct s, HashMap<String, String[]> puntosDeVariacion){
-		List<Struct> hijos = s.getHijos();
-		if (hijos != null){
-			Iterator<Struct> ite = hijos.iterator();
-			while (ite.hasNext()){
-				Struct h = ite.next();
-				System.out.println("############ h: " + h.getNombre() + " - " + h.getType());
-				if (!Utils.esPuntoDeVariacion(h.getType())){
-					System.out.println("############ Hijos de " + h.getNombre());
-					mostrarHijos(h, puntosDeVariacion);
-					System.out.println("############ Fin Hijos");
-				}
-				else{
-					Iterator<Variant> itv = h.getVariantes().iterator();
-					if (puntosDeVariacion.get(h.getElementID()) != null){
-						List<String> variantesParaPV = Arrays.asList(puntosDeVariacion.get(h.getElementID()));
-						while (itv.hasNext()){
-							Variant v = itv.next();
-							if (variantesParaPV.contains(v.getID())){
-								System.out.println("############ Variante " + v.getName() + " - " + v.getVarType());
-								System.out.println("############ Hijos de " + h.getNombre());
-								mostrarHijos(v, puntosDeVariacion);
-								System.out.println("############ Fin Hijos Variante");
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	public void mostrarHijos(Variant v, HashMap<String, String[]> puntosDeVariacion){
-		List<Struct> hijos = v.getHijos();
-		if (hijos != null){
-			Iterator<Struct> ite = hijos.iterator();
-			while (ite.hasNext()){
-				Struct h = ite.next();
-				System.out.println("############ h: " + h.getNombre() + " - " + h.getType());
-				if (!Utils.esPuntoDeVariacion(h.getType())){
-					System.out.println("############ Hijos de " + h.getNombre());
-					mostrarHijos(h, puntosDeVariacion);
-					System.out.println("############ Fin Hijos");
-				}
-				else{
-					Iterator<Variant> itv = h.getVariantes().iterator();
-					if (puntosDeVariacion.get(h.getElementID()) != null){
-						List<String> variantesParaPV = Arrays.asList(puntosDeVariacion.get(h.getElementID()));
-						while (itv.hasNext()){
-							Variant var = itv.next();
-							if (variantesParaPV.contains(var.getID())){
-								System.out.println("############ Variante " + var.getName() + " - " + var.getVarType());
-								System.out.println("############ Hijos de " + h.getNombre());
-								mostrarHijos(var, puntosDeVariacion);
-								System.out.println("############ Fin Hijos Variante");
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	public void imprimirModelo(DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion){
-		Iterator<Element> it = modelo.getElements().iterator();
-		List<Struct> hijos = null;
-		while (it.hasNext()){
-			Struct s = (Struct) it.next().getData();
-			TipoElemento tipo = s.getType();
-			if ((tipo != null) && (tipo == TipoElemento.DELIVERY_PROCESS)){
-				hijos = s.getHijos();
-			}
-		}
-		if (hijos != null){
-			Iterator<Struct> ite = hijos.iterator();
-			while (ite.hasNext()){
-				Struct s = ite.next();
-				System.out.println("############ s: " + s.getNombre() + " - " + s.getType());
-				if (!Utils.esPuntoDeVariacion(s.getType())){
-					System.out.println("############ Hijos de " + s.getNombre());
-					mostrarHijos(s, puntosDeVariacion);
-					System.out.println("############ Fin Hijos");
-				}
-				else{
-					Iterator<Variant> itv = s.getVariantes().iterator();
-					if (puntosDeVariacion.get(s.getElementID()) != null){
-						List<String> variantesParaPV = Arrays.asList(puntosDeVariacion.get(s.getElementID()));
-						while (itv.hasNext()){
-							Variant v = itv.next();
-							if (variantesParaPV.contains(v.getID())){
-								System.out.println("############ Variante " + v.getName() + " - " + v.getVarType());
-								System.out.println("############ Hijos de " + s.getNombre());
-								mostrarHijos(v, puntosDeVariacion);
-								System.out.println("############ Fin Hijos Variante");
-							}
-						}
-					}
-				}
-			}
-		}
-	}*/
-	public void exportarModelo(DefaultDiagramModel modeloAdaptado, List<TipoRolesWorkProducts> modeloRolesWP, DefaultDiagramModel modelo, List<Struct> nodos, HashMap<String, String[]> puntosDeVariacion){
-		try{
-			/*******************
-			imprimirModelo(modelo, puntosDeVariacion);
-			*******************/			
+	public void exportarModelo(DefaultDiagramModel modeloAdaptado, DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion){
+		try{		
 			if (modeloAdaptado != null){
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
@@ -425,10 +322,9 @@ public class ExportarModeloBean {
 							List<Struct> hijos = s.getHijos();
 							Iterator<Struct> itHijos = hijos.iterator();
 							while (itHijos.hasNext()){
-								Struct hijo = itHijos.next();		
-								//textoDeliveryProcess += agregarElementoAxml(hijo, modeloAdaptado, puntosDeVariacion);
+								Struct hijo = itHijos.next();
 								if (!Utils.esPuntoDeVariacion(hijo.getType())){
-									textoDeliveryProcess += agregarElementoAxml(hijo, modeloAdaptado, puntosDeVariacion);
+									textoDeliveryProcess += agregarElementoAxml(hijo, puntosDeVariacion);
 								}
 								else{
 									Iterator<Variant> itv = hijo.getVariantes().iterator();
@@ -438,8 +334,8 @@ public class ExportarModeloBean {
 										while (itv.hasNext()){
 											Variant v = itv.next();
 											if (variantesParaPVLst.contains(v.getID())){
-												Struct vHijo = Utils.crearStruct(v, hijo.getVariantes());
-												textoDeliveryProcess += agregarElementoAxml(vHijo, modeloAdaptado, puntosDeVariacion);
+												Struct vHijo = Utils.crearStruct(v, hijo);
+												textoDeliveryProcess += agregarElementoAxml(vHijo, puntosDeVariacion);
 											}
 										}
 									}
@@ -468,7 +364,7 @@ public class ExportarModeloBean {
 							while (itHijos.hasNext()){
 								Struct hijo = itHijos.next();
 								if (!Utils.esPuntoDeVariacion(hijo.getType())){
-									textoCapabilityPattern += agregarElementoAxml(hijo, modeloAdaptado, puntosDeVariacion);
+									textoCapabilityPattern += agregarElementoAxml(hijo, puntosDeVariacion);
 								}
 								else{
 									Iterator<Variant> itv = hijo.getVariantes().iterator();
@@ -478,8 +374,8 @@ public class ExportarModeloBean {
 										while (itv.hasNext()){
 											Variant v = itv.next();
 											if (variantesParaPVLst.contains(v.getID())){
-												Struct vHijo = Utils.crearStruct(v, hijo.getVariantes());
-												textoCapabilityPattern += agregarElementoAxml(vHijo, modeloAdaptado, puntosDeVariacion);
+												Struct vHijo = Utils.crearStruct(v, hijo);
+												textoCapabilityPattern += agregarElementoAxml(vHijo, puntosDeVariacion);
 											}
 										}
 									}
@@ -901,279 +797,10 @@ public class ExportarModeloBean {
     		System.out.println(e.getMessage());
 		}
 	}
-	
-	/*public String agregarElementoAxml(Struct s, DefaultDiagramModel modeloAdaptado){
+
+	public String agregarElementoAxml(Struct s, HashMap<String, String[]> puntosDeVariacion){
 		String texto = "";
 		String id = s.getElementID();
-		System.out.println("################ s: " + s.getNombre());
-		if (!idsAgregados.contains(id)
-				&& ((s.getType() == TipoElemento.WORK_PRODUCT) || (s.getType() == TipoElemento.VAR_WORK_PRODUCT) || (Utils.buscarElementoEnModeloSinHijos(id, modeloAdaptado) != null))){
-			idsAgregados.add(id);
-			String nombre = s.getNombre();
-			String nombrePresentacion = s.getPresentationName();
-			TipoElemento tipo = s.getType();
-			String briefDescription = s.getBriefDescription() != null ? s.getBriefDescription() : "";
-			
-			String isPlanned = s.getIsPlanned();
-			String superactivity = s.getSuperActivities();
-			String isOptional = s.getIsOptional();
-			String variabilityType = s.getVariabilityType();
-			String isSynchronizedWithSource = s.getIsSynchronizedWithSource();
-			
-			String orderingGuide = "";
-			String suppressed = "false";
-			String hasMultipleOccurrences = "false";
-			String prefix = "";
-			String isEventDriven = "false";
-			String isOngoing = "false";
-			String isRepeatable = "false";
-			//String isEnactable = "false";
-			String activityEntryState = "";
-			String activityExitState = "";
-			
-			if (tipo == TipoElemento.ACTIVITY){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Activity\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" variabilityType=\"" + variabilityType + "\">" + "\n";
-			}
-			else if (tipo == TipoElemento.ITERATION){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Iteration\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" variabilityType=\"" + variabilityType + "\">" + "\n";
-			}
-			else if (tipo == TipoElemento.PHASE){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Phase\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" variabilityType=\"" + variabilityType + "\">" + "\n";
-			}
-			else if (tipo == TipoElemento.TASK){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:TaskDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
-			}
-			else if ((tipo == TipoElemento.ROLE) || (tipo == TipoElemento.VAR_ROLE)){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:RoleDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\">" + "\n";
-			}
-			else if ((tipo == TipoElemento.WORK_PRODUCT) || (tipo == TipoElemento.VAR_WORK_PRODUCT)){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:WorkProductDescriptor\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isSynchronizedWithSource=\"" + isSynchronizedWithSource + "\" activityEntryState=\"" + activityEntryState +
-						"\" activityExitState=\"" + activityExitState + "\">" + "\n";
-			}
-			else if (tipo == TipoElemento.MILESTONE){
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:Milestone\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + id +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable + "\">\n";
-			}
-			else if (tipo == TipoElemento.CAPABILITY_PATTERN){
-				String processId = s.getProcessComponentId();
-				processIds.add(processId);
-				String categorizedElement = s.getElementID();
-				String idExtends = s.getElementIDExtends();
-				variabilityType = "extends";
-				String diagramURI = "";
-				nombrePresentacion = s.getProcessComponentPresentationName();
-				List<TipoMethodElementProperty> methodElementProperties = s.getMethodElementProperties();
-				
-				texto += "\t\t\t\t<BreakdownElement xsi:type=\"uma:CapabilityPattern\" name=\"" + nombre + "\" briefDescription=\"" + briefDescription + "\" id=\"" + idExtends +
-						"\" orderingGuide=\"" + orderingGuide + "\" " + "suppressed=\"" + suppressed + "\" presentationName=\"" + nombrePresentacion +
-						"\" hasMultipleOccurrences=\"" + hasMultipleOccurrences + "\" isOptional=\"" + isOptional + "\" " + "isPlanned=\"" + isPlanned +
-						"\" prefix=\"" + prefix + "\" isEventDriven=\"" + isEventDriven + "\" isOngoing=\"" + isOngoing + "\" isRepeatable=\"" + isRepeatable +
-						"\" variabilityBasedOnElement=\"" + categorizedElement + "\" variabilityType=\"" + variabilityType + (diagramURI != null && !diagramURI.equals("") ? "\" diagramURI=\"" + diagramURI : "") + "\">" + "\n";
-				if (methodElementProperties.size() > 0){
-					Iterator<TipoMethodElementProperty> itProperties = methodElementProperties.iterator();
-					while (itProperties.hasNext()){
-						TipoMethodElementProperty property = itProperties.next();
-						texto += 
-							"\t\t\t\t\t<MethodElementProperty name=\"" + property.getName() + "\" value=\"" + property.getValue() + "\"/>" + "\n";
-					}
-				}
-				texto += 
-							"\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n" +
-						"\t\t\t\t</BreakdownElement>" + "\n";
-			}
-			
-			if ((!texto.equals("")) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
-				texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
-				
-				//Agrego sucesores
-				Map<String,String[]> sucesores = s.getPredecesores();
-				if (sucesores != null){
-					Iterator<Entry<String, String[]>> iter = sucesores.entrySet().iterator();
-					while (iter.hasNext()){
-						Entry<String, String[]> e = iter.next();
-						String idLink = e.getKey();
-				    	String sucesor = e.getValue()[0];
-				    	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" + ">" + sucesor + "</Predecessor>" + "\n";
-					}
-				}
-
-				// Si es un rol => Agrego el rol
-				String idRole = s.getIdRole();
-				if ((idRole != null) && (!idRole.equals(""))){
-					texto += "\t\t\t\t\t<Role>" + idRole + "</Role>" + "\n";
-				}
-				
-				// Si es una task => Agrego la task
-				String idTask = s.getIdTask();
-				if ((idTask != null) && (!idTask.equals(""))){
-					texto += "\t\t\t\t\t<Task>" + idTask + "</Task>" + "\n";
-				}
-
-				// Si es un workproduct => Agrego el workproduct
-				String idWp = s.getIdWorkProduct();
-				if ((idWp != null) && (!idWp.equals(""))){
-					texto += "\t\t\t\t\t<WorkProduct>" + idWp + "</WorkProduct>" + "\n"; 
-				}
-				
-				// Si es responsable de algo => Lo agrego
-				List<String> responsable = s.getResponsableDe();
-				if ((responsable != null) && (responsable.size() > 0)){
-					Iterator<String> itResp = responsable.iterator();
-					while (itResp.hasNext()){
-						texto += "\t\t\t\t\t<ResponsibleFor>" + itResp.next() + "</ResponsibleFor>" + "\n";
-					}
-				}
-				
-				// Si tiene asignado un rol principal, se lo agrego
-				String performedPrimaryBy = s.getPerformedPrimaryBy();
-				if ((performedPrimaryBy != null) && (!performedPrimaryBy.equals(""))){
-					texto += "\t\t\t\t\t<PerformedPrimarilyBy>" + performedPrimaryBy + "</PerformedPrimarilyBy>" + "\n";
-				}
-				
-				// Si tiene asignado un rol adicional, se lo agrego
-				List<String> performedAditionallyBy = s.getPerformedAditionallyBy();
-				if ((performedAditionallyBy != null) && (performedAditionallyBy.size() > 0)){
-					Iterator<String> it = performedAditionallyBy.iterator();
-					while (it.hasNext()){
-						texto += "\t\t\t\t\t<AdditionallyPerformedBy>" + it.next() + "</AdditionallyPerformedBy>" + "\n";
-					}
-				}
-				
-				// Si tiene workProduct asignados, los agrego
-				List<String> mandatoryInputs = s.getMandatoryInputs();
-				if ((mandatoryInputs != null) && (mandatoryInputs.size() > 0)){
-					Iterator<String> it = mandatoryInputs.iterator();
-					while (it.hasNext()){
-						texto += "\t\t\t\t\t<MandatoryInput>" + it.next() + "</MandatoryInput>" + "\n";
-					}
-				}
-				
-				List<String> optionalInputs = s.getOptionalInputs();
-				if ((optionalInputs != null) && (optionalInputs.size() > 0)){
-					Iterator<String> it = optionalInputs.iterator();
-					while (it.hasNext()){
-						texto += "\t\t\t\t\t<OptionalInput>" + it.next() + "</OptionalInput>" + "\n";
-					}
-				}
-				
-				List<String> externalInputs = s.getExternalInputs();
-				if ((externalInputs != null) && (externalInputs.size() > 0)){
-					Iterator<String> it = externalInputs.iterator();
-					while (it.hasNext()){
-						texto += "\t\t\t\t\t<ExternalInput>" + it.next() + "</ExternalInput>" + "\n";
-					}
-				}
-				
-				List<String> outputs = s.getOutputs();
-				if ((outputs != null) && (outputs.size() > 0)){
-					Iterator<String> it = outputs.iterator();
-					while (it.hasNext()){
-						texto += "\t\t\t\t\t<Output>" + it.next() + "</Output>" + "\n";
-					}
-				}
-				
-				List<TipoSection> steps = s.getSteps();
-				if (steps != null){
-					Iterator<TipoSection> it = steps.iterator();
-					while (it.hasNext()){
-						TipoSection step = it.next();
-						String briefDescriptionStep = "";
-						String orderingGuideStep = "";
-						String suppressedStep = "false";
-						String sectionNameStep = "";
-						String variabilityTypeStep = "na";
-						texto += "\t\t\t\t\t<Step name=\"" + step.getName() + "\" briefDescription=\""+ briefDescriptionStep + "\" id=\"" + step.getXmiId() + "\" orderingGuide=\"" + orderingGuideStep + "\" suppressed=\"" + suppressedStep + "\" sectionName=\"" + sectionNameStep + "\" variabilityType=\"" + variabilityTypeStep + "\">" + "\n" +
-									"\t\t\t\t\t<Description></Description>" + "\n" +
-								 "\t\t\t\t\t</Step>" + "\n";
-					}
-				}
-				
-				// Agrego los hijos
-				List<Struct> roles = new ArrayList<Struct>();
-				List<Struct> workProduct = new ArrayList<Struct>();
-				Iterator<Struct> it = s.getHijos().iterator();
-				while (it.hasNext()){
-					Struct hijo = it.next();
-					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT) && (!Utils.esPuntoDeVariacion(hijo.getType()))){
-						System.out.println("################ agregarElementoAxml: " + hijo.getNombre());
-						texto += agregarElementoAxml(hijo, modeloAdaptado);
-					}
-					else if (Utils.esPuntoDeVariacion(hijo.getType())){
-						Iterator<Variant> itVars = hijo.getVariantes().iterator();
-						while (itVars.hasNext()){
-							Struct var = Utils.buscarElementoEnModelo(itVars.next().getID(), modeloAdaptado, "");
-							if (var != null){
-								var.setSuperActivities(hijo.getSuperActivities());
-								if (var.getType() == TipoElemento.VAR_ROLE){
-									roles.add(var);
-								}
-								else if (var.getType() == TipoElemento.VAR_WORK_PRODUCT){
-									workProduct.add(var);
-								}
-								else{
-									System.out.println("################ agregarElementoAxml: " + var.getNombre());
-									texto += agregarElementoAxml(var, modeloAdaptado);
-								}
-							}
-						}
-					}
-					else if (hijo.getType() == TipoElemento.ROLE){
-						roles.add(hijo);
-					}
-					else{
-						workProduct.add(hijo);
-					}
-				}
-				
-				texto += "\t\t\t\t</BreakdownElement>" + "\n";
-				
-				// Agrego los roles
-				if (roles.size() > 0){
-					it = roles.iterator();
-					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), modeloAdaptado);
-					}
-				}
-				
-				// Agrego los workProduct
-				if (workProduct.size() > 0){
-					it = workProduct.iterator();
-					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), modeloAdaptado);
-					}
-				}
-			}
-		}
-		return texto;
-	}*/
-	public String agregarElementoAxml(Struct s, DefaultDiagramModel modeloAdaptado, HashMap<String, String[]> puntosDeVariacion){
-		String texto = "";
-		String id = s.getElementID();
-		System.out.println("################ s: " + s.getNombre());
 		if (!idsAgregados.contains(id)){
 			idsAgregados.add(id);
 			String nombre = s.getNombre();
@@ -1385,7 +1012,7 @@ public class ExportarModeloBean {
 				while (it.hasNext()){
 					Struct hijo = it.next();
 					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT) && (!Utils.esPuntoDeVariacion(hijo.getType()))){
-						texto += agregarElementoAxml(hijo, modeloAdaptado, puntosDeVariacion);
+						texto += agregarElementoAxml(hijo, puntosDeVariacion);
 					}
 					else if (Utils.esPuntoDeVariacion(hijo.getType())){
 						Iterator<Variant> itVars = hijo.getVariantes().iterator();
@@ -1393,9 +1020,8 @@ public class ExportarModeloBean {
 						while (itVars.hasNext()){
 							Variant v = itVars.next();
 							if (variantesParaPV.contains(v.getID())){
-								Struct var = Utils.crearStruct(v, hijo.getVariantes());
+								Struct var = Utils.crearStruct(v, hijo);
 								if (var != null){
-									var.setSuperActivities(hijo.getSuperActivities());
 									if ((var.getType() == TipoElemento.ROLE) || (var.getType() == TipoElemento.VAR_ROLE)){
 										roles.add(var);
 									}
@@ -1403,7 +1029,7 @@ public class ExportarModeloBean {
 										workProduct.add(var);
 									}
 									else{
-										texto += agregarElementoAxml(var, modeloAdaptado, puntosDeVariacion);
+										texto += agregarElementoAxml(var, puntosDeVariacion);
 									}
 								}
 							}
@@ -1423,7 +1049,7 @@ public class ExportarModeloBean {
 				if (roles.size() > 0){
 					it = roles.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), modeloAdaptado, puntosDeVariacion);
+						texto += agregarElementoAxml(it.next(), puntosDeVariacion);
 					}
 				}
 				
@@ -1431,7 +1057,7 @@ public class ExportarModeloBean {
 				if (workProduct.size() > 0){
 					it = workProduct.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), modeloAdaptado, puntosDeVariacion);
+						texto += agregarElementoAxml(it.next(), puntosDeVariacion);
 					}
 				}
 			}
