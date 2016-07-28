@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,8 +35,117 @@ import config.ReadProperties;
 @Stateless
 public class ExportarManager implements IExportarManager{
 
-	public void actualizarPredecesoresModelo(DefaultDiagramModel modeloAdaptado, DefaultDiagramModel modelo){
+	public void actualizarPredecesoresModelo(/*DefaultDiagramModel modeloAdaptado,*/ DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion){
 		//recorro modelo, para cada variante busco si el id esta en modelo adapatado
+		//(fue seleccionada), si esta busco el id del var point
+		//con este id busco en los predecesores, si alguien lo tiene se lo quito y se agrega la variante como predecesor
+		//para cada varPoint veo sus predecesores, luego a cada variante elegida se le setean los mismos
+		Iterator<Element> itModelo = modelo.getElements().iterator();
+		while (itModelo.hasNext()){
+			Element e = itModelo.next();
+			Struct s = (Struct) e.getData();
+			TipoElemento tipo = s.getType();
+			if (Utils.esPuntoDeVariacion(tipo)){
+				List<Variant> variants = s.getVariantes();
+				Map<String, String[]> predecesores = s.getPredecesores();
+				String idVarPoint = s.getElementID();
+				String[] variantesParaPVArray = puntosDeVariacion.get(idVarPoint);
+				Iterator<Variant> itV = variants.iterator();
+				int num = 0;
+				// Para cada variante
+				while (itV.hasNext()){
+					num ++;
+					Variant v = itV.next();
+					String idV = v.getID();
+					boolean pertenece = false;
+					// Veo si v fue seleccionada para el PV
+					if ((variantesParaPVArray != null) && (variantesParaPVArray.length > 0)){
+						List<String> variantesParaPV = Arrays.asList(variantesParaPVArray);
+						if (variantesParaPV.contains(idV)){
+							Struct st = Utils.buscarElementoEnModelo(idV, modelo, "");
+							pertenece = true;
+							Map<String, String[]> predecesores2 = new HashMap<String, String[]>();
+							if (predecesores != null){
+								Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
+								while (itPred.hasNext()){
+									Entry<String, String[]> entry = itPred.next();
+									String idLink = entry.getKey() + num;
+									predecesores2.put(idLink, entry.getValue());
+								}
+								st.setPredecesores(predecesores2);
+							}
+						}
+						else{
+							pertenece = elementoPerteneceAModelo(idV, s.getHijos(), predecesores);
+						}
+					}
+					if (pertenece){
+						// Buscar quien tiene este id como predecessor
+						Iterator<Element> itModeloA = modelo.getElements().iterator();
+						boolean encontre = false;
+						while (itModeloA.hasNext() && !encontre){
+							Element ele = itModeloA.next();
+							Struct str = (Struct) ele.getData();
+							
+							if (str.getPredecesores() != null){
+								Iterator<Entry<String, String[]>> iter = str.getPredecesores().entrySet().iterator();
+								String link = "";
+								String properties = "";
+						  		while (iter.hasNext()){
+						  			Entry<String, String[]> elem = iter.next();
+						  			String idLink = elem.getKey();
+						        	String predecesor = elem.getValue()[0];
+						        	if (predecesor.equals(idVarPoint)){
+						        		encontre = true;
+						        		link = idLink;
+						        		properties = elem.getValue()[1];
+						        	}
+						  		}
+						  		String[] array = {idV, properties};
+						  		if (!link.equals("")){
+						  			str.getPredecesores().put(link + num, array);
+						  		}
+							}
+						  	if (!encontre){
+						  		actualizarPredecesor(idVarPoint, idV, str.getHijos(), num);
+						  	}
+						}
+					}
+				}
+				
+				// Sacar el varpoint de quien lo tiene como predecesor
+				Iterator<Element> itModeloA = modelo.getElements().iterator();
+				boolean encontre = false;
+				while (itModeloA.hasNext() && !encontre){
+					Element ele = itModeloA.next();
+					Struct str = (Struct) ele.getData();
+					
+					if (str.getPredecesores() != null){
+						Iterator<Entry<String, String[]>> iter = str.getPredecesores().entrySet().iterator();
+						String link = "";
+				  		while (iter.hasNext() && !encontre){
+				  			Entry<String, String[]> elem = iter.next();
+				  			String idLink = elem.getKey();
+				        	String predecesor = elem.getValue()[0];
+				        	if (predecesor.equals(idVarPoint)){
+				        		encontre = true;
+				        		link = idLink;
+						  		str.getPredecesores().remove(link);
+						  		// Si al sacar el id del VP de la lista de predecesores esta queda vacía, es porque no se seleccionó ninguna variante. 
+						  		if ((str.getPredecesores() == null) || (str.getPredecesores().size() == 0)){
+						  			str.setLinkToPredecessor(s.getLinkToPredecessor());
+						  			str.setPredecesores(s.getPredecesores());
+						  		}
+				        	}
+				  		}
+					}
+				  	if (!encontre){
+			  			quitarPredecessor(idVarPoint, str.getHijos());
+				  	}
+				}
+			}
+		}
+		/*//recorro modelo, para cada variante busco si el id esta en modelo adapatado
 		//(fue seleccionada), si esta busco el id del var point
 		//con este id busco en los predecesores, si alguien lo tiene se lo quito y se agrega la variante como predecesor
 		//para cada varPoint veo sus predecesores, luego a cada variante elegida se le setean los mismos
@@ -73,7 +183,7 @@ public class ExportarManager implements IExportarManager{
 							st.setPredecesores(predecesores2);
 						}
 						else{
-							pertenece = elementoPerteneceAModelo(idV, s.getHijos(),predecesores);
+							pertenece = elementoPerteneceAModelo(idV, s.getHijos(), predecesores);
 						}
 					}
 					if (pertenece){
@@ -120,7 +230,7 @@ public class ExportarManager implements IExportarManager{
 					if (str.getPredecesores() != null){
 						Iterator<Entry<String, String[]>> iter = str.getPredecesores().entrySet().iterator();
 						String link = "";
-				  		while (iter.hasNext()){
+				  		while (iter.hasNext() && !encontre){
 				  			Entry<String, String[]> elem = iter.next();
 				  			String idLink = elem.getKey();
 				        	String predecesor = elem.getValue()[0];
@@ -136,13 +246,13 @@ public class ExportarManager implements IExportarManager{
 				  	}
 				}
 			}
-		}
+		}*/
 	}
 
 	public boolean elementoPerteneceAModelo(String id, List<Struct> lista, Map<String, String[]> predecesores){
 		Iterator<Struct> it = lista.iterator();
 		while (it.hasNext()){
-			Struct s =it.next();
+			Struct s = it.next();
 			if (s.getElementID().equals(id)){
 				s.setPredecesores(predecesores);
 				return true;
@@ -197,7 +307,7 @@ public class ExportarManager implements IExportarManager{
 	public void quitarPredecessor(String Id, List<Struct> elementos){
 		Iterator<Struct> it = elementos.iterator();
 		boolean encontre = false;
-		while (it.hasNext()){
+		while (it.hasNext() && !encontre){
 			Struct str = it.next();
 			
 			Map<String,String[]> predecesores = str.getPredecesores();
@@ -215,6 +325,13 @@ public class ExportarManager implements IExportarManager{
 		  		}
 		  		if (encontre){
 		  			str.getPredecesores().remove(link);
+			  		if ((str.getPredecesores() == null) || (str.getPredecesores().size() == 0)){
+			  			Struct s = Utils.buscarElemento(Id, elementos, "");
+			  			if (s != null){
+				  			str.setLinkToPredecessor(s.getLinkToPredecessor());
+				  			str.setPredecesores(s.getPredecesores());
+			  			}
+			  		}
 		  		}
 		  		else {
 		  			List<Struct> hijos = str.getHijos();

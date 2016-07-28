@@ -102,24 +102,35 @@ public class Utils {
 
 	public static Struct crearStruct(Struct s){
 		Struct newS = new Struct(s.getElementID(), s.getNombre(), s.getType(), s.getMin(), s.getMax(), s.getImagen(), s.getProcessComponentId(), s.getProcessComponentName(), s.getPresentationId(), s.getElementIDExtends());
-		newS.setDescription(s.getDescription());
 		newS.setBriefDescription(s.getBriefDescription());
+		newS.setDescription(s.getDescription());
+        newS.setDiagramURI(s.getDiagramURI());
+        newS.setExternalInputs(s.getExternalInputs());
+	    newS.setGuid(s.getGuid());
+		newS.setHijos(s.getHijos());
+		newS.setIdRole(s.getIdRole());
+		newS.setIdTask(s.getIdTask());
+		newS.setIdWorkProduct(s.getIdWorkProduct());
+	    newS.setIsOptional(s.getIsOptional());
+	    newS.setIsPlanned(s.getIsPlanned());
+		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
+        newS.setLinkToPredecessor(s.getLinkToPredecessor());
+        newS.setMandatoryInputs(s.getMandatoryInputs());
+        newS.setMethodElementProperties(s.getMethodElementProperties());
+        newS.setModifica(s.getModifica());
+        newS.setOptionalInputs(s.getOptionalInputs());
+        newS.setOutputs(s.getOutputs());
+        newS.setPerformedAditionallyBy(s.getPerformedAditionallyBy());
+        newS.setPerformedPrimaryBy(s.getPerformedPrimaryBy());
+        newS.setPredecesores(s.getPredecesores());
 		newS.setPresentationName(s.getPresentationName());
         newS.setProcessComponentPresentationName(s.getProcessComponentPresentationName());
-	    newS.setGuid(s.getGuid());
-	    newS.setIsPlanned(s.getIsPlanned());
-	    newS.setSuperActivities(s.getSuperActivities());
-	    newS.setIsOptional(s.getIsOptional());
-		newS.setVariabilityType(s.getVariabilityType());
-		newS.setIsSynchronizedWithSource(s.getIsSynchronizedWithSource());
-		newS.setIdTask(s.getIdTask());
-		newS.setIdRole(s.getIdRole());
-		newS.setIdWorkProduct(s.getIdWorkProduct());
-		newS.setHijos(s.getHijos());
+        newS.setResponsableDe(s.getResponsableDe());
         newS.setSteps(s.getSteps());
-        newS.setMethodElementProperties(s.getMethodElementProperties());
-        newS.setPredecesores(s.getPredecesores());
-        newS.setDiagramURI(s.getDiagramURI());
+	    newS.setSuperActivities(s.getSuperActivities());
+		newS.setVariabilityType(s.getVariabilityType());
+        newS.setVariantes(s.getVariantes());
+        
         return newS;
 	}
 	

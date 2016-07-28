@@ -497,7 +497,9 @@ public class ImportarManager implements IImportarManager{
 				String workproductId = res.length > 1 ? res[1] : "";
 				if (!workproductId.equals("")){
 					TipoContentElement wp = lstWorkproduct.get(workproductId);
-					wp.setContentDescription(workproduct);
+					if (wp != null){
+						wp.setContentDescription(workproduct);
+					}
 				}
 			}
 		}

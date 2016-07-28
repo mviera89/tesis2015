@@ -2226,7 +2226,6 @@ public class XMIParser {
     			if (!result.contains(s)){
     				result.add(s);
     			}
-    			/***********************************************************************/
     			Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
     			while (itPred.hasNext()){
     				Entry<String, String[]> entry = itPred.next();
@@ -2242,7 +2241,6 @@ public class XMIParser {
     					s.setPredecesores(mapPred);
     				}
     			}
-    			/***********************************************************************/
     		}
     		List<Struct> resHijos = ordenoNodos(s.getHijos(), predecesores);
     		s.setHijos(resHijos);

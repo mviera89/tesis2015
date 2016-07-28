@@ -132,7 +132,7 @@ public class ExportarModeloBean {
 	}
 
 	public void exportarModelo(DefaultDiagramModel modeloAdaptado, DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion){
-		try{		
+		try{
 			if (modeloAdaptado != null){
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
@@ -255,7 +255,7 @@ public class ExportarModeloBean {
 						"\t<MethodPlugin name=\"" + methodPluginSelectionName + "\" briefDescription=\"" + methodPluginSelectionBriefDescription + "\" id=\"" + methodPluginSelectionId + "\" orderingGuide=\"" + methodPluginSelectionOrderingGuide + "\" suppressed=\"" + methodPluginSelectionSuppressed + "\" authors=\"" + methodPluginSelectionAuthors + (!methodPluginSelectionChangeDate.equals("") ? "\" changeDate=\"" + methodPluginSelectionChangeDate : "" ) + "\" changeDescription=\"" + methodPluginSelectionChangeDescription + "\" version=\"" + methodPluginSelectionVersion + "\" userChangeable=\"" + methodPluginSelectionUserChangeable + "\">" + "\n";
 				
 				//actualizo predecesores
-				iem.actualizarPredecesoresModelo(modeloAdaptado, modelo);
+				iem.actualizarPredecesoresModelo(/*modeloAdaptado,*/ modelo, puntosDeVariacion);
 				
 				List<Element> elementos = modeloAdaptado.getElements();
 				Iterator<Element> it = elementos.iterator();
@@ -324,7 +324,7 @@ public class ExportarModeloBean {
 							while (itHijos.hasNext()){
 								Struct hijo = itHijos.next();
 								if (!Utils.esPuntoDeVariacion(hijo.getType())){
-									textoDeliveryProcess += agregarElementoAxml(hijo, puntosDeVariacion);
+									textoDeliveryProcess += agregarElementoAxml(hijo, puntosDeVariacion, modelo);
 								}
 								else{
 									Iterator<Variant> itv = hijo.getVariantes().iterator();
@@ -335,7 +335,7 @@ public class ExportarModeloBean {
 											Variant v = itv.next();
 											if (variantesParaPVLst.contains(v.getID())){
 												Struct vHijo = Utils.crearStruct(v, hijo);
-												textoDeliveryProcess += agregarElementoAxml(vHijo, puntosDeVariacion);
+												textoDeliveryProcess += agregarElementoAxml(vHijo, puntosDeVariacion, modelo);
 											}
 										}
 									}
@@ -364,7 +364,7 @@ public class ExportarModeloBean {
 							while (itHijos.hasNext()){
 								Struct hijo = itHijos.next();
 								if (!Utils.esPuntoDeVariacion(hijo.getType())){
-									textoCapabilityPattern += agregarElementoAxml(hijo, puntosDeVariacion);
+									textoCapabilityPattern += agregarElementoAxml(hijo, puntosDeVariacion, modelo);
 								}
 								else{
 									Iterator<Variant> itv = hijo.getVariantes().iterator();
@@ -375,7 +375,7 @@ public class ExportarModeloBean {
 											Variant v = itv.next();
 											if (variantesParaPVLst.contains(v.getID())){
 												Struct vHijo = Utils.crearStruct(v, hijo);
-												textoCapabilityPattern += agregarElementoAxml(vHijo, puntosDeVariacion);
+												textoCapabilityPattern += agregarElementoAxml(vHijo, puntosDeVariacion, modelo);
 											}
 										}
 									}
@@ -798,7 +798,7 @@ public class ExportarModeloBean {
 		}
 	}
 
-	public String agregarElementoAxml(Struct s, HashMap<String, String[]> puntosDeVariacion){
+	public String agregarElementoAxml(Struct s, HashMap<String, String[]> puntosDeVariacion, DefaultDiagramModel modelo){
 		String texto = "";
 		String id = s.getElementID();
 		if (!idsAgregados.contains(id)){
@@ -902,17 +902,8 @@ public class ExportarModeloBean {
 			if ((!texto.equals("")) && (tipo != TipoElemento.CAPABILITY_PATTERN)){
 				texto += "\t\t\t\t\t<SuperActivity>" + superactivity + "</SuperActivity>" + "\n";
 				
-				// Agrego sucesores
-				Map<String,String[]> sucesores = s.getPredecesores();
-				if (sucesores != null){
-					Iterator<Entry<String, String[]>> iter = sucesores.entrySet().iterator();
-					while (iter.hasNext()){
-						Entry<String, String[]> e = iter.next();
-						String idLink = e.getKey();
-				    	String sucesor = e.getValue()[0];
-				    	texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" + ">" + sucesor + "</Predecessor>" + "\n";
-					}
-				}
+				// Agrego predecesores
+				texto += agregarPredecesores(s, puntosDeVariacion, modelo);
 
 				// Si es un rol => Agrego el rol
 				String idRole = s.getIdRole();
@@ -1012,24 +1003,27 @@ public class ExportarModeloBean {
 				while (it.hasNext()){
 					Struct hijo = it.next();
 					if ((hijo.getType() != TipoElemento.ROLE) && (hijo.getType() != TipoElemento.WORK_PRODUCT) && (!Utils.esPuntoDeVariacion(hijo.getType()))){
-						texto += agregarElementoAxml(hijo, puntosDeVariacion);
+						texto += agregarElementoAxml(hijo, puntosDeVariacion, modelo);
 					}
 					else if (Utils.esPuntoDeVariacion(hijo.getType())){
 						Iterator<Variant> itVars = hijo.getVariantes().iterator();
-						List<String> variantesParaPV = Arrays.asList(puntosDeVariacion.get(hijo.getElementID()));
-						while (itVars.hasNext()){
-							Variant v = itVars.next();
-							if (variantesParaPV.contains(v.getID())){
-								Struct var = Utils.crearStruct(v, hijo);
-								if (var != null){
-									if ((var.getType() == TipoElemento.ROLE) || (var.getType() == TipoElemento.VAR_ROLE)){
-										roles.add(var);
-									}
-									else if ((var.getType() == TipoElemento.WORK_PRODUCT) || (var.getType() == TipoElemento.VAR_WORK_PRODUCT)){
-										workProduct.add(var);
-									}
-									else{
-										texto += agregarElementoAxml(var, puntosDeVariacion);
+						String[] variantesParaPVArray = puntosDeVariacion.get(hijo.getElementID());
+						if (variantesParaPVArray != null){
+							List<String> variantesParaPV = Arrays.asList(variantesParaPVArray);
+							while (itVars.hasNext()){
+								Variant v = itVars.next();
+								if (variantesParaPV.contains(v.getID())){
+									Struct var = Utils.crearStruct(v, hijo);
+									if (var != null){
+										if ((var.getType() == TipoElemento.ROLE) || (var.getType() == TipoElemento.VAR_ROLE)){
+											roles.add(var);
+										}
+										else if ((var.getType() == TipoElemento.WORK_PRODUCT) || (var.getType() == TipoElemento.VAR_WORK_PRODUCT)){
+											workProduct.add(var);
+										}
+										else{
+											texto += agregarElementoAxml(var, puntosDeVariacion, modelo);
+										}
 									}
 								}
 							}
@@ -1049,7 +1043,7 @@ public class ExportarModeloBean {
 				if (roles.size() > 0){
 					it = roles.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), puntosDeVariacion);
+						texto += agregarElementoAxml(it.next(), puntosDeVariacion, modelo);
 					}
 				}
 				
@@ -1057,9 +1051,33 @@ public class ExportarModeloBean {
 				if (workProduct.size() > 0){
 					it = workProduct.iterator();
 					while (it.hasNext()){
-						texto += agregarElementoAxml(it.next(), puntosDeVariacion);
+						texto += agregarElementoAxml(it.next(), puntosDeVariacion, modelo);
 					}
 				}
+			}
+		}
+		return texto;
+	}
+
+	public String agregarPredecesores(Struct s, HashMap<String, String[]> puntosDeVariacion, DefaultDiagramModel modelo){
+		String texto = "";
+		Map<String,String[]> predecesores = s.getPredecesores();
+		if (predecesores != null){
+			Iterator<Entry<String, String[]>> iter = predecesores.entrySet().iterator();
+			while (iter.hasNext()){
+				Entry<String, String[]> e = iter.next();
+				String idLink = e.getKey();
+		    	String predecesor = e.getValue()[0];
+		    	Struct pv = Utils.buscarElementoEnModelo(predecesor, modelo, "");
+		    	if ((pv != null) && Utils.esPuntoDeVariacion(pv.getType())){
+		    		if (!puntosDeVariacion.containsKey(predecesor) || (puntosDeVariacion.get(predecesor) == null) || (puntosDeVariacion.get(predecesor).length == 0)){
+		    			// No se seleccionó ninguna variante
+		    			texto += agregarPredecesores(pv, puntosDeVariacion, modelo);
+			    	}
+		    	}
+		    	else{
+		    		texto += "\t\t\t\t\t<Predecessor id=\"" + idLink + "\"" +" linkType=\"finishToStart\"" + ">" + predecesor + "</Predecessor>" + "\n";
+		    	}
 			}
 		}
 		return texto;
