@@ -648,6 +648,22 @@ public class AdaptarModeloBean {
     			if (v.getHijos().size() > 0){
     				ocultarHijos(e, modelo);
     			}
+    			// Si el elemento que estoy eliminando es hijo del DeliveryProcess => Lo elimino de la lista de hijos
+				Struct s = (Struct) e.getData();
+				Struct p = Utils.buscarElementoEnModelo(((Struct) padre.getData()).getSuperActivities(), modelo, "");
+				if (p.getType() == TipoElemento.DELIVERY_PROCESS){
+					List<Struct> hijosDP = p.getHijos();
+					if (hijosDP != null){
+						Iterator<Struct> itHijosDP = hijosDP.iterator();
+						while (itHijosDP.hasNext()){
+							Struct hijo = itHijosDP.next();
+							if (hijo.getElementID().equals(s.getElementID())){
+								itHijosDP.remove();
+							}
+						}
+					}
+				}
+				// Lo elimino del modelo
     			modelo.removeElement(e);
     		}
     		iam.modificarExpandido(v, false);
