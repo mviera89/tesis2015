@@ -33,7 +33,7 @@ import logica.dataTypes.TipoView;
 import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
-import logica.negocio.IExportarManager;
+import logica.interfaces.IExportarManager;
 import logica.utils.Utils;
 
 import org.eclipse.jgit.api.errors.TransportException;

@@ -13,7 +13,7 @@ import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
 import logica.enumerados.TipoEtiqueta;
-import logica.negocio.IAdaptarManager;
+import logica.interfaces.IAdaptarManager;
 import logica.utils.Utils;
 import logica.utils.XMIParser;
 

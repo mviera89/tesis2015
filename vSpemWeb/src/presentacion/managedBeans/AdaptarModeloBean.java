@@ -28,7 +28,6 @@ import org.primefaces.model.diagram.endpoint.BlankEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
-import org.primefaces.model.diagram.overlay.Overlay;
 
 import config.Constantes;
 import config.ReadProperties;
@@ -38,7 +37,7 @@ import logica.dataTypes.TipoTareasWorkProducts;
 import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
-import logica.negocio.IAdaptarManager;
+import logica.interfaces.IAdaptarManager;
 import logica.utils.Utils;
 
 @ManagedBean
@@ -120,14 +119,6 @@ public class AdaptarModeloBean {
 
     public void setModelo(DefaultDiagramModel modelo) {
 		this.modelo = modelo;
-	}
-
-	public DefaultDiagramModel getModeloAdaptado() {
-		return modeloAdaptado;
-	}
-
-	public void setModeloAdaptado(DefaultDiagramModel modelo) {
-		this.modeloAdaptado = modelo;
 	}
 
 	public int getY() {
@@ -639,7 +630,8 @@ public class AdaptarModeloBean {
     }
 
     public void ocultarVariantes(Element padre, DefaultDiagramModel modelo){
-    	List<Variant> variantes = ((Struct) padre.getData()).getVariantes();
+    	Struct pv = (Struct) padre.getData();
+    	List<Variant> variantes = pv.getVariantes();
     	Iterator<Variant> it = variantes.iterator();
     	while (it.hasNext()){
     		Variant v = it.next();
@@ -663,11 +655,96 @@ public class AdaptarModeloBean {
 						}
 					}
 				}
+				Iterator<Element> itModel = modelo.getElements().iterator();
+				while (itModel.hasNext()){
+					Element eTask = itModel.next();
+					Struct st = (Struct) eTask.getData();
+					actualizarRoles(pv, v, st);
+					actualizarWP(pv, v, st);
+				}
+				
 				// Lo elimino del modelo
     			modelo.removeElement(e);
     		}
     		iam.modificarExpandido(v, false);
     	}
+    }
+
+    public boolean actualizarRoles(Struct pv, Variant v, Struct task){
+    	boolean encontre = false;
+    	if ((task.getType() == TipoElemento.TASK) || (task.getType() == TipoElemento.VAR_TASK)){
+			if (task.getPerformedPrimaryBy().equals(v.getID())){
+				encontre = true;
+				task.setPerformedPrimaryBy(pv.getElementID());
+			}
+			if (task.getPerformedAditionallyBy() != null){
+				Iterator<String> itRemove = task.getPerformedAditionallyBy().iterator();
+				while (itRemove.hasNext() && !encontre){
+					String remove = itRemove.next();
+					if (remove.equals(v.getID())){
+						encontre = true;
+						itRemove.remove();
+					}
+				}
+				if (encontre){
+					List<String> performedAditionallyBy = (task.getPerformedAditionallyBy() == null) ? new ArrayList<String>() : task.getPerformedAditionallyBy();
+					performedAditionallyBy.add(pv.getElementID());
+					task.setPerformedAditionallyBy(performedAditionallyBy);
+				}
+			}
+		}
+    	if (!encontre){
+	    	Iterator<Struct> it = task.getHijos().iterator();
+	    	while (it.hasNext() && !encontre){
+	    		Struct hijo = it.next();
+	    		encontre = actualizarRoles(pv, v, hijo);
+	    	}
+    	}
+    	return encontre;
+    }
+    
+    public boolean actualizarWP(Struct pv, Variant v, Struct role){
+    	boolean encontre = false;
+    	if (role.getType() == TipoElemento.VP_ROLE){
+    		if (role.getModifica() != null){
+				Iterator<String> itRemove = role.getModifica().iterator();
+				while (itRemove.hasNext() && !encontre){
+					String remove = itRemove.next();
+					if (remove.equals(v.getID())){
+						encontre = true;
+						itRemove.remove();
+					}
+				}
+				if (encontre && ((role.getModifica() == null) || (role.getModifica().size() == 0))){
+					List<String> modifica = new ArrayList<String>();
+					modifica.add(pv.getElementID());
+					role.setModifica(modifica);
+				}
+			}
+			if (role.getResponsableDe() != null){
+				Iterator<String> itRemove = role.getResponsableDe().iterator();
+				while (itRemove.hasNext() && !encontre){
+					String remove = itRemove.next();
+					if (remove.equals(v.getID())){
+						encontre = true;
+						itRemove.remove();
+					}
+				}
+				if (encontre){
+					List<String> responsableDe = (role.getResponsableDe() == null) ? new ArrayList<String>() : role.getResponsableDe();
+					responsableDe.add(pv.getElementID());
+					role.setResponsableDe(responsableDe);
+				}
+			}
+		}
+    	if (!encontre){
+	    	Iterator<Struct> it = role.getHijos().iterator();
+	    	while (it.hasNext() && !encontre){
+	    		Struct hijo = it.next();
+	    		encontre = actualizarWP(pv, v, hijo);
+	    	}
+    	}
+    	return encontre;
     }
 
 	public void seleccionarVariantes(){
@@ -1655,11 +1732,6 @@ public class AdaptarModeloBean {
 			mostrarHijos(e, modeloAdaptado, true);
 		}
 		return x;
-	}
-
-	public void mostrarVistaPrevia(){
-		RequestContext c = RequestContext.getCurrentInstance();
-		c.execute("PF('vistaPreviaDialog').show()");
 	}
 
 	/*** Funciones booleanas ***/

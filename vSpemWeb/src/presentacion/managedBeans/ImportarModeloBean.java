@@ -22,7 +22,7 @@ import logica.dataTypes.TipoLibrary;
 import logica.dataTypes.TipoMethodConfiguration;
 import logica.dataTypes.TipoMethodPackage;
 import logica.dataTypes.TipoPlugin;
-import logica.negocio.IImportarManager;
+import logica.interfaces.IImportarManager;
 
 import org.primefaces.event.TabChangeEvent;
 

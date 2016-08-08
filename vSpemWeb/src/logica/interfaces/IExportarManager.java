@@ -1,4 +1,4 @@
-package logica.negocio;
+package logica.interfaces;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import logica.dominio.Struct;
-import logica.negocio.IExportarManager;
+import logica.interfaces.IExportarManager;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;

@@ -29,8 +29,8 @@ import logica.dataTypes.TipoPlugin;
 import logica.dataTypes.TipoView;
 import logica.enumerados.TipoElemento;
 import logica.enumerados.TipoTag;
+import logica.interfaces.IImportarManager;
 import logica.managerbeans.ImportarManager;
-import logica.negocio.IImportarManager;
 import logica.utils.Utils;
 import logica.utils.XMIParser;
 

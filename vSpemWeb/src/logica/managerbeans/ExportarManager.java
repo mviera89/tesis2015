@@ -20,7 +20,7 @@ import javax.ejb.Stateless;
 import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
-import logica.negocio.IExportarManager;
+import logica.interfaces.IExportarManager;
 import logica.utils.GitControl;
 import logica.utils.Utils;
 
@@ -55,16 +55,18 @@ public class ExportarManager implements IExportarManager{
 					List<String> variantesParaPV = Arrays.asList(variantesParaPVArray);
 					if (variantesParaPV.contains(idV)){
 						Struct st = Utils.buscarElementoEnModelo(idV, modelo, "");
-						if ((st != null) && (predecesores != null)){
+						if (st != null){
+							if (predecesores != null){
 							pertenece = true;
-							Map<String, String[]> predecesores2 = new HashMap<String, String[]>();
-							Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
-							while (itPred.hasNext()){
-								Entry<String, String[]> entry = itPred.next();
-								String idLink = entry.getKey() + num;
-								predecesores2.put(idLink, entry.getValue());
+								Map<String, String[]> predecesores2 = new HashMap<String, String[]>();
+								Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
+								while (itPred.hasNext()){
+									Entry<String, String[]> entry = itPred.next();
+									String idLink = entry.getKey() + num;
+									predecesores2.put(idLink, entry.getValue());
+								}
+								st.setPredecesores(predecesores2);
 							}
-							st.setPredecesores(predecesores2);
 						}
 					}
 					else{

@@ -1,4 +1,4 @@
-package logica.negocio;
+package logica.interfaces;
 
 import java.util.List;
 
