@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import logica.dataTypes.TipoContentCategory;
 import logica.dataTypes.TipoContentElement;
@@ -178,16 +176,6 @@ public class VistaBean {
 
 	public void actualizarIndiceActivo(int indice){
 		setIndiceActivo(indice);
-		
-		if (indice == 1){
-			FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
-    		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-			AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
-	        if (ab != null){
-	        	ab.init();
-	        }
-	        this.setFinModelado(false);
-		}
 	}
 	
 	public boolean deshabilitar(int indice){

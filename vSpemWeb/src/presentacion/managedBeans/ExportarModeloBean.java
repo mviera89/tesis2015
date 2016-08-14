@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -70,6 +71,10 @@ public class ExportarModeloBean {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@PostConstruct
+    public void init() {
 		exportar = false;
 		repositorioExport = ReadProperties.getProperty("URL_GITHUB_EXPORT_DEFAULT");
 		comentarioRepositorioExport = "";
@@ -136,14 +141,25 @@ public class ExportarModeloBean {
 	public void exportarModelo(DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion) {
 		try {
 			if (modelo != null) {
+				this.init();
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb = (VistaBean) session.getAttribute("VistaBean");
-
+				
+				// Reinicio adaptarModeloBean
+				AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
+		        if (ab != null){
+		        	ab.init();
+		        }
+		        
 				String nomArchivo = vb.getNombreArchivo();
 				nomArchivo = nomArchivo.substring(0, nomArchivo.length() - 4); // Para quitar la extensión
-
-				File archivo = new File(ReadProperties.getProperty("destinoExport") + nomArchivo + "_" + Constantes.nomArchivoExport);
+				nomArchivo = ReadProperties.getProperty("destinoExport") + nomArchivo + "_" + Constantes.nomArchivoExport;
+				
+				File archivo = new File(nomArchivo);
+				if (archivo.exists()){
+					archivo.delete();
+				}
 				OutputStream out = new FileOutputStream(archivo);
 
 				TipoLibrary library = vb.getLibrary();

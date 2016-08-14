@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -66,7 +67,7 @@ public class AdaptarModeloBean {
 	private HashMap<String,List<String>> tareasWPExternalInputs;
 	private HashMap<String,List<String>> tareasWPOutputs;
 	
-	private String idTab = "tab1";
+	private String idTab;
 	private List<TipoRolesTareas> rolesTareas;
 	private List<TipoRolesWorkProducts> rolesWP;
 	private List<TipoTareasWorkProducts> tareasWP;
@@ -83,11 +84,15 @@ public class AdaptarModeloBean {
 
 	@PostConstruct
     public void init() {
-    	nodos = new ArrayList<Struct>();
-    	variantes = new ArrayList<SelectItem>();
-    	variantesSeleccionadas = null;
+    	this.y = Constantes.yInicial;
+    	this.nodos = new ArrayList<Struct>();
+    	this.puntoVariacionAdaptado = null;
+    	this.variantes = new ArrayList<SelectItem>();
+    	this.variantesSeleccionadas = null;
+    	
     	this.puntosDeVariacion = new HashMap<String, String[]>();
-
+    	this.restriccionesPV = new HashMap<String, String>();
+    	this.erroresModeloFinal = new ArrayList<String[]>();
     	this.rolesTareasPrimary = new HashMap<String, List<Struct>>();
     	this.rolesTareasAdditionally = new HashMap<String, List<Struct>>();
     	this.rolesWPResponsable = new HashMap<String, List<String>>();
@@ -97,9 +102,8 @@ public class AdaptarModeloBean {
     	this.tareasWPExternalInputs = new HashMap<String, List<String>>();
     	this.tareasWPOutputs = new HashMap<String, List<String>>();
     	
-    	this.restriccionesPV = new HashMap<String, String>();
-    	erroresModeloFinal = new ArrayList<String[]>();
-    	this.y = Constantes.yInicial;
+    	this.idTab = "tab1";
+    	
         crearModelo();
         cargarDatos(nodos);
         crearModeloRolesTareas();
@@ -178,8 +182,6 @@ public class AdaptarModeloBean {
 			}
 			else if (idTab.equals("tab3")){
 				this.redibujarModeloWPS();
-			}
-			else if (idTab.equals("tab4")){
 			}
 			RequestContext context = RequestContext.getCurrentInstance();
 			context.execute("PF('variantesDialog').hide()");
@@ -875,9 +877,6 @@ public class AdaptarModeloBean {
 							modeloRolesWP.removeElement(e);
 						}
 					}
-				}
-				
-				else if (idTab.equals("tab4")){
 				}
 			}
     	}
@@ -1826,8 +1825,6 @@ public class AdaptarModeloBean {
 					}
 				}
 			}
-		}
-		else if (idTab.equals("tab4")){
 		}
 		
 		return null;

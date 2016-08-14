@@ -57,7 +57,7 @@ public class ExportarManager implements IExportarManager{
 						Struct st = Utils.buscarElementoEnModelo(idV, modelo, "");
 						if (st != null){
 							if (predecesores != null){
-							pertenece = true;
+								pertenece = true;
 								Map<String, String[]> predecesores2 = new HashMap<String, String[]>();
 								Iterator<Entry<String, String[]>> itPred = predecesores.entrySet().iterator();
 								while (itPred.hasNext()){

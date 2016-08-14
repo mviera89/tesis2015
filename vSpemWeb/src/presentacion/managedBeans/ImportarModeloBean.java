@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.servlet.http.HttpSession;
@@ -37,16 +37,16 @@ public class ImportarModeloBean {
 
 	IImportarManager iim;
 	
-	private String mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
-	private String repositorioIngresado = ReadProperties.getProperty("URL_GITHUB_DEFAULT");
-	private String directorioLocalIngresado = ReadProperties.getProperty("DIRECTORIO_LOCAL_DEFAULT");
-	private Boolean desdeRepositorio = true;
-	private String repositorio = "";
-	private String nombreArchivo = "";
-	private String nombreArchivoRepo = "";
-	private String nombreArchivoLocal = "";
-	private List<String> archivosDisponibles = new ArrayList<String>();
-	private List<String> archivosDisponiblesLocal = new ArrayList<String>();
+	private String mensajeAyudaRepositorio;
+	private String repositorioIngresado;
+	private String directorioLocalIngresado;
+	private Boolean desdeRepositorio;
+	private String repositorio;
+	private String nombreArchivo;
+	private String nombreArchivoRepo;
+	private String nombreArchivoLocal;
+	private List<String> archivosDisponibles;
+	private List<String> archivosDisponiblesLocal;
 
 
 	public ImportarModeloBean() {
@@ -57,7 +57,20 @@ public class ImportarModeloBean {
 			e.printStackTrace();		
 		}
 	}
-
+	@PostConstruct
+    public void init() {
+		this.mensajeAyudaRepositorio = Constantes.mensjaeAyudaRepositorio;
+		this.repositorioIngresado = ReadProperties.getProperty("URL_GITHUB_DEFAULT");
+		this.directorioLocalIngresado = ReadProperties.getProperty("DIRECTORIO_LOCAL_DEFAULT");
+		this.desdeRepositorio = true;
+		this.repositorio = "";
+		this.nombreArchivo = "";
+		this.nombreArchivoRepo = "";
+		this.nombreArchivoLocal = "";
+		this.archivosDisponibles = new ArrayList<String>();
+		this.archivosDisponiblesLocal = new ArrayList<String>();
+	}
+	
 	public String getMensajeAyudaRepositorio() {
 		return mensajeAyudaRepositorio;
 	}
@@ -134,6 +147,9 @@ public class ImportarModeloBean {
 
 	public void leerArchivos(boolean esDesdeRepositorio) throws Exception {
 		try{
+			this.nombreArchivo = "";
+			this.nombreArchivoRepo = "";
+			this.nombreArchivoLocal = "";
 			desdeRepositorio = esDesdeRepositorio;
 			repositorio = (esDesdeRepositorio) ? repositorioIngresado : directorioLocalIngresado;
 			if (!repositorio.equals("")){
@@ -214,6 +230,12 @@ public class ImportarModeloBean {
 				        FacesMessage mensaje = new FacesMessage("", "El archivo ha sido cargado correctamente.");
 			            FacesContext.getCurrentInstance().addMessage(null, mensaje);
 						System.out.println("Fin de la descarga.");
+
+						// Reinicio AdaptarModeloBean
+						AdaptarModeloBean ab = (AdaptarModeloBean) session.getAttribute("adaptarModeloBean");
+				        if (ab != null){
+				        	ab.init();
+				        }
 					}
 					catch (Exception e) {
 						FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Ha ocurrido un error durante la carga de los archivos.");
