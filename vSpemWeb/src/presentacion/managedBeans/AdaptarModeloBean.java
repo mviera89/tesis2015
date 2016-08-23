@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -80,7 +79,6 @@ public class AdaptarModeloBean {
 			e.printStackTrace();		
 		}
 	}
-
 
 	@PostConstruct
     public void init() {
@@ -1176,7 +1174,6 @@ public class AdaptarModeloBean {
 			String nomRol = entry.getKey();
 			List<String> wps = entry.getValue();
 			if ((nomRol != null) && (!nomRol.equals(""))){
-				//Struct rol = buscarRolPorId(idRol, nodos);
 				List<Struct> roles = iam.buscarRolPorNombre(nodos, nomRol);
 				Iterator<Struct> itRoles = roles.iterator();
 		       	while (itRoles.hasNext()){
@@ -1533,7 +1530,7 @@ public class AdaptarModeloBean {
 					// Si es un punto de variación, recorro las variantes y agrego las que están en el modelo
 					// Lo hago así porque sino se incluyen al final
 					if (iam.esPuntoDeVariacion(type)){
-						//busco padre del varpoint
+						// busco padre del varpoint
 						Struct padre = null;
 						Iterator<Element> iter = modelo.getElements().iterator();
 						while (iter.hasNext() && (padre == null)){

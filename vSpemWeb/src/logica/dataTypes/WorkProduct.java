@@ -27,7 +27,5 @@ public class WorkProduct {
 	public void setWorkProducts(List<String> workProducts) {
 		this.workProducts = workProducts;
 	}
-	
-	
 
 }

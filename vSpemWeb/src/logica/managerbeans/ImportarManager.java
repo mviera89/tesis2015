@@ -130,7 +130,6 @@ public class ImportarManager implements IImportarManager{
 					archivo = archivo.substring(0, archivo.indexOf("\"")).replace("%20", " ");
 					File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivo);
 					f.mkdirs();
-					//cargarTodoDeRepositorio(dirPlugin + archivo + "/");
 					cargarTodoDeRepositorio(desdeRepositorio, repositorio, dirPlugin + archivo + "/");
 				}
 			}
@@ -165,7 +164,6 @@ public class ImportarManager implements IImportarManager{
 					if (indexExtension == -1){
 						File f = new File(ReadProperties.getProperty("destinoDescargas") + dirPlugin + archivo);
 						f.mkdirs();
-						//cargarTodoDeRepositorio(dirPlugin + archivo + "/");
 						cargarTodoDeRepositorio(desdeRepositorio, repositorio, dirPlugin + archivo + "/");
 					}
 					else{

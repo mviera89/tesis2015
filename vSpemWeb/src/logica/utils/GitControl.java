@@ -51,13 +51,11 @@ public class GitControl {
     public void initRepo() throws GitAPIException {
     	Git.init().call();
     }
-    
-    
+
     public void cloneRepo() throws IOException, NoFilepatternException, GitAPIException, TransportException {
-        Git.cloneRepository()
-                .setURI(remotePath)
-                .setDirectory(new File(localPath))
-                .call();
+        Git.cloneRepository().setURI(remotePath)
+                			 .setDirectory(new File(localPath))
+                			 .call();
     }
  
     public void addToRepo() throws IOException, NoFilepatternException, GitAPIException {
@@ -72,32 +70,27 @@ public class GitControl {
 		addRemote.setUri(uri);
 		addRemote.call();
     }
-    public void commitToRepo(String message) throws IOException, NoHeadException,
-            NoMessageException, ConcurrentRefUpdateException,
-            JGitInternalException, WrongRepositoryStateException, GitAPIException {
+    public void commitToRepo(String message) throws IOException, NoHeadException, NoMessageException, ConcurrentRefUpdateException,
+            										JGitInternalException, WrongRepositoryStateException, GitAPIException {
         git.commit().setMessage(message).call();
     }
  
-    public void pushToRepo() throws IOException, JGitInternalException,
-            InvalidRemoteException, GitAPIException {
+    public void pushToRepo() throws IOException, JGitInternalException, InvalidRemoteException, GitAPIException {
         PushCommand pc = git.push();
-        pc.setCredentialsProvider(cp)
-                .setForce(true)
-                .setPushAll();
+        pc.setCredentialsProvider(cp).setForce(true).setPushAll();
         try {
             Iterator<PushResult> it = pc.call().iterator();
             if (it.hasNext()) {
                 System.out.println(it.next().toString());
             }
-        } catch (InvalidRemoteException e) {
+        }
+        catch (InvalidRemoteException e) {
             e.printStackTrace();
         }
     }
  
-    public void pullFromRepo() throws IOException, WrongRepositoryStateException,
-            InvalidConfigurationException, DetachedHeadException,
-            InvalidRemoteException, CanceledException, RefNotFoundException,
-            NoHeadException, GitAPIException, TransportException {
+    public void pullFromRepo() throws IOException, WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException,
+    								  InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, GitAPIException, TransportException {
         git.pull().call();
     }
  

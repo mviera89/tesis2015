@@ -258,7 +258,8 @@ public class Utils {
 	}
 
 	public static Variant crearCopiaVariante(Variant v){
-		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(), v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
+		Variant newV = new Variant(v.getID(), v.getName(), v.getPresentationName(), v.getIDVarPoint(), v.isInclusive(), v.getVarType(), v.getProcessComponentId(),
+								   v.getProcessComponentName(), v.getPresentationId(), v.getElementIDExtends());
 
 		newV.setBriefDescription(v.getBriefDescription());
 		newV.setDescription(v.getDescription());
@@ -304,8 +305,7 @@ public class Utils {
         	if(s.getElementID().equals(id)){
         		res = s;
         	}
-        	else { 
-        		
+        	else {
         		if (s.getHijos().size() > 0){
         			res = buscarElementoPorId(id, s.getHijos());
         		}

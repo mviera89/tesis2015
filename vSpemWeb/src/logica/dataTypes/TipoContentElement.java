@@ -291,23 +291,4 @@ public class TipoContentElement {
 		this.contentDescription = contentDescription;
 	}
 
-	@Override
-	public String toString() {
-		return "TipoContentElement [tipoElemento=" + tipoElemento
-				+ ", xmiVersion=" + xmiVersion + ", xmi=" + xmi + ", uma="
-				+ uma + ", epf=" + epf + ", epfVersion=" + epfVersion + ", id="
-				+ id + ", name=" + name + ", guid=" + guid
-				+ ", presentationName=" + presentationName + ", authors="
-				+ authors + ", changeDate=" + changeDate + ", version="
-				+ version + ", mainDescription=" + mainDescription
-				+ ", keyConsiderations=" + keyConsiderations + ", sections="
-				+ sections + ", purpose=" + purpose + ", alternatives="
-				+ alternatives + ", attachments=" + attachments
-				+ ", briefDescription=" + briefDescription + ", performedBy="
-				+ performedBy + ", mandatoryInput=" + mandatoryInput
-				+ ", optionalInput=" + optionalInput + ", output=" + output
-				+ ", additionallyPerformedBy=" + additionallyPerformedBy
-				+ ", guidance=" + guidance + "]";
-	}
-
 }

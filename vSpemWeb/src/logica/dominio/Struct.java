@@ -10,7 +10,7 @@ import logica.enumerados.TipoElemento;
 import config.Constantes;
 
 public class Struct {
-	
+
 	private String elementID;
 	private String nombre;
 	private TipoElemento type;
@@ -34,7 +34,7 @@ public class Struct {
 	private String isOptional;
 	private String variabilityType;
 	private String isSynchronizedWithSource;
-	
+
     private String performedPrimaryBy;
     private List<String> performedAditionallyBy;
     private List<String> mandatoryInputs;
@@ -50,17 +50,17 @@ public class Struct {
 	private String processComponentPresentationName;
 	private String presentationId;
 	private String elementIDExtends;
-	
+
     private String idTask;
     private String idWorkProduct;
     private String idRole;
     private List<TipoSection> steps;
     private List<TipoMethodElementProperty> methodElementProperties;
-	
+
     private String diagramURI;
-    
+
 	public Struct(){}
-	
+
 	public Struct(String ID, String nombre, TipoElemento type, int min, int max, String imagen, String processComponentId, String processComponentName, String presentationId, String elementIDExtends){
 		this.elementID = ID;
 		this.nombre = nombre;
@@ -443,34 +443,6 @@ public class Struct {
 
 	public void setDiagramURI(String diagramURI) {
 		this.diagramURI = diagramURI;
-	}
-
-	@Override
-	public String toString() {
-		return "Struct [elementID=" + elementID + ", nombre=" + nombre
-				+ ", type=" + type + ", variantes=" + variantes + ", hijos="
-				+ hijos + ", min=" + min + ", max=" + max + ", color=" + color
-				+ ", imagen=" + imagen + ", esPV=" + esPV + ", estaExpandido="
-				+ estaExpandido + ", etiqueta=" + etiqueta + ", description="
-				+ description + ", briefDescription=" + briefDescription
-				+ ", presentationName=" + presentationName + ", guid=" + guid
-				+ ", isPlanned=" + isPlanned + ", superActivities="
-				+ superActivities + ", isOptional=" + isOptional
-				+ ", variabilityType=" + variabilityType
-				+ ", isSynchronizedWithSource=" + isSynchronizedWithSource
-				+ ", performedPrimaryBy=" + performedPrimaryBy
-				+ ", performedAditionallyBy=" + performedAditionallyBy
-				+ ", mandatoryInputs=" + mandatoryInputs + ", optionalInputs="
-				+ optionalInputs + ", externalInputs=" + externalInputs
-				+ ", outputs=" + outputs + ", responsableDe=" + responsableDe
-				+ ", modifica=" + modifica + ", linkToPredecessor="
-				+ linkToPredecessor + ", precesesores=" + predecesores
-				+ ", processComponentId=" + processComponentId
-				+ ", processComponentName=" + processComponentName
-				+ ", presentationId=" + presentationId + ", elementIDExtends="
-				+ elementIDExtends + ", idTask=" + idTask + ", idWorkProduct="
-				+ idWorkProduct + ", idRole=" + idRole + ", steps=" + steps
-				+ "]";
 	}
 
 }

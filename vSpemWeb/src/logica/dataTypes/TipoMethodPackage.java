@@ -57,11 +57,4 @@ public class TipoMethodPackage {
 		this.processComponentChild = processComponentChild;
 	}
 
-	@Override
-	public String toString() {
-		return "TipoMethodPackage [type=" + type + ", id=" + id + ", name="
-				+ name + ", guid=" + guid + ", processComponentChild="
-				+ processComponentChild + "]";
-	}
-
 }

@@ -257,7 +257,7 @@ public class ExportarManager implements IExportarManager{
 	}
 
 	public File exportarModelo(String nomArchivo, String dirPlugin, String repositorioExport, String userRepositorioExport, String passRepositorioExport, String comentarioRepositorioExport) throws IOException, NoFilepatternException, GitAPIException{
-		// archivo puede ser de la forma: dir1/dir2/.../nombre
+		// Archivo puede ser de la forma: dir1/dir2/.../nombre
 		String repo = repositorioExport;
 		int indexDiv = repo.indexOf("/");
 		String dirRepo = "";
