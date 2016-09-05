@@ -1,0 +1,51 @@
+<html xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+	
+	<p:outputLabel value="Importar proceso base" style="font-size: 20px; margin-top:1%;"/>
+	
+	<h:form id="importar_form">
+		
+		<p:tabView>
+	        <p:tab title="Repositorio Github">
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Repositorio (https://github.com/):" style="width: 200px;"/>
+					<p:inputText value="#{importarModeloBean.repositorioIngresado}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+					<p:graphicImage value="/iconos/info.png" title="#{importarModeloBean.mensajeAyudaRepositorio}" style="margin: 0px 10px 0px 10px;"/>
+					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos(true)}" update=":panel_principal" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Archivo: " style="width: 200px;" />
+					<p:selectOneListbox id="buscadorArchivos" value="#{importarModeloBean.nombreArchivoRepo}" filter="true" style="margin: 10px 10px 0px 10px;" >
+						<f:selectItems value="#{importarModeloBean.archivosDisponibles}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
+					</p:selectOneListbox>
+					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponibles.size() == 0}" update="importar_form:msg, importar_form:sig"/>
+				</h:panelGrid>
+			</p:tab>
+	        <p:tab title="Directorio local">
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Directorio local:" style="width: 200px;"/>
+					<p:inputText value="#{importarModeloBean.directorioLocalIngresado}" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+					<p:commandButton value="Seleccionar archivo" action="#{importarModeloBean.leerArchivos(false)}" update=":panel_principal" />
+				</h:panelGrid>
+				
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Archivo: " style="width: 200px;" />
+					<p:selectOneListbox id="buscadorArchivosLocal" value="#{importarModeloBean.nombreArchivoLocal}" filter="true" style="margin: 10px 10px 0px 10px;" >
+						<f:selectItems value="#{importarModeloBean.archivosDisponiblesLocal}" var="archivo" itemLabel="#{archivo}" itemValue="#{archivo}"/>
+					</p:selectOneListbox>
+					<p:commandButton value="Cargar" action="#{importarModeloBean.cargarArchivo}" disabled="#{importarModeloBean.archivosDisponiblesLocal.size() == 0}" update="importar_form:msg, importar_form:sig"/>
+				</h:panelGrid>
+	        </p:tab>
+	        <p:ajax event="tabChange" listener="#{importarModeloBean.onTabChange}" update="importar_form"/>
+		</p:tabView>
+		
+		<div style="margin-top: 10px;">
+			<p:messages id="msg" showDetail="true"/>
+			
+			<p:commandButton id="sig" value="&#187; Siguiente" action="#{VistaBean.actualizarIndiceActivo(1)}" disabled="#{empty importarModeloBean.nombreArchivo}" update=":panel_principal" />
+		</div>
+	</h:form>
+	
+</html>

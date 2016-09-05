@@ -1,0 +1,52 @@
+<html xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+	<p:outputLabel value="Exportar variante" style="font-size: 20px; margin-top:1%;"/>
+	
+	<h:form>
+		<p:panel>
+			<p:outputPanel>
+				<h:panelGrid columns="2" style="margin-bottom: 10px;">
+			        <p:outputLabel for="opciones" value="Exportar a repositorio:" style="width: 200px;"/>
+			        <p:selectOneRadio id="opciones" value="#{exportarModeloBean.exportar}" layout="grid" columns="2" style="margin-left: 10px; width: 100px;">
+			            <f:selectItem itemLabel="Si" itemValue="true"/>
+			            <f:selectItem itemLabel="No" itemValue="false" />
+			            <p:ajax event="change" update="exportar_form:repositorioPanel"/>
+			        </p:selectOneRadio>
+			    </h:panelGrid>
+			</p:outputPanel>
+		</p:panel>
+	</h:form>
+	<h:form id="exportar_form">
+		<p:outputPanel id="repositorioPanel">
+			<p:panel rendered="#{exportarModeloBean.exportar}">
+				<h:panelGrid columns="2" style="margin-bottom: 10px;">
+					<p:outputLabel value="Repositorio (https://github.com/):" style="width: 200px;"/>
+					<h:panelGroup>
+						<p:inputText value="#{exportarModeloBean.repositorioExport}" required="true" style="width: 350px; margin: 0px 0px 0px 10px;"/>
+						<p:graphicImage value="/iconos/info.png" title="#{exportarModeloBean.mensajeAyudaRepositorioExport}" style="margin: 0px 10px 0px 10px;"/>
+					</h:panelGroup>
+					
+					<p:outputLabel for="coment" value="Comentario: " style="width: 200px;"/>
+					<p:inputText id="coment" value="#{exportarModeloBean.comentarioRepositorioExport}" required="true" style="width: 150px; margin: 0px 0px 10px 10px;" />
+					
+					<p:outputLabel for="user" value="Usuario:" style="width: 200px;"/>
+					<p:inputText id="user" value="#{exportarModeloBean.userRepositorioExport}" required="true" style="width: 150px; margin: 0px 0px 10px 10px;" />
+					
+					<p:outputLabel for="passwd" value="Contraseña:" style="width: 200px;"/>
+					<p:password id="passwd" value="#{exportarModeloBean.passRepositorioExport}" required="true" style="width: 150px; margin: 0px 0px 0px 10px;"/>
+				</h:panelGrid>
+			</p:panel>
+		</p:outputPanel>
+		
+		<p:panelGrid>
+			<p:messages id="msg" showDetail="true"/>
+		</p:panelGrid>
+		
+		<div style="margin-top: 10px;">
+			<p:commandButton value="Finalizar" action="#{exportarModeloBean.exportarModelo(adaptarModeloBean.modelo, adaptarModeloBean.puntosDeVariacion)}" update=":panel_principal" />
+		</div>
+	</h:form>
+
+</html>
