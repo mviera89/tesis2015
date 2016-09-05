@@ -27,5 +27,6 @@ public interface IExportarManager {
 	void copiarArchivos(File origen, File destino);
 	void copiarDirectorio(File origen, File destino);
 	void borrarDirectorio(File dir);
-	
+	void copiarDatosParaExport(String dirPlugin);
+
 }

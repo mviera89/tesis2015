@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +37,7 @@ import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
 import logica.interfaces.IExportarManager;
+import logica.utils.GitControl;
 import logica.utils.Utils;
 
 import org.eclipse.jgit.api.errors.TransportException;
@@ -141,7 +144,6 @@ public class ExportarModeloBean {
 	public void exportarModelo(DefaultDiagramModel modelo, HashMap<String, String[]> puntosDeVariacion) {
 		try {
 			if (modelo != null) {
-				this.init();
 				FacesContext context = javax.faces.context.FacesContext.getCurrentInstance();
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 				VistaBean vb = (VistaBean) session.getAttribute("VistaBean");
@@ -648,6 +650,8 @@ public class ExportarModeloBean {
 				out.flush();
 				out.close();
 
+				iem.copiarDatosParaExport(vb.getDirPlugin());
+				
 				boolean ok = true;
 				if (exportar) {
 					ok = exportarModeloARepositorio();
@@ -657,6 +661,7 @@ public class ExportarModeloBean {
 					FacesMessage mensaje = new FacesMessage("", "El modelo ha sido exportado correctamente.");
 					FacesContext.getCurrentInstance().addMessage(null, mensaje);
 					vb.setFinModelado(true);
+					this.init();
 				}
 				else {
 					FacesMessage mensaje = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ha fallado la carga al repositorio.");

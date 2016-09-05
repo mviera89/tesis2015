@@ -327,26 +327,28 @@ public class ExportarManager implements IExportarManager{
 
 	public void copiarDirectorio(File origen, File destino){
 		File[] archivos = origen.listFiles();
-		int n = archivos.length;
-		for (int i = 0; i < n; i++){
-			File archivo = archivos[i];
-			if (archivo.isDirectory()) {
-				File newDestino = new File(destino + "/" + archivo.getName());
-				newDestino.mkdirs();
-				copiarDirectorio(archivo, newDestino);
-				// Si el directorio está vacío => Lo borro
-				if (newDestino.listFiles().length == 0){
-					newDestino.delete();
+		if (archivos != null){
+			int n = archivos.length;
+			for (int i = 0; i < n; i++){
+				File archivo = archivos[i];
+				if (archivo.isDirectory()) {
+					File newDestino = new File(destino + "/" + archivo.getName());
+					newDestino.mkdirs();
+					copiarDirectorio(archivo, newDestino);
+					// Si el directorio está vacío => Lo borro
+					if (newDestino.listFiles().length == 0){
+						newDestino.delete();
+					}
 				}
-			}
-			else{
-				String nombreExt = archivo.getName();
-				int indexExtension = nombreExt.indexOf(".");
-				if (indexExtension != -1){
-					String extArchivo = nombreExt.substring(indexExtension + 1, nombreExt.length());
-					// Solo cargo archivos que no son xmi, excepto los 'diagram.xmi'
-					if ((!extArchivo.equals("xmi")) || (nombreExt.equals("diagram.xmi"))){
-						copiarArchivos(archivo, new File(destino + "/" + archivo.getName()));
+				else{
+					String nombreExt = archivo.getName();
+					int indexExtension = nombreExt.indexOf(".");
+					if (indexExtension != -1){
+						String extArchivo = nombreExt.substring(indexExtension + 1, nombreExt.length());
+						// Solo cargo archivos que no son xmi, excepto los 'diagram.xmi'
+						if ((!extArchivo.equals("xmi")) || (nombreExt.equals("diagram.xmi"))){
+							copiarArchivos(archivo, new File(destino + "/" + archivo.getName()));
+						}
 					}
 				}
 			}
@@ -364,6 +366,18 @@ public class ExportarManager implements IExportarManager{
 				archivos[i].delete();
 			}
 			dir.delete();
+		}
+	}
+	
+	public void copiarDatosParaExport(String dirPlugin){
+		String destinoImport = ReadProperties.getProperty("destinoDescargas");
+		String destinoExport = ReadProperties.getProperty("destinoExport");
+		if (!destinoImport.equals(destinoExport)){
+			File origen = new File(destinoImport + dirPlugin);
+			// Creo el destino
+			File destino = new File(destinoExport + dirPlugin);
+			destino.mkdirs();
+			this.copiarDirectorio(origen, destino);
 		}
 	}
 
