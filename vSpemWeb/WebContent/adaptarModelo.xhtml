@@ -60,7 +60,7 @@
 									<f:facet name="element">
 										<h:panelGroup>
 											<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-														   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+														   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
 												<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
 												<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
 											</h:commandLink>
@@ -118,33 +118,37 @@
 							</h:panelGroup>
 							
 							<h:panelGroup>
-								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.responsableDe.elements.size() > 0}">
+								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.responsableDe.size() > 0}">
 									<legend>Responsable de</legend>
-									<p:diagram value="#{rolWP.responsableDe}" var="elem" style="height: #{(rolWP.responsableDe.connections.size() + 1) * 110}px;">
-										<f:facet name="element">
-											<h:panelGroup>
-												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
-													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
-												</h:commandLink>
-											</h:panelGroup>
-										</f:facet>
-									</p:diagram>
+									<p:dataGrid value="#{rolWP.responsableDe}" var="diagram" columns="#{rolWP.responsableDe.size() > 4 ? 4 : rolWP.responsableDe.size()}">
+						                <p:diagram value="#{diagram}" var="elem" style="height: #{(diagram.connections.size() > 0) ? 220 : 110}px;">
+											<f:facet name="element">
+												<h:panelGroup>
+													<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+																   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+														<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+														<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+													</h:commandLink>
+												</h:panelGroup>
+											</f:facet>
+										</p:diagram>
+								    </p:dataGrid>
 								</p:fieldset>
-								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.modifica.elements.size() > 0}">
+								<p:fieldset style="margin-bottom:20px" rendered="#{rolWP.modifica.size() > 0}">
 									<legend>Modifica</legend>
-									<p:diagram value="#{rolWP.modifica}" var="elem" style="height: #{(rolWP.modifica.connections.size() + 1) * 110}px;">
-										<f:facet name="element">
-											<h:panelGroup>
-												<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
-															   value="#{elem.nombre}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
-													<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
-													<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
-												</h:commandLink>
-											</h:panelGroup>
-										</f:facet>
-									</p:diagram>
+									<p:dataGrid value="#{rolWP.modifica}" var="diagram" columns="#{rolWP.modifica.size() > 4 ? 4 : rolWP.modifica.size()}">
+										<p:diagram value="#{diagram}" var="elem" style="height: #{(diagram.connections.size() > 0) ? 220 : 110}px;">
+											<f:facet name="element">
+												<h:panelGroup>
+													<h:commandLink disabled="#{!elem.esPV}" onclick="#{adaptarModeloBean.seleccionarVariantes()};"
+																   value="#{elem.presentationName}" title="#{elem.esPV ? 'Seleccionar variantes' : ''}" style="color: #{elem.color};">
+														<p:graphicImage value="/imagenes/#{elem.imagen}" style="display:block; margin:auto;" />
+														<f:param name="elemSeleccionado" value="#{elem.elementID}"/>
+													</h:commandLink>
+												</h:panelGroup>
+											</f:facet>
+										</p:diagram>
+									</p:dataGrid>
 								</p:fieldset>
 							</h:panelGroup>
 							

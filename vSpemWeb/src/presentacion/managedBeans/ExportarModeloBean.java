@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +35,6 @@ import logica.dominio.Struct;
 import logica.dominio.Variant;
 import logica.enumerados.TipoElemento;
 import logica.interfaces.IExportarManager;
-import logica.utils.GitControl;
 import logica.utils.Utils;
 
 import org.eclipse.jgit.api.errors.TransportException;

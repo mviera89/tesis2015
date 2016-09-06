@@ -1,5 +1,7 @@
 package logica.dataTypes;
 
+import java.util.List;
+
 import logica.dominio.Struct;
 
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -7,8 +9,8 @@ import org.primefaces.model.diagram.DefaultDiagramModel;
 public class TipoRolesWorkProducts {
 
 	private Struct rol;
-	private DefaultDiagramModel responsableDe;
-	private DefaultDiagramModel modifica;
+	private List<DefaultDiagramModel> responsableDe;
+	private List<DefaultDiagramModel> modifica;
 
 	public Struct getRol() {
 		return rol;
@@ -18,19 +20,19 @@ public class TipoRolesWorkProducts {
 		this.rol = rol;
 	}
 
-	public DefaultDiagramModel getResponsableDe() {
+	public List<DefaultDiagramModel> getResponsableDe() {
 		return responsableDe;
 	}
 
-	public void setResponsableDe(DefaultDiagramModel responsableDe) {
+	public void setResponsableDe(List<DefaultDiagramModel> responsableDe) {
 		this.responsableDe = responsableDe;
 	}
 
-	public DefaultDiagramModel getModifica() {
+	public List<DefaultDiagramModel> getModifica() {
 		return modifica;
 	}
 
-	public void setModifica(DefaultDiagramModel modifica) {
+	public void setModifica(List<DefaultDiagramModel> modifica) {
 		this.modifica = modifica;
 	}
 

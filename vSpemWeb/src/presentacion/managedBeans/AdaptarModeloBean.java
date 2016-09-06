@@ -852,22 +852,30 @@ public class AdaptarModeloBean {
 					while ((it.hasNext())){
 						TipoRolesWorkProducts trt = it.next();
 						if (trt.getResponsableDe() != null){
-							Iterator<Element> iterResp = trt.getResponsableDe().getElements().iterator();
+							Iterator<DefaultDiagramModel> iterResp = trt.getResponsableDe().iterator();
 							while (iterResp.hasNext() && (modeloRolesWP == null)){
-								Element el = iterResp.next();
-								String id = ((Struct) el.getData()).getElementID();
-								if (id.equals(idPuntoVariacionAdaptado)){
-									modeloRolesWP = trt.getResponsableDe();
+								DefaultDiagramModel diagram = iterResp.next();
+								Iterator<Element> iterRespD = diagram.getElements().iterator();
+								while (iterRespD.hasNext()){
+									Element el = iterRespD.next();
+									String id = ((Struct) el.getData()).getElementID();
+									if (id.equals(idPuntoVariacionAdaptado)){
+										modeloRolesWP = diagram;
+									}
 								}
 							}
 						}
 						if ((modeloRolesWP == null) && (trt.getModifica() != null)){
-							Iterator<Element> iterMod = trt.getModifica().getElements().iterator();
+							Iterator<DefaultDiagramModel> iterMod = trt.getModifica().iterator();
 							while (iterMod.hasNext() && (modeloRolesWP == null)){
-								Element el = iterMod.next();
-								String id = ((Struct) el.getData()).getElementID();
-								if (id.equals(idPuntoVariacionAdaptado)){
-									modeloRolesWP = trt.getModifica();
+								DefaultDiagramModel diagram = iterMod.next();
+								Iterator<Element> iterModD = diagram.getElements().iterator();
+								while (iterModD.hasNext()){
+									Element el = iterModD.next();
+									String id = ((Struct) el.getData()).getElementID();
+									if (id.equals(idPuntoVariacionAdaptado)){
+										modeloRolesWP = diagram;
+									}
 								}
 							}
 						}
@@ -1073,18 +1081,8 @@ public class AdaptarModeloBean {
 
 	/*** Modelo Roles WorkProducts ***/
 	
-	public DefaultDiagramModel crearModeloParaWPS(List<String> wps){
-		DefaultDiagramModel modeloWps = new DefaultDiagramModel();
-		modeloWps.setMaxConnections(-1);
-	   	
-    	FlowChartConnector conector = new FlowChartConnector();
-    	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
-    	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
-    	conector.setAlwaysRespectStubs(true);
-    	modeloWps.setDefaultConnector(conector);
-    	
-    	float x = 0;
-    	float y = 0;
+	public List<DefaultDiagramModel> crearModeloParaWPS(List<String> wps){
+    	List<DefaultDiagramModel> res = new ArrayList<DefaultDiagramModel>();
     	// Para cada wp lo busco y lo agrego
     	Iterator<String> itWP = wps.iterator();
     	List<String> wpAgregados = new ArrayList<String>();
@@ -1093,15 +1091,26 @@ public class AdaptarModeloBean {
     		Struct wpS = iam.buscarWP(nodos, wp);
     		if (wpS != null){
     			if (!wpAgregados.contains(wpS.getNombre())){
+
+    				DefaultDiagramModel modeloWps = new DefaultDiagramModel();
+    				modeloWps.setMaxConnections(-1);
+    			   	
+    		    	FlowChartConnector conector = new FlowChartConnector();
+    		    	conector.setPaintStyle("{strokeStyle:'#404a4e', lineWidth:2}");
+    		    	conector.setHoverPaintStyle("{strokeStyle:'#20282b'}");
+    		    	conector.setAlwaysRespectStubs(true);
+    		    	modeloWps.setDefaultConnector(conector);
+    		    	
     				wpAgregados.add(wpS.getNombre());
-			        Element root = new Element(wpS, x + "em", y + "em");
+			        Element root = new Element(wpS);
 			        root.setDraggable(false);
 			        modeloWps.addElement(root);
-			        x += wpS.getNombre().length();
+			        
+			        res.add(modeloWps);
     			}
     		}
     	}
-    	return modeloWps;
+    	return res;
 	}
 	
 	public void crearModeloRolesWorkProducts(){
@@ -1120,7 +1129,7 @@ public class AdaptarModeloBean {
 		       	while (itRoles.hasNext()){
 		       		Struct rol = itRoles.next();
 		       		// Crear modelo para wps
-		       		DefaultDiagramModel wpsModel = crearModeloParaWPS(wps);
+		       		List<DefaultDiagramModel> wpsModel = crearModeloParaWPS(wps);
 		       		if (!rolesAgregados.contains(rol.getNombre())){
 		       			rolesAgregados.add(rol.getNombre());
 		       			TipoRolesWorkProducts trt = new TipoRolesWorkProducts();
@@ -1134,27 +1143,36 @@ public class AdaptarModeloBean {
 							TipoRolesWorkProducts trt = iter.next();
 							Struct s = trt.getRol();
 							if (s.getNombre().equals(rol.getNombre())){
-								DefaultDiagramModel responsable = trt.getResponsableDe();
+								List<DefaultDiagramModel> responsable = trt.getResponsableDe();
 								if (responsable != null){
-			       					List<Element> resp = responsable.getElements();
-									Iterator<Element> itWs = wpsModel.getElements().iterator();
-									// Agrego todos los wp que no están
-									while (itWs.hasNext()){
-										Element wp = itWs.next();
-										boolean fin = false;
-										int i = 0;
-										int n = resp.size();
-										while ((i < n) && !fin){
-											String nombreResp = ((Struct) resp.get(i).getData()).getNombre();
-											String nombreWp = ((Struct) wp.getData()).getNombre();
-											if (nombreResp.equals(nombreWp)){
-												fin = true;
+									List<DefaultDiagramModel> res = new ArrayList<DefaultDiagramModel>();
+									Iterator<DefaultDiagramModel> itResp = responsable.iterator();
+									while (itResp.hasNext()){
+										DefaultDiagramModel model = itResp.next();
+				       					List<Element> resp = model.getElements();
+				       					Iterator<DefaultDiagramModel> itLstWs = wpsModel.iterator();
+				       					while (itLstWs.hasNext()){
+				       						DefaultDiagramModel modelWs = itLstWs.next();
+											Iterator<Element> itWs = modelWs.getElements().iterator();
+											// Agrego todos los wp que no están
+											while (itWs.hasNext()){
+												Element wp = itWs.next();
+												boolean fin = false;
+												int i = 0;
+												int n = resp.size();
+												while ((i < n) && !fin){
+													String nombreResp = ((Struct) resp.get(i).getData()).getNombre();
+													String nombreWp = ((Struct) wp.getData()).getNombre();
+													if (nombreResp.equals(nombreWp)){
+														fin = true;
+													}
+													i++;
+												}
+												if (!fin){
+													res.add(model);
+												}
 											}
-											i++;
-										}
-										if (!fin){
-											resp.add(wp);
-										}
+				       					}
 									}
 								}
 								else{
@@ -1179,7 +1197,7 @@ public class AdaptarModeloBean {
 		       	while (itRoles.hasNext()){
 		       		Struct rol = itRoles.next();
 		       		// crear modelo para wps
-		       		DefaultDiagramModel wpsModel = crearModeloParaWPS(wps);
+		       		List<DefaultDiagramModel> wpsModel = crearModeloParaWPS(wps);
 		       		if (!rolesAgregados.contains(rol.getNombre())){
 			       		rolesAgregados.add(rol.getNombre());
 			       		TipoRolesWorkProducts trt = new TipoRolesWorkProducts();
@@ -1193,31 +1211,40 @@ public class AdaptarModeloBean {
 		       				TipoRolesWorkProducts trt = iter.next();
 		       				Struct s = trt.getRol();
 		       				if (s.getNombre().equals(rol.getNombre())){
-			       				DefaultDiagramModel modifica = trt.getModifica();
-			       				if (modifica != null) {
-			       					List<Element> modif = modifica.getElements();
-									Iterator<Element> itWs = wpsModel.getElements().iterator();
-									// Agrego todos los wp que no están
-									while (itWs.hasNext()){
-										Element wp = itWs.next();
-										boolean fin = false;
-										int i = 0;
-										int n = modif.size();
-										while ((i < n) && !fin){
-											String nombreModif = ((Struct) modif.get(i).getData()).getNombre();
-											String nombreWp = ((Struct) wp.getData()).getNombre();
-											if (nombreModif.equals(nombreWp)){
-												fin = true;
+		       					List<DefaultDiagramModel> modifica = trt.getModifica();
+								if (modifica != null){
+									List<DefaultDiagramModel> res = new ArrayList<DefaultDiagramModel>();
+									Iterator<DefaultDiagramModel> itMod = modifica.iterator();
+									while (itMod.hasNext()){
+										DefaultDiagramModel model = itMod.next();
+				       					List<Element> modif = model.getElements();
+				       					Iterator<DefaultDiagramModel> itLstWs = wpsModel.iterator();
+				       					while (itLstWs.hasNext()){
+				       						DefaultDiagramModel modelWs = itLstWs.next();
+											Iterator<Element> itWs = modelWs.getElements().iterator();
+											// Agrego todos los wp que no están
+											while (itWs.hasNext()){
+												Element wp = itWs.next();
+												boolean fin = false;
+												int i = 0;
+												int n = modif.size();
+												while ((i < n) && !fin){
+													String nombreModif = ((Struct) modif.get(i).getData()).getNombre();
+													String nombreWp = ((Struct) wp.getData()).getNombre();
+													if (nombreModif.equals(nombreWp)){
+														fin = true;
+													}
+													i++;
+												}
+												if (!fin){
+													res.add(model);
+												}
 											}
-											i++;
-										}
-										if (!fin){
-											modif.add(wp);
-										}
+				       					}
 									}
-			       				}
-			       				else{
-			       					trt.setModifica(wpsModel);
+								}
+								else{
+									trt.setModifica(wpsModel);
 			       				}
 		       				}
 		       			}
@@ -1249,31 +1276,40 @@ public class AdaptarModeloBean {
 			boolean estaVP = false;
 			while (it.hasNext() && !estaVP){
 				TipoRolesWorkProducts trt = it.next();
-				DefaultDiagramModel responsable = trt.getResponsableDe();
-				DefaultDiagramModel modifica = trt.getModifica();
+				List<DefaultDiagramModel> responsable = trt.getResponsableDe();
+				List<DefaultDiagramModel> modifica = trt.getModifica();
 				// busco idPuntoVariacionAdaptado en los modelos
 				boolean encontre = false;
 				if (responsable != null){
-					Iterator<Element> itResp = responsable.getElements().iterator();
-					while(itResp.hasNext() && !encontre){
-						Element e = itResp.next();
-						Struct s = (Struct) e.getData();
-						if (s.getElementID().equals(idPuntoVariacionAdaptado)){
-							encontre = true;
-							modeloRolesWPS = responsable;
-							estaVP = true;
+					Iterator<DefaultDiagramModel> resp = responsable.iterator();
+					while (resp.hasNext()){
+						DefaultDiagramModel model = resp.next();
+						Iterator<Element> itResp = model.getElements().iterator();
+						while(itResp.hasNext() && !encontre){
+							Element e = itResp.next();
+							Struct s = (Struct) e.getData();
+							if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+								encontre = true;
+								modeloRolesWPS = model;
+								estaVP = true;
+							}
 						}
 					}
 				}
 				if (!encontre){
 					if (modifica != null){
-						Iterator<Element> itMod = modifica.getElements().iterator();
-						while(itMod.hasNext()){
-							Element e = itMod.next();
-							Struct s = (Struct) e.getData();
-							if (s.getElementID().equals(idPuntoVariacionAdaptado)){
-								modeloRolesWPS = modifica;
-								estaVP = true;
+						Iterator<DefaultDiagramModel> mod = modifica.iterator();
+						while (mod.hasNext()){
+							DefaultDiagramModel model = mod.next();
+							Iterator<Element> itMod = model.getElements().iterator();
+							while(itMod.hasNext() && !encontre){
+								Element e = itMod.next();
+								Struct s = (Struct) e.getData();
+								if (s.getElementID().equals(idPuntoVariacionAdaptado)){
+									encontre = true;
+									modeloRolesWPS = model;
+									estaVP = true;
+								}
 							}
 						}
 					}
@@ -1798,24 +1834,30 @@ public class AdaptarModeloBean {
 				boolean encontre = false;
 				TipoRolesWorkProducts trt = it.next();
 				if (trt.getResponsableDe() != null){
-					Iterator<Element> iterResp = trt.getResponsableDe().getElements().iterator();
-					while (iterResp.hasNext() && !encontre){
-						Element e = iterResp.next();
-						String id = ((Struct) e.getData()).getElementID();
-						if (id.equals(idElemento)){
-							encontre = true;
-							return e;
+					Iterator<DefaultDiagramModel> iterR = trt.getResponsableDe().iterator();
+					while (iterR.hasNext()){
+						DefaultDiagramModel resp = iterR.next();
+						Iterator<Element> iterResp = resp.getElements().iterator();
+						while (iterResp.hasNext() && !encontre){
+							Element e = iterResp.next();
+							String id = ((Struct) e.getData()).getElementID();
+							if (id.equals(idElemento)){
+								encontre = true;
+								return e;
+							}
 						}
 					}
 				}
-				
 				if (trt.getModifica() != null){
-					if (!encontre){ //busco en el modelo modifica
-						Iterator<Element> iterMod = trt.getModifica().getElements().iterator();
+					Iterator<DefaultDiagramModel> iterM = trt.getModifica().iterator();
+					while (iterM.hasNext()){
+						DefaultDiagramModel mod = iterM.next();
+						Iterator<Element> iterMod = mod.getElements().iterator();
 						while (iterMod.hasNext() && !encontre){
 							Element e = iterMod.next();
 							String id = ((Struct) e.getData()).getElementID();
 							if (id.equals(idElemento)){
+								encontre = true;
 								return e;
 							}
 						}
